@@ -18,11 +18,13 @@ InputSelect::InputSelect(
 	Input(hg::move(content_), ReflowClassList {}, nullptr),
 	Atom({}, {}, {}),
 	_text(hg::move(text_)),
-	_runtimeMenuHost() {
+	_menu() {
 	bindAttributeOwner(this);
 }
 
-InputSelect::~InputSelect() = default;
+InputSelect::~InputSelect() {
+	closeMenu();
+}
 
 string InputSelect::getTag() const noexcept {
 	return std::format(R"(InputSelect <{:#x}>)", reinterpret_cast<u64>(this));
@@ -44,7 +46,7 @@ void InputSelect::tick() {
 
 void InputSelect::openMenu() {
 
-	assertd(_runtimeMenuHost == nullptr);
+	assertd(not _menu.has_value());
 
 	const auto window = std::static_pointer_cast<Window>(root());
 	assertrt(window != nullptr);
@@ -57,24 +59,26 @@ void InputSelect::openMenu() {
 	const auto result = invokeOnSelectMenu(builderEvent);
 	::hg::assertrt(result == EventResponse::eHandled || result == EventResponse::eConsumed);
 
-	auto menu = menuBuilder.construct();
-	// TODO: Support dynamic re-positioning based on the popover content sizing
-	const auto screenMenuOffset = getLayoutState().layoutOffset + math::fvec2 {
-		std::max(-getLayoutState().layoutOffset.x, -300.F), getLayoutState().layoutSize.y
-	};
-	_runtimeMenuHost = make_sptr<Host>(menu, screenMenuOffset, math::fvec2 { std::numeric_limits<f32>::infinity() });
-
-	discard = window->requestLayer(LayerBand::ePopup, _runtimeMenuHost);
-	menu->setParent(_runtimeMenuHost);
-	menu->markAsPending(true, true);
+	const auto& layout = getLayoutState();
+	_menu = WindowManager::get()->openPopup(
+		window,
+		menuBuilder.construct(),
+		PopupAnchor { .offset = layout.layoutOffset, .size = layout.layoutSize, .side = PopupSide::eBelow, .align = PopupAlign::eStart },
+		weak_from_this(),
+		None,
+		[this, self = weak_from_this()]() {
+			if (not self.expired()) {
+				_menu = None;
+			}
+		}
+	);
 }
 
 void InputSelect::closeMenu() {
-	const auto window = std::static_pointer_cast<Window>(root());
-	assertrt(window != nullptr);
-
-	auto host = std::exchange(_runtimeMenuHost, nullptr);
-	window->dropLayer(host.get());
+	// The manager is gone at shutdown, its router drops the popups itself.
+	if (const auto& manager = WindowManager::get(); _menu.has_value() && manager != nullptr) {
+		manager->closePopup(*_menu);
+	}
 }
 
 Widget::listen_handle_type InputSelect::onInputChange(listen_fn_type<InputChangeEvent> listenFn_) {
@@ -99,7 +103,7 @@ EventReply InputSelect::invokeOnMouseButtonDown(ref<const MouseEvent> event_) {
 		return Input::invokeOnMouseButtonDown(event_);
 	}
 
-	if (_runtimeMenuHost != nullptr) {
+	if (_menu.has_value()) {
 		closeMenu();
 	} else {
 		openMenu();
@@ -111,20 +115,6 @@ EventReply InputSelect::invokeOnMouseButtonDown(ref<const MouseEvent> event_) {
 EventReply InputSelect::invokeOnFocus(cref<FocusEvent> event_) {
 	// TODO: Check whether we still need this | Could replace mount button up
 	return Input::invokeOnFocus(event_);
-}
-
-EventReply InputSelect::invokeOnBlur(cref<FocusEvent> event_) {
-
-	if (_runtimeMenuHost == nullptr) {
-		return Input::invokeOnBlur(event_);
-	}
-
-	/**/
-
-	closeMenu();
-
-	discard = Input::invokeOnBlur(event_);
-	return EventResponse::eHandled;
 }
 
 void InputSelect::onAttachDataWatcher(ref<DataWatcher> watcher_) {

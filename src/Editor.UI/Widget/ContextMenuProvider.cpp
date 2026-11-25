@@ -14,11 +14,11 @@ using namespace hg;
 
 ContextMenuProvider::ContextMenuProvider() :
 	CompoundWidget(ReflowClassList {}, nullptr),
-	_runtimeMenuHost() {}
+	_menu() {}
 
 ContextMenuProvider::ContextMenuProvider(mref<SharedPtr<Widget>> content_) :
 	CompoundWidget(::hg::move(content_), ReflowClassList {}, nullptr),
-	_runtimeMenuHost() {}
+	_menu() {}
 
 ContextMenuProvider::~ContextMenuProvider() = default;
 
@@ -71,7 +71,7 @@ EventReply ContextMenuProvider::invokeOnMouseButtonUp(ref<const MouseEvent> even
 		return CompoundWidget::invokeOnMouseButtonUp(event_);
 	}
 
-	::hg::assertrt(_runtimeMenuHost == nullptr);
+	::hg::assertrt(not _menu.has_value());
 
 	const auto subModule = engine::Engine::getEngine()->getModules().getSubModule(EditorUIDepKey);
 	::hg::assertd(subModule != nullptr);
@@ -81,32 +81,18 @@ EventReply ContextMenuProvider::invokeOnMouseButtonUp(ref<const MouseEvent> even
 
 	const auto& service = *static_cast<const ptr<const EditorUI>>(subModule.get())->getEditorServices().contextService;
 
-	// TODO: Update positioning and possible sizing constraints for host
-	const auto menu = service.buildContextMenu(*window);
-	_runtimeMenuHost = make_sptr<Host>(
-		menu,
-		event_._pointer,
-		math::fvec2 { std::numeric_limits<f32>::infinity() }
-	);
-	[[maybe_unused]] auto layer = window->requestLayer(LayerBand::ePopup, _runtimeMenuHost);
-	menu->setParent(_runtimeMenuHost);
-
-	/**/
-
-	menu->markAsPending(true, true);
-	WindowManager::get()->focus(window, menu);
-
-	/**/
-
-	::hg::discard = _runtimeMenuHost->onBlur(
-		[this, window, self = shared_from_this()]([[maybe_unused]] ref<const FocusEvent> event_) {
-			auto host = std::exchange(_runtimeMenuHost, nullptr);
-			window->dropLayer(host.get());
-			return EventResponse::eHandled;
+	_menu = WindowManager::get()->openPopup(
+		window,
+		service.buildContextMenu(*window),
+		PopupAnchor { .offset = event_._pointer, .size = math::vec2 {}, .side = PopupSide::eBelow, .align = PopupAlign::eStart },
+		{},
+		None,
+		[this, self = weak_from_this()]() {
+			if (not self.expired()) {
+				_menu = None;
+			}
 		}
 	);
-
-	/**/
 
 	// Note: Invoke the basis to still call the event handlers
 	::hg::discard = CompoundWidget::invokeOnMouseButtonUp(event_);
