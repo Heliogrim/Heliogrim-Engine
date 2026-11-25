@@ -20,6 +20,10 @@ namespace hg::engine::reflow {
 		u64 id = 0uLL;
 	};
 
+	struct ModalHandle {
+		u64 id = 0uLL;
+	};
+
 	class EventRouter {
 	public:
 		using this_type = EventRouter;
@@ -66,6 +70,25 @@ namespace hg::engine::reflow {
 		// Open order, the last popup of a window is its top one.
 		Vector<Popup> _popups;
 		u64 _popupIds = 0uLL;
+
+		struct Modal {
+			u64 id;
+			wptr<Window> window;
+			sptr<Widget> content;
+			sptr<Host> host;
+			bool placed;
+			FocusSnapshot snapshot;
+			std::function<void()> onClosed;
+		};
+
+		// Open order, the last modal is the active one.
+		Vector<Modal> _modals;
+		// Requests waiting for every open modal to close, without host and snapshot yet.
+		Vector<Modal> _queuedModals;
+		u64 _modalIds = 0uLL;
+
+		// Deepest widget of the event being routed, lets a modal opened from inside the active one nest.
+		wptr<Widget> _routeTarget;
 
 	public:
 		void registerWindow(ref<const sptr<Window>> window_);
@@ -124,6 +147,20 @@ namespace hg::engine::reflow {
 
 	public:
 		/**
+		 * Opens the content in a dialog scope centred on the window, moves the focus into it and raises the window.
+		 * While a modal is active the request waits in order, unless it comes from an event routed inside the active modal.
+		 */
+		[[nodiscard]] ModalHandle openModal(ref<const sptr<Window>> window_, sptr<Widget> content_, std::function<void()> onClosed_);
+
+		/**
+		 * Closes the modal after the ones nested above it, restores the focus from before it opened and opens the next queued one.
+		 */
+		void closeModal(const ModalHandle handle_);
+
+		[[nodiscard]] Opt<ModalHandle> activeModal() const noexcept;
+
+	public:
+		/**
 		 * Widgets under the point, root first.
 		 */
 		[[nodiscard]] Vector<sptr<Widget>> hitPath(ref<const sptr<Window>> window_, const math::vec2 point_) const;
@@ -160,8 +197,10 @@ namespace hg::engine::reflow {
 
 		void apply(ref<const sptr<Window>> window_, ref<const EventReply> reply_, ref<const sptr<Widget>> capturer_, const u32 button_);
 
+		void moveFocus(ref<const sptr<Window>> window_, ref<const sptr<Widget>> target_);
+
 		/**
-		 * Closes popups whose anchor unmounted and places popups once their host has a layout size.
+		 * Closes popups whose anchor unmounted and modals whose window is gone, places both once their host has a layout size.
 		 */
 		void maintainPopups();
 
@@ -171,5 +210,15 @@ namespace hg::engine::reflow {
 		void closePopups(ref<const Vector<u64>> ids_);
 
 		[[nodiscard]] bool closeOnOutsideDown(ref<const sptr<Window>> window_, const math::vec2 point_);
+
+		// Window of the active modal, null without one.
+		[[nodiscard]] sptr<Window> modalWindow() const;
+
+		// Pointer input on a window other than the active modal's is blocked.
+		[[nodiscard]] bool blocked(ref<const sptr<Window>> window_) const;
+
+		[[nodiscard]] sptr<Window> mainWindow() const;
+
+		void activateModal(mref<Modal> modal_);
 	};
 }

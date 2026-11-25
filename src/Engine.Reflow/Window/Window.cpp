@@ -41,6 +41,10 @@ void Window::setClientSize(cref<math::vec2> nextClientSize_) {
 	_clientSize = nextClientSize_;
 }
 
+nmpt<engine::platform::NativeWindow> Window::nativeWindow() const noexcept {
+	return _nativeWindow;
+}
+
 math::vec2 Window::getClientSize() const noexcept {
 	return _clientSize;
 }

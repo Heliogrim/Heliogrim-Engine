@@ -40,6 +40,9 @@ namespace hg::engine::reflow {
 	private:
 		ptr<platform::NativeWindow> _nativeWindow;
 
+	public:
+		[[nodiscard]] nmpt<platform::NativeWindow> nativeWindow() const noexcept;
+
 	private:
 		WindowType _type;
 

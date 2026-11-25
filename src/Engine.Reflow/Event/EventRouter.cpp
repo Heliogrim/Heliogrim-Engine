@@ -59,6 +59,26 @@ static sptr<Widget> clickTarget(ref<const sptr<Window>> window_, ref<const Vecto
 	return remembered != nullptr ? remembered : scope;
 }
 
+static sptr<Widget> deepest(ref<const Vector<sptr<Widget>>> path_) {
+	return path_.empty() ? nullptr : path_.back();
+}
+
+static math::vec2 centred(const math::vec2 client_, const math::vec2 size_) noexcept {
+	return math::vec2 { std::max(0.F, (client_.x - size_.x) * 0.5F), std::max(0.F, (client_.y - size_.y) * 0.5F) };
+}
+
+namespace {
+	// Restores the target of the enclosing route when a (nested) route returns.
+	struct RouteScope {
+		ref<wptr<Widget>> slot;
+		wptr<Widget> previous;
+
+		~RouteScope() {
+			slot = ::hg::move(previous);
+		}
+	};
+}
+
 static LayerBand anchorBand(ref<const sptr<Window>> window_, ref<const sptr<Widget>> anchor_) {
 	for (auto next = anchor_; next != nullptr; next = next->parent()) {
 		if (next->parent() != window_) {
@@ -111,20 +131,31 @@ ptr<EventRouter::WindowRoute> EventRouter::findRoute(const ptr<const Window> win
 Vector<sptr<Widget>> EventRouter::hitPath(ref<const sptr<Window>> window_, const math::vec2 point_) const {
 
 	Vector<sptr<Widget>> path {};
-	if (window_ == nullptr || not contains(*window_, point_)) {
+	if (window_ == nullptr || not contains(*window_, point_) || blocked(window_)) {
 		return path;
 	}
 
 	path.push_back(window_);
 
-	sptr<Widget> next {};
+	// The active modal hides every layer below its host and the content.
 	const auto layers = window_->layers();
-	for (auto it = layers.rbegin(); it != layers.rend() && next == nullptr; ++it) {
-		if (*it == nullptr || not isHitTestable((*it)->band)) {
+	auto floor = 0uLL;
+	bool modal = false;
+	for (auto idx = 0uLL; idx < layers.size() && not _modals.empty(); ++idx) {
+		if (layers[idx] != nullptr && layers[idx]->host.lock() == _modals.back().host) {
+			floor = idx;
+			modal = true;
+		}
+	}
+
+	sptr<Widget> next {};
+	for (auto idx = layers.size(); idx > floor && next == nullptr; --idx) {
+		const auto& layer = layers[idx - 1uLL];
+		if (layer == nullptr || not isHitTestable(layer->band)) {
 			continue;
 		}
 
-		const auto host = (*it)->host.lock();
+		const auto host = layer->host.lock();
 		if (host != nullptr && host->state().isVisible() && contains(*host, point_)) {
 			next = host;
 		}
@@ -133,7 +164,7 @@ Vector<sptr<Widget>> EventRouter::hitPath(ref<const sptr<Window>> window_, const
 	// The title bar shares the content rectangle, so the content (1) is tested before the title bar (0).
 	const auto* const windowChildren = window_->children();
 	for (const auto idx : { 1uLL, 0uLL }) {
-		if (next != nullptr || windowChildren->size() <= idx) {
+		if (next != nullptr || modal || windowChildren->size() <= idx) {
 			continue;
 		}
 
@@ -269,6 +300,13 @@ EventReply EventRouter::route(ref<const sptr<Window>> requested_, ref<const inpu
 	// A held capture receives the pointer whichever window reported it.
 	const auto window_ = captureWindow(requested_);
 
+	if (event_._down && blocked(window_)) {
+		if (const auto native = modalWindow()->nativeWindow(); native != nullptr) {
+			native->raise();
+		}
+		return EventReply::consumed();
+	}
+
 	const auto point = math::vec2 { static_cast<float>(event_._pointer.x), static_cast<float>(event_._pointer.y) };
 	if (event_._down && closeOnOutsideDown(window_, point)) {
 		_dismissButton = event_._button;
@@ -284,6 +322,8 @@ EventReply EventRouter::route(ref<const sptr<Window>> requested_, ref<const inpu
 	const auto hit = hitPath(window_, point);
 
 	if (event_._down) {
+		const RouteScope routing { _routeTarget, std::exchange(_routeTarget, deepest(hit)) };
+		const auto version = _focusVersion;
 
 		for (const auto& widget : hit) {
 			markState(widget, WidgetStateFlagBits::ePress, true);
@@ -309,8 +349,8 @@ EventReply EventRouter::route(ref<const sptr<Window>> requested_, ref<const inpu
 			consumed = visit(*it, (*it)->invokeOnMouseButtonDown(event_));
 		}
 
-		// A focus requested by the reply wins over the click target.
-		if (not hit.empty() && reply.focus.expired()) {
+		// A focus requested by the reply or moved by a handler (e.g. opening a modal) wins over the click target.
+		if (not hit.empty() && reply.focus.expired() && version == _focusVersion) {
 			if (const auto target = clickTarget(window_, hit); target != window_->getFocusTarget()) {
 				focus(window_, target);
 			}
@@ -325,6 +365,7 @@ EventReply EventRouter::route(ref<const sptr<Window>> requested_, ref<const inpu
 		path = hit;
 	}
 
+	const RouteScope routing { _routeTarget, std::exchange(_routeTarget, deepest(path)) };
 	const auto reply = bubble(path, event_, &Widget::invokeOnMouseButtonUp);
 
 	releasePress(event_._button);
@@ -379,6 +420,7 @@ EventReply EventRouter::route(ref<const sptr<Window>> requested_, ref<const inpu
 		path = hit;
 	}
 
+	const RouteScope routing { _routeTarget, std::exchange(_routeTarget, deepest(path)) };
 	const auto reply = bubble(path, event_, &Widget::invokeOnMouseMove);
 	apply(window_, reply, nullptr, 0uL);
 	return reply;
@@ -387,14 +429,21 @@ EventReply EventRouter::route(ref<const sptr<Window>> requested_, ref<const inpu
 EventReply EventRouter::route(ref<const sptr<Window>> window_, ref<const input::event::MouseWheelEvent> event_) {
 	maintainPopups();
 	const auto path = hitPath(window_, math::vec2 { static_cast<float>(event_._pointer.x), static_cast<float>(event_._pointer.y) });
+	const RouteScope routing { _routeTarget, std::exchange(_routeTarget, deepest(path)) };
 	const auto reply = bubble(path, event_, &Widget::invokeOnWheel);
 	apply(window_, reply, nullptr, 0uL);
 	return reply;
 }
 
-EventReply EventRouter::route(ref<const sptr<Window>> window_, ref<const input::event::KeyboardEvent> event_) {
+EventReply EventRouter::route(ref<const sptr<Window>> requested_, ref<const input::event::KeyboardEvent> event_) {
 
 	maintainPopups();
+
+	// Keys go to the active modal whichever window has the OS focus.
+	const auto modal = modalWindow();
+	const auto& window_ = modal != nullptr ? modal : requested_;
+
+	const auto modals = _modals.size();
 
 	// Attention: Copy the focus path, handlers may move the focus while we walk it.
 	Vector<sptr<Widget>> path {};
@@ -403,6 +452,8 @@ EventReply EventRouter::route(ref<const sptr<Window>> window_, ref<const input::
 			path.push_back(::hg::move(widget));
 		}
 	}
+
+	const RouteScope routing { _routeTarget, std::exchange(_routeTarget, deepest(path)) };
 
 	EventReply reply {};
 	if (event_._down) {
@@ -430,7 +481,8 @@ EventReply EventRouter::route(ref<const sptr<Window>> window_, ref<const input::
 		}
 	}
 
-	if (event_._down && event_._key == escape && not reply.isConsumed()) {
+	// An Escape that closed a modal must not close the popups it uncovered as well.
+	if (event_._down && event_._key == escape && not reply.isConsumed() && _modals.size() == modals) {
 		for (auto it = _popups.rbegin(); it != _popups.rend(); ++it) {
 			if (it->window.lock() == window_) {
 				closePopup(PopupHandle { it->id });
@@ -445,6 +497,7 @@ EventReply EventRouter::route(ref<const sptr<Window>> window_, ref<const input::
 EventReply EventRouter::route(ref<const sptr<Window>> window_, ref<const input::event::DragDropEvent> event_) {
 	maintainPopups();
 	const auto path = hitPath(window_, math::vec2 { static_cast<float>(event_._pointer.x), static_cast<float>(event_._pointer.y) });
+	const RouteScope routing { _routeTarget, std::exchange(_routeTarget, deepest(path)) };
 	const auto reply = bubble(path, event_, &Widget::invokeOnDrop);
 	apply(window_, reply, nullptr, 0uL);
 	return reply;
@@ -465,6 +518,11 @@ void EventRouter::focus(ref<const sptr<Window>> window_, ref<const sptr<Widget>>
 		}
 	}
 	closePopups(lost);
+
+	moveFocus(window_, target_);
+}
+
+void EventRouter::moveFocus(ref<const sptr<Window>> window_, ref<const sptr<Widget>> target_) {
 
 	onWindowFocusChanged(window_);
 
@@ -667,6 +725,27 @@ void EventRouter::maintainPopups() {
 	}
 
 	closePopups(stale);
+
+	Vector<u64> gone {};
+	for (auto& modal : _modals) {
+
+		const auto window = modal.window.lock();
+		if (window == nullptr) {
+			gone.push_back(modal.id);
+			continue;
+		}
+
+		const auto size = modal.host->getLayoutState().layoutSize;
+		if (not modal.placed && size.x > 0.F && size.y > 0.F) {
+			modal.host->setHostOffset(centred(window->getClientSize(), size));
+			modal.host->markAsPending(true, true);
+			modal.placed = true;
+		}
+	}
+
+	for (auto it = gone.rbegin(); it != gone.rend(); ++it) {
+		closeModal(ModalHandle { *it });
+	}
 }
 
 bool EventRouter::closeOnOutsideDown(ref<const sptr<Window>> window_, const math::vec2 point_) {
@@ -699,4 +778,135 @@ bool EventRouter::closeOnOutsideDown(ref<const sptr<Window>> window_, const math
 	}
 	closePopups(outside);
 	return true;
+}
+
+ModalHandle EventRouter::openModal(ref<const sptr<Window>> window_, sptr<Widget> content_, std::function<void()> onClosed_) {
+
+	auto modal = Modal {
+		.id = ++_modalIds,
+		.window = window_,
+		.content = ::hg::move(content_),
+		.host = nullptr,
+		.placed = false,
+		.snapshot = {},
+		.onClosed = ::hg::move(onClosed_)
+	};
+	const auto handle = ModalHandle { modal.id };
+
+	// Only a request from an event routed inside the active modal nests, any other waits its turn.
+	bool nests = false;
+	for (auto next = _routeTarget.lock(); next != nullptr && not _modals.empty() && not nests; next = next->parent()) {
+		nests = next == _modals.back().host;
+	}
+
+	if (nests || (_modals.empty() && _queuedModals.empty())) {
+		activateModal(::hg::move(modal));
+	} else {
+		_queuedModals.emplace_back(::hg::move(modal));
+	}
+
+	return handle;
+}
+
+void EventRouter::activateModal(mref<Modal> modal_) {
+
+	const auto window = modal_.window.lock();
+	modal_.snapshot = snapshotFocus(window);
+	// A drag must not continue into a window the modal blocks.
+	_captured.reset();
+
+	// The content has no layout size before its first pass; maintainPopups centres it once it has one.
+	const auto size = modal_.content->getLayoutState().layoutSize;
+	const auto scope = make_sptr<FocusScope>(FocusScopeKind::eDialog);
+	scope->setContent(::hg::move(modal_.content));
+
+	modal_.host = make_sptr<Host>(scope, centred(window->getClientSize(), size), window->getClientSize());
+	discard = window->requestLayer(LayerBand::eDialog, modal_.host);
+	scope->setParent(modal_.host);
+	modal_.host->markAsPending(true, true);
+	modal_.placed = size.x > 0.F && size.y > 0.F;
+	_modals.emplace_back(::hg::move(modal_));
+
+	if (const auto native = window->nativeWindow(); native != nullptr) {
+		native->raise();
+	}
+
+	// Opening a modal closes nothing, so the focus moves without closing the popups of other windows.
+	const auto first = nextFocusable(scope, nullptr, false);
+	moveFocus(window, first != nullptr ? first : scope);
+}
+
+void EventRouter::closeModal(const ModalHandle handle_) {
+
+	if (const auto queued = std::ranges::find_if(_queuedModals, [&handle_](const auto& modal_) { return modal_.id == handle_.id; });
+		queued != _queuedModals.end()) {
+		auto modal = ::hg::move(*queued);
+		_queuedModals.erase(queued);
+		if (modal.onClosed) {
+			modal.onClosed();
+		}
+		return;
+	}
+
+	// Modals nested above close first, their handlers may close this one as well.
+	for (;;) {
+		const auto it = std::ranges::find_if(_modals, [&handle_](const auto& modal_) { return modal_.id == handle_.id; });
+		if (it == _modals.end()) {
+			return;
+		}
+		if (std::next(it) == _modals.end()) {
+			break;
+		}
+		closeModal(ModalHandle { _modals.back().id });
+	}
+
+	auto modal = ::hg::move(_modals.back());
+	_modals.pop_back();
+
+	if (const auto window = modal.window.lock()) {
+		window->dropLayer(modal.host.get());
+		restoreFocus(window, modal.snapshot);
+	} else if (const auto main = mainWindow()) {
+		restoreFocus(main, snapshotFocus(main));
+	}
+
+	if (modal.onClosed) {
+		modal.onClosed();
+	}
+
+	while (_modals.empty() && not _queuedModals.empty()) {
+		auto next = ::hg::move(_queuedModals.front());
+		_queuedModals.erase(_queuedModals.begin());
+
+		if (not next.window.expired()) {
+			activateModal(::hg::move(next));
+		} else if (next.onClosed) {
+			next.onClosed();
+		}
+	}
+}
+
+Opt<ModalHandle> EventRouter::activeModal() const noexcept {
+	if (_modals.empty()) {
+		return None;
+	}
+	return SomeVal<ModalHandle>(_modals.back().id);
+}
+
+sptr<Window> EventRouter::modalWindow() const {
+	return _modals.empty() ? nullptr : _modals.back().window.lock();
+}
+
+bool EventRouter::blocked(ref<const sptr<Window>> window_) const {
+	const auto modal = modalWindow();
+	return modal != nullptr && modal != window_;
+}
+
+sptr<Window> EventRouter::mainWindow() const {
+	for (const auto& entry : _routes) {
+		if (auto window = entry.window.lock()) {
+			return window;
+		}
+	}
+	return nullptr;
 }

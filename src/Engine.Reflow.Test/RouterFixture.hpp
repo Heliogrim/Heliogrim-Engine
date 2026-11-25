@@ -46,6 +46,7 @@ namespace ReflowModule {
 
 		bool focusable = false;
 		std::function<void()> blurHook {};
+		std::function<void()> downHook {};
 
 	private:
 		EventReply record(ref<const string> kind_, ref<const EventReply> reply_) {
@@ -59,6 +60,9 @@ namespace ReflowModule {
 		}
 
 		EventReply invokeOnMouseButtonDown(ref<const MouseEvent>) override {
+			if (const auto hook = std::exchange(downHook, {})) {
+				hook();
+			}
 			return record("down", down);
 		}
 
