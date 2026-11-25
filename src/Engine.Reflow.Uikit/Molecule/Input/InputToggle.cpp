@@ -23,6 +23,10 @@ string InputToggle::getTag() const noexcept {
 	return std::format(R"(InputToggle <{:#x}>)", reinterpret_cast<u64>(this));
 }
 
+bool InputToggle::isFocusable() const noexcept {
+	return isEnabled();
+}
+
 bool InputToggle::shouldTick() const noexcept {
 	return not state().isFocus() && isPristine() && state().isLayoutOrRenderPending();
 }

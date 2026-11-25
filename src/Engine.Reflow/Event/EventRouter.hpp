@@ -2,6 +2,7 @@
 
 #include "DragDropEvent.hpp"
 #include "EventReply.hpp"
+#include "FocusNavigation.hpp"
 #include "KeyboardEvent.hpp"
 #include "MouseEvent.hpp"
 #include "MouseMoveEvent.hpp"
@@ -40,26 +41,36 @@ namespace hg::engine::reflow {
 		wptr<Widget> _captured;
 		u32 _captureButton = 0uL;
 
+		// Bumped on every focus change, lets a focus change detect a nested one from its blur or focus handlers.
+		u64 _focusVersion = 0uLL;
+
 	public:
 		void registerWindow(ref<const sptr<Window>> window_);
 
 		void unregisterWindow(nmpt<const Window> window_);
 
 	public:
-		EventReply route(cref<sptr<Window>> window_, ref<const input::event::MouseButtonEvent> event_);
+		EventReply route(ref<const sptr<Window>> window_, ref<const input::event::MouseButtonEvent> event_);
 
-		EventReply route(cref<sptr<Window>> window_, ref<const input::event::MouseMoveEvent> event_);
+		EventReply route(ref<const sptr<Window>> window_, ref<const input::event::MouseMoveEvent> event_);
 
-		EventReply route(cref<sptr<Window>> window_, ref<const input::event::MouseWheelEvent> event_);
+		EventReply route(ref<const sptr<Window>> window_, ref<const input::event::MouseWheelEvent> event_);
 
-		EventReply route(cref<sptr<Window>> window_, ref<const input::event::KeyboardEvent> event_);
+		EventReply route(ref<const sptr<Window>> window_, ref<const input::event::KeyboardEvent> event_);
 
-		EventReply route(cref<sptr<Window>> window_, ref<const input::event::DragDropEvent> event_);
+		EventReply route(ref<const sptr<Window>> window_, ref<const input::event::DragDropEvent> event_);
 
 	public:
-		void focus(cref<sptr<Window>> window_, cref<sptr<Widget>> target_);
+		void focus(ref<const sptr<Window>> window_, ref<const sptr<Widget>> target_);
 
-		void blur(cref<sptr<Window>> window_);
+		void blur(ref<const sptr<Window>> window_);
+
+		[[nodiscard]] FocusSnapshot snapshotFocus(ref<const sptr<Window>> window_) const;
+
+		/**
+		 * Focus the deepest widget of the snapshot still mounted in the window, else the window content.
+		 */
+		void restoreFocus(ref<const sptr<Window>> window_, ref<const FocusSnapshot> snapshot_);
 
 	public:
 		/**

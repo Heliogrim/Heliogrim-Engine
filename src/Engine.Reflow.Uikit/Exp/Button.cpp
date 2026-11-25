@@ -10,79 +10,17 @@ import Engine.Reflow;
 using namespace hg::engine::reflow;
 using namespace hg;
 
-SharedPtr<uikit::Button> uikit::makeButton(
-	mref<Variant<TextButtonCreateOptions, ImageButtonCreateOptions, ButtonCreateOptions>> options_
-) {
-
-	auto button = make_sptr<uikit::Button>();
-	const auto& theming = getRuntimeTheming();
-
-	::hg::move(options_).apply(
-		Overloaded {
-			[&](TextButtonCreateOptions& textOptions_) {
-
-				switch (textOptions_.level) {
-					case 0: button->setStateTheme(InteractiveStateFlagBits::eHover, theming->getStatedTheme(0u, { .hover = true }));
-						break;
-					case 1: button->setStateTheme(InteractiveStateFlagBits::eHover, theming->getStatedTheme(1u, { .hover = true }));
-						break;
-					case 2: button->setStateTheme(InteractiveStateFlagBits::eHover, theming->getStatedTheme(2u, { .hover = true }));
-						break;
-					case 3: button->setStateTheme(InteractiveStateFlagBits::eHover, theming->getStatedTheme(3u, { .hover = true }));
-						break;
-					default: ;
-				}
-
-				/**/
-
-				auto background = make_sptr<uikit::Paint>(ReflowClassList { "[Button] > background"sv }, nullptr);
-				button->addChild(background);
-				button->addChild(::hg::move(textOptions_.text));
-			},
-			[&](ImageButtonCreateOptions& imageOptions_) {
-
-				switch (imageOptions_.level) {
-					case 0: button->setStateTheme(InteractiveStateFlagBits::eHover, theming->getStatedTheme(0u, { .hover = true }));
-						break;
-					case 1: button->setStateTheme(InteractiveStateFlagBits::eHover, theming->getStatedTheme(1u, { .hover = true }));
-						break;
-					case 2: button->setStateTheme(InteractiveStateFlagBits::eHover, theming->getStatedTheme(2u, { .hover = true }));
-						break;
-					case 3: button->setStateTheme(InteractiveStateFlagBits::eHover, theming->getStatedTheme(3u, { .hover = true }));
-						break;
-					default: ;
-				}
-
-				button->addChild(::hg::move(imageOptions_.image));
-			},
-			[&](ButtonCreateOptions& customOptions_) {
-
-				switch (customOptions_.level) {
-					case 0: button->setStateTheme(InteractiveStateFlagBits::eHover, theming->getStatedTheme(0u, { .hover = true }));
-						break;
-					case 1: button->setStateTheme(InteractiveStateFlagBits::eHover, theming->getStatedTheme(1u, { .hover = true }));
-						break;
-					case 2: button->setStateTheme(InteractiveStateFlagBits::eHover, theming->getStatedTheme(2u, { .hover = true }));
-						break;
-					case 3: button->setStateTheme(InteractiveStateFlagBits::eHover, theming->getStatedTheme(3u, { .hover = true }));
-						break;
-					default: ;
-				}
-
-				button->addChild(::hg::move(customOptions_.children));
-			}
-		}
-	);
-
-	return button;
-}
-
 uikit::Button::Button() = default;
 
 uikit::Button::~Button() = default;
 
 string uikit::Button::getTag() const noexcept {
 	return std::format(R"(Button <{:#x}>)", reinterpret_cast<u64>(this));
+}
+
+bool uikit::Button::isFocusable() const noexcept {
+	// Buttons keep no disabled state.
+	return true;
 }
 
 void uikit::Button::setBaseTheme(mref<Opt<theming::Theme>> theme_) {
@@ -272,4 +210,71 @@ EventReply uikit::Button::invokeOnMouseLeave(ref<const MouseMoveEvent> event_) {
 	}
 
 	return response;
+}
+
+SharedPtr<uikit::Button> uikit::makeButton(
+	mref<Variant<TextButtonCreateOptions, ImageButtonCreateOptions, ButtonCreateOptions>> options_
+) {
+
+	auto button = make_sptr<uikit::Button>();
+	const auto& theming = getRuntimeTheming();
+
+	::hg::move(options_).apply(
+		Overloaded {
+			[&](TextButtonCreateOptions& textOptions_) {
+
+				switch (textOptions_.level) {
+					case 0: button->setStateTheme(InteractiveStateFlagBits::eHover, theming->getStatedTheme(0u, { .hover = true }));
+						break;
+					case 1: button->setStateTheme(InteractiveStateFlagBits::eHover, theming->getStatedTheme(1u, { .hover = true }));
+						break;
+					case 2: button->setStateTheme(InteractiveStateFlagBits::eHover, theming->getStatedTheme(2u, { .hover = true }));
+						break;
+					case 3: button->setStateTheme(InteractiveStateFlagBits::eHover, theming->getStatedTheme(3u, { .hover = true }));
+						break;
+					default: ;
+				}
+
+				/**/
+
+				auto background = make_sptr<uikit::Paint>(ReflowClassList { "[Button] > background"sv }, nullptr);
+				button->addChild(background);
+				button->addChild(::hg::move(textOptions_.text));
+			},
+			[&](ImageButtonCreateOptions& imageOptions_) {
+
+				switch (imageOptions_.level) {
+					case 0: button->setStateTheme(InteractiveStateFlagBits::eHover, theming->getStatedTheme(0u, { .hover = true }));
+						break;
+					case 1: button->setStateTheme(InteractiveStateFlagBits::eHover, theming->getStatedTheme(1u, { .hover = true }));
+						break;
+					case 2: button->setStateTheme(InteractiveStateFlagBits::eHover, theming->getStatedTheme(2u, { .hover = true }));
+						break;
+					case 3: button->setStateTheme(InteractiveStateFlagBits::eHover, theming->getStatedTheme(3u, { .hover = true }));
+						break;
+					default: ;
+				}
+
+				button->addChild(::hg::move(imageOptions_.image));
+			},
+			[&](ButtonCreateOptions& customOptions_) {
+
+				switch (customOptions_.level) {
+					case 0: button->setStateTheme(InteractiveStateFlagBits::eHover, theming->getStatedTheme(0u, { .hover = true }));
+						break;
+					case 1: button->setStateTheme(InteractiveStateFlagBits::eHover, theming->getStatedTheme(1u, { .hover = true }));
+						break;
+					case 2: button->setStateTheme(InteractiveStateFlagBits::eHover, theming->getStatedTheme(2u, { .hover = true }));
+						break;
+					case 3: button->setStateTheme(InteractiveStateFlagBits::eHover, theming->getStatedTheme(3u, { .hover = true }));
+						break;
+					default: ;
+				}
+
+				button->addChild(::hg::move(customOptions_.children));
+			}
+		}
+	);
+
+	return button;
 }

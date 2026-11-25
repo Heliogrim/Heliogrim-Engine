@@ -60,8 +60,6 @@ void InputBase::updateValueAndValidity(const bool propagate_, const bool emit_) 
 }
 
 EventReply InputBase::invokeOnFocus(cref<FocusEvent> event_) {
-	_state |= WidgetStateFlagBits::eFocus;
-
 	// Warning: Temporary Fix
 	markAsPending(true, true);
 
@@ -70,7 +68,6 @@ EventReply InputBase::invokeOnFocus(cref<FocusEvent> event_) {
 
 EventReply InputBase::invokeOnBlur(cref<FocusEvent> event_) {
 	markAsTouched();
-	_state.unwrap &= (~static_cast<u8>(WidgetStateFlagBits::eFocus));
 
 	// Warning: Temporary Fix
 	markAsPending(true, true);

@@ -24,6 +24,8 @@ namespace hg::engine::reflow::uikit {
 	public:
 		[[nodiscard]] string getTag() const noexcept override;
 
+		[[nodiscard]] bool isFocusable() const noexcept override;
+
 	public:
 		struct MapStateToSets {
 			Opt<theming::Theme> base;

@@ -116,6 +116,11 @@ namespace hg::engine::reflow {
 		ReflowEventEmitter _emitter;
 
 	public:
+		/**
+		 * Whether click and tab navigation may move the focus onto this widget.
+		 */
+		[[nodiscard]] virtual bool isFocusable() const noexcept;
+
 		void blur();
 
 		void focus();

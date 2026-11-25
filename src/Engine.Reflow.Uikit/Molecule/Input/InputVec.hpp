@@ -49,6 +49,11 @@ namespace hg::engine::reflow::uikit {
 			return std::format(R"(InputVec[{}] <{:#x}>)", vector_dim, reinterpret_cast<u64>(this));
 		}
 
+		// The component inputs are the tab stops, the vector itself is not.
+		[[nodiscard]] bool isFocusable() const noexcept override {
+			return false;
+		}
+
 	public:
 		void prepare() {
 			::hg::assertd(static_cast<bool>(_content));
