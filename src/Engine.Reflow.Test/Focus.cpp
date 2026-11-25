@@ -241,4 +241,54 @@ namespace ReflowModule {
 		EXPECT_FALSE(c->state().isFocus());
 		EXPECT_FALSE(e->state().isFocus());
 	}
+	TEST_F(RouterFixture, ScopeContentSwapDropsRemembered) {
+		c->focusable = true;
+		const auto scope = mountPanel(*this, a);
+		mouse(5, 5, true);
+		mouse(5, 5, false);
+		ASSERT_EQ(window->getFocusTarget(), c);
+
+		const auto other = make_sptr<Container>("other", &log);
+		size(other, 200.F);
+		scope->setContent(other);
+		tick(window);
+		EXPECT_EQ(a->parent(), nullptr);
+		EXPECT_EQ(scope->remembered(), nullptr);
+
+		mouse(150, 150, true);
+		EXPECT_NE(window->getFocusTarget(), c);
+		for (const auto& entry : window->getFocusPath()) {
+			EXPECT_NE(entry.lock(), c);
+		}
+	}
+
+	TEST_F(RouterFixture, ClickEmptyKeepsFocusWithoutScope) {
+		c->focusable = true;
+		mouse(5, 5, true);
+		mouse(5, 5, false);
+		ASSERT_EQ(window->getFocusTarget(), c);
+
+		bool blurred = false;
+		c->blurHook = [&] { blurred = true; };
+		mouse(150, 150, true);
+		EXPECT_EQ(window->getFocusTarget(), c);
+		EXPECT_TRUE(c->state().isFocus());
+		EXPECT_FALSE(blurred);
+	}
+
+	TEST_F(RouterFixture, ScopeIsLayoutTransparent) {
+		const auto paint = make_sptr<Leaf>("paint", &log);
+		size(paint, 30.F);
+		const auto scope = panel(paint);
+		a->addChild(scope);
+		tick(window);
+
+		const auto& outer = scope->getLayoutState();
+		const auto& inner = paint->getLayoutState();
+		EXPECT_EQ(outer.layoutOffset.x, inner.layoutOffset.x);
+		EXPECT_EQ(outer.layoutOffset.y, inner.layoutOffset.y);
+		EXPECT_EQ(outer.layoutSize.x, inner.layoutSize.x);
+		EXPECT_EQ(outer.layoutSize.y, inner.layoutSize.y);
+		EXPECT_EQ(inner.layoutSize.x, 30.F);
+	}
 }
