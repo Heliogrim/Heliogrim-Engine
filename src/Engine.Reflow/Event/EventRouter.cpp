@@ -558,7 +558,8 @@ PopupHandle EventRouter::openPopup(
 	_popups.emplace_back(
 		Popup {
 			.id = id,
-			.parent = parent_.has_value() ? parent_->id : 0uLL,
+			// A popup anchored inside another one is its child, so the parent closes it first.
+			.parent = parent_.has_value() ? parent_->id : popupIdOf(anchorWidget_.lock()),
 			.window = window_,
 			.host = host,
 			.anchor = anchor_,
@@ -606,6 +607,36 @@ void EventRouter::closePopup(const PopupHandle handle_) {
 
 bool EventRouter::hasOpenPopup(nmpt<const Window> window_) const noexcept {
 	return std::ranges::any_of(_popups, [window_](const auto& popup_) { return popup_.window.lock().get() == window_.get(); });
+}
+
+bool EventRouter::closePopupOf(ref<const sptr<Widget>> widget_) {
+
+	auto id = popupIdOf(widget_);
+	if (id == 0uLL) {
+		return false;
+	}
+
+	for (auto it = _popups.end(); it != _popups.begin();) {
+		--it;
+		if (it->id == id && it->parent != 0uLL) {
+			id = it->parent;
+			it = _popups.end();
+		}
+	}
+
+	closePopup(PopupHandle { id });
+	return true;
+}
+
+u64 EventRouter::popupIdOf(sptr<Widget> widget_) const {
+	for (; widget_ != nullptr; widget_ = widget_->parent()) {
+		for (const auto& popup : _popups) {
+			if (popup.host == widget_) {
+				return popup.id;
+			}
+		}
+	}
+	return 0uLL;
 }
 
 void EventRouter::closePopups(ref<const Vector<u64>> ids_) {

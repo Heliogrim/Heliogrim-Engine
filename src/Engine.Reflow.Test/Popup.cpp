@@ -163,6 +163,43 @@ namespace ReflowModule {
 		EXPECT_EQ(window->getFocusTarget(), c);
 	}
 
+	TEST_F(RouterFixture, ChildCloseDoesNotOverrideParentRestore) {
+		c->focusable = true;
+		router.focus(window, c);
+
+		const auto parent = popupLeaf("parent", &log);
+		const auto parentHandle = router.openPopup(window, parent, below(c), c, None, []() {});
+		tick(window);
+		// No explicit parent: derived from the anchor sitting inside the parent popup.
+		const auto childHandle = router.openPopup(window, popupLeaf("child", &log), below(parent), parent, None, []() {});
+
+		router.closePopup(parentHandle);
+		EXPECT_FALSE(router.hasOpenPopup(window.get()));
+		EXPECT_EQ(window->getFocusTarget(), c);
+
+		// A late close of the child (e.g. from its anchor's destructor) is a no-op.
+		router.closePopup(childHandle);
+		EXPECT_EQ(window->getFocusTarget(), c);
+	}
+
+	TEST_F(RouterFixture, PopupCloseOfClosesChain) {
+		c->focusable = true;
+		router.focus(window, c);
+
+		Vector<string> order {};
+		const auto parent = popupLeaf("parent", &log);
+		discard = router.openPopup(window, parent, below(c), c, None, [&]() { order.emplace_back("parent"); });
+		tick(window);
+		const auto child = popupLeaf("child", &log);
+		discard = router.openPopup(window, child, below(parent), parent, None, [&]() { order.emplace_back("child"); });
+
+		EXPECT_TRUE(router.closePopupOf(child));
+		EXPECT_EQ(order, (Vector<string> { "child", "parent" }));
+		EXPECT_FALSE(router.hasOpenPopup(window.get()));
+		EXPECT_EQ(window->getFocusTarget(), c);
+		EXPECT_FALSE(router.closePopupOf(c));
+	}
+
 	TEST_F(RouterFixture, PopupAnchorUnmountCloses) {
 		bool closed = false;
 		discard = router.openPopup(window, popupLeaf("p", &log), below(c), c, None, [&closed]() { closed = true; });
