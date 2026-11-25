@@ -13,7 +13,7 @@ static void experimental_add_actor(math::Transform baseTransform_);
 
 EventReply EditorSceneViewport::invokeOnKeyDown(ref<const KeyboardEvent> event_) {
 
-	if (event_._down == true && event_._key == 'n') {
+	if (state().isFocus() && event_._down == true && event_._key == 'n') {
 
 		markAsPending(true, true);
 		return EventResponse::eConsumed;
