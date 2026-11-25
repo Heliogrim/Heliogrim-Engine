@@ -133,6 +133,8 @@ namespace hg::engine::reflow {
 
 		bool dropOnClick(listen_handle_type handle_);
 
+		virtual EventReply invokeOnPreviewMouseButtonDown(ref<const MouseEvent> event_);
+
 		virtual EventReply invokeOnMouseButtonDown(ref<const MouseEvent> event_);
 
 		virtual EventReply invokeOnMouseButtonUp(ref<const MouseEvent> event_);
@@ -167,6 +169,8 @@ namespace hg::engine::reflow {
 		virtual EventReply invokeOnTouchMove(ref<const TouchEvent> event_);
 
 	public:
+		virtual EventReply invokeOnPreviewKeyDown(ref<const KeyboardEvent> event_);
+
 		virtual EventReply invokeOnKeyDown(ref<const KeyboardEvent> event_);
 
 		virtual EventReply invokeOnKeyUp(ref<const KeyboardEvent> event_);

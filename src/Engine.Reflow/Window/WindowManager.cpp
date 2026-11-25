@@ -55,9 +55,13 @@ void WindowManager::setup() {
 
 	emitter.on<input::event::MouseButtonEvent>(
 		[this](const auto& event_) {
-			const auto wnd { resolveWindow(event_._pointer) };
+			auto wnd { resolveWindow(event_._pointer) };
+			// The capture releases on its button up, even when the pointer left every window.
+			if (wnd == nullptr && captured() != nullptr) {
+				wnd = std::static_pointer_cast<Window>(captured()->root());
+			}
 			if (wnd) {
-				dispatch(wnd, event_);
+				route(wnd, event_);
 			}
 		}
 	);
@@ -67,11 +71,11 @@ void WindowManager::setup() {
 			const auto nextWnd { resolveWindow(event_._pointer) };
 
 			if (prevWnd && prevWnd != nextWnd) {
-				dispatch(prevWnd, event_);
+				route(prevWnd, event_);
 			}
 
 			if (nextWnd) {
-				dispatch(nextWnd, event_);
+				route(nextWnd, event_);
 			}
 		}
 	);
@@ -79,7 +83,7 @@ void WindowManager::setup() {
 		[this](const auto& event_) {
 			const auto wnd { resolveWindow(event_._pointer) };
 			if (wnd) {
-				dispatch(wnd, event_);
+				route(wnd, event_);
 			}
 		}
 	);
@@ -87,7 +91,7 @@ void WindowManager::setup() {
 		[this](const auto& event_) {
 			const auto wnd { resolveWindow(event_._pointer) };
 			if (wnd) {
-				dispatch(wnd, event_);
+				route(wnd, event_);
 			}
 		}
 	);
@@ -103,7 +107,7 @@ void WindowManager::setup() {
 			}
 
 			if (wnd != nullptr) {
-				dispatch(wnd, event_);
+				route(wnd, event_);
 			}
 		}
 	);
@@ -203,7 +207,7 @@ void WindowManager::handleWindowResize(const ptr<BoundWindow> wnd_, cref<math::i
 	}
 }
 
-void WindowManager::interceptFocusEvent(cref<sptr<Window>> window_, cref<FocusEvent> event_) {
+void WindowManager::onWindowFocusChanged(ref<const sptr<Window>> window_) {
 
 	if (not _focusOrder.empty()) {
 
@@ -252,6 +256,7 @@ void WindowManager::destroyWindow(mref<sptr<Window>> window_) {
 
 	auto bound = std::move(*iter);
 	_windows.erase(iter);
+	unregisterWindow(wnd.get());
 
 	/**/
 
@@ -389,5 +394,6 @@ sptr<Window> WindowManager::requestWindow(
 	/**/
 
 	_windows.emplace_back(std::move(bound));
+	registerWindow(wnd);
 	return wnd;
 }
