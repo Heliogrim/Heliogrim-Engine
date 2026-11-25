@@ -2,6 +2,7 @@
 
 #include <Widget/MenuSpacer.hpp>
 
+import Engine.Reflow;
 import Engine.Reflow.Uikit;
 
 using namespace hg::editor::ui;
@@ -139,7 +140,8 @@ SharedPtr<MenuItem> MenuBuilder::setupMenuItem(mref<SharedPtr<MenuItem>> item_, 
 	if (data_.action != nullptr) {
 		item_->onClick(
 			[self = item_.get(), action = data_.action]([[maybe_unused]] const auto& event_) {
-				if (action()) {
+				// A picked item closes the popup chain it sits in; the owner's onClosed resets its handle.
+				if (action() && not WindowManager::get()->closePopupOf(self->shared_from_this())) {
 					self->blur();
 				}
 				return EventResponse::eHandled;
