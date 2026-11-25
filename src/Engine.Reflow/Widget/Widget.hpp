@@ -113,6 +113,18 @@ namespace hg::engine::reflow {
 
 		[[nodiscard]] ref<ReflowClassList> getStaticClassList() noexcept;
 
+	private:
+		String _name;
+
+	public:
+		/**
+		 * The description name `find` matches; the widget owns a copy, so runtime-built names stay valid.
+		 */
+		[[nodiscard]] StringView getName() const noexcept;
+
+		void setName(const StringView name_);
+
+	public:
 		/**
 		 * Abstract System Clocking
 		 */
