@@ -115,6 +115,13 @@ namespace hg::engine::reflow {
 
 		[[nodiscard]] bool hasOpenPopup(nmpt<const Window> window_) const noexcept;
 
+		/**
+		 * Closes the outermost popup of the chain that holds widget_, e.g. after a menu item was picked.
+		 *
+		 * @returns false if widget_ is not inside a popup.
+		 */
+		bool closePopupOf(ref<const sptr<Widget>> widget_);
+
 	public:
 		/**
 		 * Widgets under the point, root first.
@@ -157,6 +164,9 @@ namespace hg::engine::reflow {
 		 * Closes popups whose anchor unmounted and places popups once their host has a layout size.
 		 */
 		void maintainPopups();
+
+		// Innermost popup whose host holds widget_, 0 if none.
+		[[nodiscard]] u64 popupIdOf(sptr<Widget> widget_) const;
 
 		void closePopups(ref<const Vector<u64>> ids_);
 
