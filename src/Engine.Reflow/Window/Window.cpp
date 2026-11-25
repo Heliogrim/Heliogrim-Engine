@@ -45,6 +45,10 @@ nmpt<engine::platform::NativeWindow> Window::nativeWindow() const noexcept {
 	return _nativeWindow;
 }
 
+void Window::setNativeWindow(const ptr<engine::platform::NativeWindow> nativeWindow_) noexcept {
+	_nativeWindow = nativeWindow_;
+}
+
 math::vec2 Window::getClientSize() const noexcept {
 	return _clientSize;
 }
