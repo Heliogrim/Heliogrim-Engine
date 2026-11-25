@@ -15,7 +15,7 @@ namespace hg::engine::reflow::uikit {
 	 */
 	class UniformGridLayout :
 		public GridLayoutBase,
-		public Atom<void, CompositeLayoutAttributes<BoxLayoutAttributes, FlexLayoutAttributes, BoxLayoutAttributes>, void> {
+		public Atom<void, CompositeLayoutAttributes<BoxLayoutAttributes, FlexLayoutAttributes, GridCellAttributes>, void> {
 	public:
 		using this_type = UniformGridLayout;
 
