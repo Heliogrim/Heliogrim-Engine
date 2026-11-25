@@ -97,6 +97,14 @@ EventResponse InputSelect::invokeOnSelectMenu(ref<const SelectMenuEvent> event_)
 	return _emitter.emit(EditorUiEventNames::SelectMenuEvent, event_);
 }
 
+bool InputSelect::isFocusable() const noexcept {
+	return isEnabled();
+}
+
+EventReply InputSelect::invokeOnFocus(cref<FocusEvent> event_) {
+	// TODO: Check whether we still need this | Could replace mount button up
+	return Input::invokeOnFocus(event_);
+}
 EventReply InputSelect::invokeOnMouseButtonDown(ref<const MouseEvent> event_) {
 
 	if (event_._button != 1u) {
@@ -106,15 +114,13 @@ EventReply InputSelect::invokeOnMouseButtonDown(ref<const MouseEvent> event_) {
 	if (_menu.has_value()) {
 		closeMenu();
 	} else {
+		// Focus first, so the popup's focus snapshot restores the select when the menu closes.
+		WindowManager::get()->focus(std::static_pointer_cast<Window>(root()), shared_from_this());
 		openMenu();
 	}
 
 	discard = Input::invokeOnMouseButtonDown(event_);
 	return EventResponse::eConsumed;
-}
-EventReply InputSelect::invokeOnFocus(cref<FocusEvent> event_) {
-	// TODO: Check whether we still need this | Could replace mount button up
-	return Input::invokeOnFocus(event_);
 }
 
 void InputSelect::onAttachDataWatcher(ref<DataWatcher> watcher_) {

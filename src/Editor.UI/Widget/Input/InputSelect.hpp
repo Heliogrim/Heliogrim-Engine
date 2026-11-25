@@ -58,10 +58,11 @@ namespace hg::editor::ui {
 
 		engine::reflow::EventResponse invokeOnSelectMenu(ref<const engine::reflow::SelectMenuEvent> event_) const;
 
-		engine::reflow::EventReply invokeOnMouseButtonDown(ref<const engine::reflow::MouseEvent> event_) override;
+		[[nodiscard]] bool isFocusable() const noexcept override;
 
 		engine::reflow::EventReply invokeOnFocus(cref<engine::reflow::FocusEvent> event_) override;
 
+		engine::reflow::EventReply invokeOnMouseButtonDown(ref<const engine::reflow::MouseEvent> event_) override;
 
 	public:
 		void onAttachDataWatcher(ref<engine::reflow::DataWatcher> watcher_) override;
