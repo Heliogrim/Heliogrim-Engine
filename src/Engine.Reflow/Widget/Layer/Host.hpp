@@ -31,6 +31,8 @@ namespace hg::engine::reflow {
 
 		[[nodiscard]] math::vec2 getHostOffset() const noexcept;
 
+		void setHostOffset(const math::vec2 hostOffset_) noexcept;
+
 		[[nodiscard]] math::vec2 getHostSize() const noexcept;
 
 	public:

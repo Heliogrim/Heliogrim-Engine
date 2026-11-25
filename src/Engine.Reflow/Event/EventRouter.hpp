@@ -8,6 +8,7 @@
 #include "MouseMoveEvent.hpp"
 #include "WheelEvent.hpp"
 #include "../Widget/__fwd.hpp"
+#include "../Widget/Layer/PopupPlacement.hpp"
 #include "../Window/__fwd.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
@@ -15,6 +16,10 @@ import Engine.Common;
 #endif
 
 namespace hg::engine::reflow {
+	struct PopupHandle {
+		u64 id = 0uLL;
+	};
+
 	class EventRouter {
 	public:
 		using this_type = EventRouter;
@@ -40,9 +45,27 @@ namespace hg::engine::reflow {
 
 		wptr<Widget> _captured;
 		u32 _captureButton = 0uL;
+		Opt<u32> _dismissButton;
 
 		// Bumped on every focus change, lets a focus change detect a nested one from its blur or focus handlers.
 		u64 _focusVersion = 0uLL;
+
+		struct Popup {
+			u64 id;
+			u64 parent;
+			wptr<Window> window;
+			sptr<Host> host;
+			PopupAnchor anchor;
+			wptr<Widget> anchorWidget;
+			bool anchored;
+			bool placed;
+			FocusSnapshot snapshot;
+			std::function<void()> onClosed;
+		};
+
+		// Open order, the last popup of a window is its top one.
+		Vector<Popup> _popups;
+		u64 _popupIds = 0uLL;
 
 	public:
 		void registerWindow(ref<const sptr<Window>> window_);
@@ -74,6 +97,26 @@ namespace hg::engine::reflow {
 
 	public:
 		/**
+		 * Opens the content in a popup scope placed at the anchor and moves the focus into it.
+		 */
+		[[nodiscard]] PopupHandle openPopup(
+			ref<const sptr<Window>> window_,
+			sptr<Widget> content_,
+			ref<const PopupAnchor> anchor_,
+			wptr<Widget> anchorWidget_,
+			Opt<PopupHandle> parent_,
+			std::function<void()> onClosed_
+		);
+
+		/**
+		 * Closes the popup after its children, drops its layer and restores the focus from before it opened.
+		 */
+		void closePopup(const PopupHandle handle_);
+
+		[[nodiscard]] bool hasOpenPopup(nmpt<const Window> window_) const noexcept;
+
+	public:
+		/**
 		 * Widgets under the point, root first.
 		 */
 		[[nodiscard]] Vector<sptr<Widget>> hitPath(ref<const sptr<Window>> window_, const math::vec2 point_) const;
@@ -101,13 +144,22 @@ namespace hg::engine::reflow {
 	private:
 		[[nodiscard]] ptr<WindowRoute> findRoute(const ptr<const Window> window_) noexcept;
 
-		[[nodiscard]] sptr<Window> captureWindow(cref<sptr<Window>> window_) const;
+		[[nodiscard]] sptr<Window> captureWindow(ref<const sptr<Window>> window_) const;
 
-		[[nodiscard]] Vector<sptr<Widget>> capturePath(cref<sptr<Window>> window_);
+		[[nodiscard]] Vector<sptr<Widget>> capturePath(ref<const sptr<Window>> window_);
 
 		// Drops the presses of button_, a widget stays pressed while another button still holds it.
-		void releasePress(u32 button_);
+		void releasePress(const u32 button_);
 
-		void apply(cref<sptr<Window>> window_, ref<const EventReply> reply_, cref<sptr<Widget>> capturer_, u32 button_);
+		void apply(ref<const sptr<Window>> window_, ref<const EventReply> reply_, ref<const sptr<Widget>> capturer_, const u32 button_);
+
+		/**
+		 * Closes popups whose anchor unmounted and places popups once their host has a layout size.
+		 */
+		void maintainPopups();
+
+		void closePopups(ref<const Vector<u64>> ids_);
+
+		[[nodiscard]] bool closeOnOutsideDown(ref<const sptr<Window>> window_, const math::vec2 point_);
 	};
 }

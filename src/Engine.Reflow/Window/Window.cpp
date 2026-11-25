@@ -120,36 +120,10 @@ std::span<const uptr<Layer>> Window::layers() const noexcept {
 }
 
 void Window::dropLayer(nmpt<Host> host_) {
-	const auto remove = std::ranges::remove_if(
-		_layers,
-		[host_](const auto& entry_) {
-			return entry_.get() != nullptr ? entry_->host.lock().get() == host_.get() : true;
-		}
-	);
-
-	if (remove.empty()) {
-		return;
+	const auto it = std::ranges::find_if(_layers, [host_](const auto& entry_) { return entry_->host.lock().get() == host_.get(); });
+	if (it != _layers.end()) {
+		dropLayer(it->get());
 	}
-
-	/**/
-
-	for (const auto& layer : remove) {
-		if (not layer || layer->host.expired())
-			continue;
-		invalidateHostArea(*this, *layer->host.lock());
-	}
-
-	std::erase_if(
-		_children,
-		[host_](const auto& widget_) {
-			if (widget_.get() == host_.get()) {
-				widget_->setParent(nullptr);
-				return true;
-			}
-			return false;
-		}
-	);
-	_layers.erase(remove.begin(), remove.end());
 }
 
 void Window::dropLayer(nmpt<Layer> layer_) {
