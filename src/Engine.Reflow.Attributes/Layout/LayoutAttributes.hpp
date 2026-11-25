@@ -42,6 +42,8 @@ namespace hg::engine::reflow {
 			static_cast<u8>((static_cast<u8>(decltype(Attributes_::attribute)::phase) | ... | 0u))
 		};
 
+		constexpr static std::array<StringView, sizeof...(Attributes_)> slotNames { Attributes_::name... };
+
 	public:
 		constexpr LayoutAttributes() = default;
 

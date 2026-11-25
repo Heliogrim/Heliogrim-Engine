@@ -268,10 +268,10 @@ UniquePtr<AssetBrowserView> editor::ui::makeAssetBrowserView(ref<AssetBrowserCon
 	std::get<0>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::heightGrow>(1.F);
 	std::get<0>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::heightShrink>(0.F);
 
-	std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::maxWidth>({ ReflowUnitType::eAbsolute, 94.F });
-	std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::minWidth>({ ReflowUnitType::eAbsolute, 94.F });
-	std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::minHeight>({ ReflowUnitType::eAbsolute, 130.F });
-	std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::maxHeight>({ ReflowUnitType::eAbsolute, 130.F });
+	std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMaxWidth>({ ReflowUnitType::eAbsolute, 94.F });
+	std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMinWidth>({ ReflowUnitType::eAbsolute, 94.F });
+	std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMinHeight>({ ReflowUnitType::eAbsolute, 130.F });
+	std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMaxHeight>({ ReflowUnitType::eAbsolute, 130.F });
 
 	content->addChild(clone(grid));
 

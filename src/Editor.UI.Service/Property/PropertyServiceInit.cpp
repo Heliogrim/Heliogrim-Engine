@@ -39,16 +39,16 @@ void service::initPropertyService(ref<PropertyService> service_) {
 				auto grid = make_sptr<uikit::UniformGridLayout>();
 
 				std::get<0>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
-				std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::minHeight>(
+				std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMinHeight>(
 					{ ReflowUnitType::eAbsolute, 20.F }
 				);
-				std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::maxHeight>(
+				std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMaxHeight>(
 					{ ReflowUnitType::eAbsolute, 20.F }
 				);
-				std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::minWidth>(
+				std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMinWidth>(
 					{ ReflowUnitType::eRelative, 1.F / 4.F }
 				);
-				std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::maxWidth>(
+				std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMaxWidth>(
 					{ ReflowUnitType::eRelative, 1.F / 4.F }
 				);
 
@@ -150,16 +150,16 @@ void service::initPropertyService(ref<PropertyService> service_) {
 				auto grid = make_sptr<uikit::UniformGridLayout>();
 
 				std::get<0>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
-				std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::minHeight>(
+				std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMinHeight>(
 					{ ReflowUnitType::eAbsolute, 20.F }
 				);
-				std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::maxHeight>(
+				std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMaxHeight>(
 					{ ReflowUnitType::eAbsolute, 20.F }
 				);
-				std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::minWidth>(
+				std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMinWidth>(
 					{ ReflowUnitType::eRelative, 1.F / 4.F }
 				);
-				std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::maxWidth>(
+				std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMaxWidth>(
 					{ ReflowUnitType::eRelative, 1.F / 4.F }
 				);
 
@@ -422,16 +422,16 @@ void service::initPropertyService(ref<PropertyService> service_) {
 					auto grid = make_sptr<uikit::UniformGridLayout>();
 
 					std::get<0>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::minHeight>(
+					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMinHeight>(
 						{ ReflowUnitType::eAbsolute, 20.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::maxHeight>(
+					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMaxHeight>(
 						{ ReflowUnitType::eAbsolute, 20.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::minWidth>(
+					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMinWidth>(
 						{ ReflowUnitType::eRelative, 1.F / 4.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::maxWidth>(
+					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMaxWidth>(
 						{ ReflowUnitType::eRelative, 1.F / 4.F }
 					);
 
@@ -578,16 +578,16 @@ void service::initPropertyService(ref<PropertyService> service_) {
 					auto grid = make_sptr<uikit::UniformGridLayout>();
 
 					std::get<0>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::minHeight>(
+					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMinHeight>(
 						{ ReflowUnitType::eAbsolute, 20.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::maxHeight>(
+					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMaxHeight>(
 						{ ReflowUnitType::eAbsolute, 20.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::minWidth>(
+					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMinWidth>(
 						{ ReflowUnitType::eRelative, 1.F / 4.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::maxWidth>(
+					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMaxWidth>(
 						{ ReflowUnitType::eRelative, 1.F / 4.F }
 					);
 
@@ -657,16 +657,16 @@ void service::initPropertyService(ref<PropertyService> service_) {
 					auto grid = make_sptr<uikit::UniformGridLayout>();
 
 					std::get<0>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::minHeight>(
+					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMinHeight>(
 						{ ReflowUnitType::eAbsolute, 20.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::maxHeight>(
+					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMaxHeight>(
 						{ ReflowUnitType::eAbsolute, 20.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::minWidth>(
+					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMinWidth>(
 						{ ReflowUnitType::eRelative, 1.F / 4.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::maxWidth>(
+					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMaxWidth>(
 						{ ReflowUnitType::eRelative, 1.F / 4.F }
 					);
 
@@ -754,16 +754,16 @@ void service::initPropertyService(ref<PropertyService> service_) {
 					auto grid = make_sptr<uikit::UniformGridLayout>();
 
 					std::get<0>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::minHeight>(
+					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMinHeight>(
 						{ ReflowUnitType::eAbsolute, 20.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::maxHeight>(
+					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMaxHeight>(
 						{ ReflowUnitType::eAbsolute, 20.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::minWidth>(
+					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMinWidth>(
 						{ ReflowUnitType::eRelative, 1.F / 4.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::maxWidth>(
+					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMaxWidth>(
 						{ ReflowUnitType::eRelative, 1.F / 4.F }
 					);
 
@@ -887,16 +887,16 @@ void service::initPropertyService(ref<PropertyService> service_) {
 					auto grid = make_sptr<uikit::UniformGridLayout>();
 
 					std::get<0>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::minHeight>(
+					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMinHeight>(
 						{ ReflowUnitType::eAbsolute, 40.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::maxHeight>(
+					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMaxHeight>(
 						{ ReflowUnitType::eAbsolute, 40.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::minWidth>(
+					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMinWidth>(
 						{ ReflowUnitType::eRelative, 1.F / 3.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::maxWidth>(
+					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMaxWidth>(
 						{ ReflowUnitType::eRelative, 1.F / 3.F }
 					);
 
@@ -950,16 +950,16 @@ void service::initPropertyService(ref<PropertyService> service_) {
 					auto grid = make_sptr<uikit::UniformGridLayout>();
 
 					std::get<0>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::minHeight>(
+					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMinHeight>(
 						{ ReflowUnitType::eAbsolute, 20.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::maxHeight>(
+					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMaxHeight>(
 						{ ReflowUnitType::eAbsolute, 20.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::minWidth>(
+					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMinWidth>(
 						{ ReflowUnitType::eRelative, 1.F / 4.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::maxWidth>(
+					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMaxWidth>(
 						{ ReflowUnitType::eRelative, 1.F / 4.F }
 					);
 
@@ -1191,16 +1191,16 @@ void service::initPropertyService(ref<PropertyService> service_) {
 					auto grid = make_sptr<uikit::UniformGridLayout>();
 
 					std::get<0>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::minHeight>(
+					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMinHeight>(
 						{ ReflowUnitType::eAbsolute, 40.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::maxHeight>(
+					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMaxHeight>(
 						{ ReflowUnitType::eAbsolute, 40.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::minWidth>(
+					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMinWidth>(
 						{ ReflowUnitType::eRelative, 1.F / 3.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::maxWidth>(
+					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMaxWidth>(
 						{ ReflowUnitType::eRelative, 1.F / 3.F }
 					);
 
@@ -1343,16 +1343,16 @@ void service::initPropertyService(ref<PropertyService> service_) {
 					auto grid = make_sptr<uikit::UniformGridLayout>();
 
 					std::get<0>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::minHeight>(
+					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMinHeight>(
 						{ ReflowUnitType::eAbsolute, 20.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::maxHeight>(
+					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMaxHeight>(
 						{ ReflowUnitType::eAbsolute, 20.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::minWidth>(
+					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMinWidth>(
 						{ ReflowUnitType::eRelative, 1.F / 4.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::maxWidth>(
+					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMaxWidth>(
 						{ ReflowUnitType::eRelative, 1.F / 4.F }
 					);
 
