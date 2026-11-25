@@ -52,5 +52,8 @@ namespace hg::engine::platform {
 		[[nodiscard]] string_view title() const noexcept override;
 
 		void setTitle(const string_view title_) override;
+
+	public:
+		void raise() override;
 	};
 }
