@@ -35,6 +35,10 @@ string InputText::getTag() const noexcept {
 	return std::format(R"(InputText <{:#x}>)", reinterpret_cast<u64>(this));
 }
 
+bool InputText::isFocusable() const noexcept {
+	return isEnabled();
+}
+
 bool InputText::shouldTick() const noexcept {
 	return not state().isFocus() && isPristine() && state().isLayoutOrRenderPending();
 }
@@ -88,6 +92,16 @@ Widget::listen_handle_type InputText::onInputChange(listen_fn_type<InputChangeEv
 EventReply InputText::invokeOnKeyDown(ref<const KeyboardEvent> event_) {
 
 	if (not state().isFocus()) {
+		return EventResponse::eUnhandled;
+	}
+
+	// Tab belongs to focus navigation, Escape commits and still reaches the enclosing widgets.
+	if (event_._key == '\t') {
+		return EventResponse::eUnhandled;
+	}
+
+	if (event_._key == /* Escape */'\x1B') {
+		updateValueAndValidity(true, true);
 		return EventResponse::eUnhandled;
 	}
 

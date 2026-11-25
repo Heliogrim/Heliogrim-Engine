@@ -63,6 +63,10 @@ bool Widget::shouldTick() const noexcept {
 
 void Widget::tick() {}
 
+bool Widget::isFocusable() const noexcept {
+	return false;
+}
+
 void Widget::blur() {
 	const auto root = std::static_pointer_cast<Window>(this->root());
 	if (root == nullptr)

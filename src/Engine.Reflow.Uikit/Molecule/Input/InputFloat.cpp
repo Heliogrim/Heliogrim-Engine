@@ -33,6 +33,10 @@ string InputFloat::getTag() const noexcept {
 	return std::format(R"(InputFloat <{:#x}>)", reinterpret_cast<u64>(this));
 }
 
+bool InputFloat::isFocusable() const noexcept {
+	return isEnabled();
+}
+
 bool InputFloat::shouldTick() const noexcept {
 	return not state().isFocus() && isPristine() && state().isLayoutOrRenderPending();
 }
@@ -100,6 +104,11 @@ Widget::listen_handle_type InputFloat::onInputChange(listen_fn_type<InputChangeE
 EventReply InputFloat::invokeOnKeyDown(ref<const KeyboardEvent> event_) {
 
 	if (not state().isFocus()) {
+		return EventResponse::eUnhandled;
+	}
+
+	// Tab belongs to focus navigation.
+	if (event_._key == '\t') {
 		return EventResponse::eUnhandled;
 	}
 

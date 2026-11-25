@@ -33,6 +33,10 @@ string InputIntegral::getTag() const noexcept {
 	return std::format(R"(InputIntegral <{:#x}>)", reinterpret_cast<u64>(this));
 }
 
+bool InputIntegral::isFocusable() const noexcept {
+	return isEnabled();
+}
+
 bool InputIntegral::shouldTick() const noexcept {
 	return not state().isFocus() && isPristine() && state().isLayoutOrRenderPending();
 }
@@ -152,6 +156,11 @@ Widget::listen_handle_type InputIntegral::onInputChange(listen_fn_type<InputChan
 EventReply InputIntegral::invokeOnKeyDown(ref<const KeyboardEvent> event_) {
 
 	if (not state().isFocus()) {
+		return EventResponse::eUnhandled;
+	}
+
+	// Tab belongs to focus navigation.
+	if (event_._key == '\t') {
 		return EventResponse::eUnhandled;
 	}
 

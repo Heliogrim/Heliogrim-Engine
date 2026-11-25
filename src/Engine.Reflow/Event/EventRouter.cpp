@@ -1,6 +1,7 @@
 #include "EventRouter.hpp"
 
 #include "FocusEvent.hpp"
+#include "../Widget/FocusScope.hpp"
 #include "../Widget/Widget.hpp"
 #include "../Widget/Layer/Host.hpp"
 #include "../Window/LayerBand.hpp"
@@ -29,6 +30,25 @@ static EventReply bubble(ref<const Vector<sptr<Widget>>> path_, ref<const Event_
 		}
 	}
 	return reply;
+}
+
+static sptr<Widget> windowContent(ref<const sptr<Window>> window_) {
+	return (*window_->children())[1];
+}
+
+static sptr<Widget> clickTarget(ref<const sptr<Window>> window_, ref<const Vector<sptr<Widget>>> hit_) {
+	for (auto it = hit_.rbegin(); it != hit_.rend(); ++it) {
+		if ((*it)->isFocusable()) {
+			return *it;
+		}
+	}
+
+	const auto scope = nearestScope(hit_.back());
+	if (scope == nullptr) {
+		return windowContent(window_);
+	}
+	auto remembered = scope->remembered();
+	return remembered != nullptr ? remembered : scope;
 }
 
 bool EventRouter::intersects(ref<const math::vec2> off_, ref<const math::vec2> size_, ref<const math::vec2> point_) noexcept {
@@ -252,6 +272,13 @@ EventReply EventRouter::route(ref<const sptr<Window>> requested_, ref<const inpu
 			consumed = visit(*it, (*it)->invokeOnMouseButtonDown(event_));
 		}
 
+		// A focus requested by the reply wins over the click target.
+		if (not hit.empty() && reply.focus.expired()) {
+			if (const auto target = clickTarget(window_, hit); target != window_->getFocusTarget()) {
+				focus(window_, target);
+			}
+		}
+
 		apply(window_, reply, capturer, event_._button);
 		return reply;
 	}
@@ -259,11 +286,6 @@ EventReply EventRouter::route(ref<const sptr<Window>> requested_, ref<const inpu
 	auto path = capturePath(window_);
 	if (path.empty()) {
 		path = hit;
-	}
-
-	// Warning: Temporary Solution
-	if (not hit.empty() && not hit.back()->state().isFocus()) {
-		focus(window_, hit.back());
 	}
 
 	const auto reply = bubble(path, event_, &Widget::invokeOnMouseButtonUp);
@@ -354,6 +376,18 @@ EventReply EventRouter::route(cref<sptr<Window>> window_, ref<const input::event
 
 	reply = merge(reply, bubble(path, event_, event_._down ? &Widget::invokeOnKeyDown : &Widget::invokeOnKeyUp));
 	apply(window_, reply, nullptr, 0uL);
+
+	if (event_._down && event_._key == '\t' && not reply.isConsumed()) {
+		// SDL_KMOD_SHIFT (left | right shift), Engine.Reflow does not see SDL.
+		constexpr u16 shiftModifier = 0x0003u;
+		const auto current = window_->getFocusTarget();
+		const sptr<Widget> scope = current != nullptr ? nearestScope(current) : nullptr;
+		const auto next = nextFocusable(scope != nullptr ? scope : windowContent(window_), current, (event_._modifier & shiftModifier) != 0u);
+		if (next != nullptr && next != current) {
+			focus(window_, next);
+		}
+	}
+
 	return reply;
 }
 
@@ -366,8 +400,14 @@ EventReply EventRouter::route(cref<sptr<Window>> window_, ref<const input::event
 
 void EventRouter::focus(ref<const sptr<Window>> window_, ref<const sptr<Widget>> target_) {
 
+	// An unmounted target or one in another window would leave a foreign focus chain.
+	if (target_ == nullptr || target_->root() != window_) {
+		return;
+	}
+
 	onWindowFocusChanged(window_);
 
+	const auto version = ++_focusVersion;
 	const FocusEvent event { target_ };
 
 	Vector<sptr<Widget>> chain {};
@@ -382,19 +422,33 @@ void EventRouter::focus(ref<const sptr<Window>> window_, ref<const sptr<Widget>>
 		++keep;
 	}
 
-	// Attention: Detach the stale suffix first, blur handlers may move the focus again.
-	const Vector<wptr<Widget>> stale { path.begin() + keep, path.end() };
-	path.erase(path.begin() + keep, path.end());
-	for (auto it = stale.rbegin(); it != stale.rend(); ++it) {
-		if (const auto widget = it->lock()) {
-			widget->invokeOnBlur(event);
+	// Attention: Detach one stale entry per blur, a handler moving the focus again sees a coherent path and wins.
+	while (path.size() > keep) {
+		const auto widget = path.back().lock();
+		path.pop_back();
+		if (widget == nullptr) {
+			continue;
+		}
+		markState(widget, WidgetStateFlagBits::eFocus, false);
+		widget->invokeOnBlur(event);
+		if (version != _focusVersion) {
+			return;
 		}
 	}
 
-	path.insert(path.end(), chain.begin() + keep, chain.end());
+	for (auto idx = keep; idx < chain.size(); ++idx) {
+		path.emplace_back(chain[idx]);
+		markState(chain[idx], WidgetStateFlagBits::eFocus, true);
+	}
+
+	for (const auto& widget : chain) {
+		if (const auto scope = std::dynamic_pointer_cast<FocusScope>(widget); scope != nullptr && scope != target_) {
+			scope->_remembered = target_;
+		}
+	}
 
 	for (auto idx = chain.size(); idx > keep; --idx) {
-		if (chain[idx - 1uLL]->invokeOnFocus(event).isConsumed()) {
+		if (chain[idx - 1uLL]->invokeOnFocus(event).isConsumed() || version != _focusVersion) {
 			break;
 		}
 	}
@@ -402,4 +456,18 @@ void EventRouter::focus(ref<const sptr<Window>> window_, ref<const sptr<Widget>>
 
 void EventRouter::blur(ref<const sptr<Window>> window_) {
 	focus(window_, window_);
+}
+
+FocusSnapshot EventRouter::snapshotFocus(ref<const sptr<Window>> window_) const {
+	return FocusSnapshot { .path = window_->_focus };
+}
+
+void EventRouter::restoreFocus(ref<const sptr<Window>> window_, ref<const FocusSnapshot> snapshot_) {
+	for (auto it = snapshot_.path.rbegin(); it != snapshot_.path.rend(); ++it) {
+		if (const auto widget = it->lock(); widget != nullptr && widget != window_ && widget->root() == window_) {
+			focus(window_, widget);
+			return;
+		}
+	}
+	focus(window_, windowContent(window_));
 }

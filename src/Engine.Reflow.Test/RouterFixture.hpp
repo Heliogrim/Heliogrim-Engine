@@ -44,6 +44,9 @@ namespace ReflowModule {
 		EventReply previewKey = EventReply::unhandled();
 		EventReply keyDown = EventReply::unhandled();
 
+		bool focusable = false;
+		std::function<void()> blurHook {};
+
 	private:
 		EventReply record(ref<const string> kind_, ref<const EventReply> reply_) {
 			log->emplace_back(kind_ + ":" + name);
@@ -89,6 +92,17 @@ namespace ReflowModule {
 
 		EventReply invokeOnKeyDown(ref<const KeyboardEvent>) override {
 			return record("key-down", keyDown);
+		}
+
+		[[nodiscard]] bool isFocusable() const noexcept override {
+			return focusable;
+		}
+
+		EventReply invokeOnBlur(ref<const engine::reflow::FocusEvent> event_) override {
+			if (const auto hook = std::exchange(blurHook, {})) {
+				hook();
+			}
+			return Base_::invokeOnBlur(event_);
 		}
 	};
 
@@ -161,6 +175,15 @@ namespace ReflowModule {
 
 		engine::reflow::EventReply mouse(const s32 x_, const s32 y_, const bool down_, const u32 button_ = 0u) {
 			return router.route(window, engine::input::event::MouseButtonEvent { math::ivec2 { x_, y_ }, button_, down_, 0u });
+		}
+
+		engine::reflow::EventReply key(const char key_, const u16 modifier_ = 0u) {
+			return router.route(window, engine::input::event::KeyboardEvent { key_, true, modifier_ });
+		}
+
+		void mount(cref<sptr<engine::reflow::Widget>> content_) {
+			window->setContent(content_);
+			tick(window);
 		}
 
 		engine::reflow::EventReply move(const float x_, const float y_) {
