@@ -273,7 +273,7 @@ namespace ReflowModule {
 	}
 
 	TEST_F(InvalidationFixture, CompositeSlotMarksLayout) {
-		std::get<1>(mid->getLayoutAttributes().attributeSets).update<attr::FlexLayout::rowGap>(6.F);
+		mid->set<attr::FlexLayout::rowGap>(6.F);
 
 		EXPECT_TRUE(mid->state().isLayoutPending());
 	}

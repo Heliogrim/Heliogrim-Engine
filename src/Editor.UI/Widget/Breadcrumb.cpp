@@ -12,11 +12,11 @@ using namespace hg;
 Breadcrumb::Breadcrumb() :
 	HorizontalLayout() {
 	/**/
-	std::get<0>(getLayoutAttributes().attributeSets).update<attr::BoxLayout::minHeight>({ ReflowUnitType::eAbsolute, 20.F });
-	std::get<0>(getLayoutAttributes().attributeSets).update<attr::BoxLayout::padding>(Padding { 4.F });
+	set<attr::BoxLayout::minHeight>({ ReflowUnitType::eAbsolute, 20.F });
+	set<attr::BoxLayout::padding>(Padding { 4.F });
 
-	std::get<1>(getLayoutAttributes().attributeSets).update<attr::FlexLayout::rowGap>(2.F);
-	std::get<1>(getLayoutAttributes().attributeSets).update<attr::FlexLayout::align>(ReflowAlignment::eCenter);
+	set<attr::FlexLayout::rowGap>(2.F);
+	set<attr::FlexLayout::align>(ReflowAlignment::eCenter);
 }
 
 Breadcrumb::~Breadcrumb() {

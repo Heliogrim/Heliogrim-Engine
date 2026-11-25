@@ -63,18 +63,16 @@ string UniformGridLayout::getTag() const noexcept {
 
 PrefetchSizing UniformGridLayout::prefetchSlotSizingX() const {
 
-	const auto& slot = std::get<2>(getLayoutAttributes().attributeSets);
-
 	// TODO: Check for auto-sizing requiring size measure of the slot child element
 
 	return algorithm::prefetch(
 		ReflowAxis::eXAxis,
 		{
 			.mainAxis = ReflowAxis::eXAxis,
-			.min = algorithm::unitAbsMin(slot.valueOf<attr::GridCell::cellMinWidth>(), slot.valueOf<attr::GridCell::cellMinHeight>()),
-			.max = algorithm::unitAbsMax(slot.valueOf<attr::GridCell::cellMaxWidth>(), slot.valueOf<attr::GridCell::cellMaxHeight>()),
+			.min = algorithm::unitAbsMin(this->get<attr::GridCell::cellMinWidth>(), this->get<attr::GridCell::cellMinHeight>()),
+			.max = algorithm::unitAbsMax(this->get<attr::GridCell::cellMaxWidth>(), this->get<attr::GridCell::cellMaxHeight>()),
 			.gapping = { 0.F, 0.F },
-			.padding = slot.valueOf<attr::GridCell::cellPadding>()
+			.padding = this->get<attr::GridCell::cellPadding>()
 		},
 		get_null_children()
 	);
@@ -82,51 +80,46 @@ PrefetchSizing UniformGridLayout::prefetchSlotSizingX() const {
 
 PrefetchSizing UniformGridLayout::prefetchSlotSizingY() const {
 
-	const auto& box = std::get<0>(getLayoutAttributes().attributeSets);
-	const auto& flex = std::get<1>(getLayoutAttributes().attributeSets);
-
-	const auto& padding = box.valueOf<attr::BoxLayout::padding>();
-	const auto gapping = math::fvec2 { flex.valueOf<attr::FlexLayout::colGap>(), flex.valueOf<attr::FlexLayout::rowGap>() };
+	const auto& padding = this->get<attr::BoxLayout::padding>();
+	const auto gapping = math::fvec2 { this->get<attr::FlexLayout::colGap>(), this->get<attr::FlexLayout::rowGap>() };
 
 	const auto space = getLayoutState().computeSize - math::fvec2 { padding.x + padding.z, padding.y + padding.z };
-
-	const auto& slot = std::get<2>(getLayoutAttributes().attributeSets);
 
 	auto min = math::fvec2 {};
 	auto max = math::fvec2 {};
 
-	if (slot.valueOf<attr::GridCell::cellMinWidth>().type == ReflowUnitType::eAbsolute) {
-		min.x = slot.valueOf<attr::GridCell::cellMinWidth>().value;
+	if (this->get<attr::GridCell::cellMinWidth>().type == ReflowUnitType::eAbsolute) {
+		min.x = this->get<attr::GridCell::cellMinWidth>().value;
 
-	} else if (slot.valueOf<attr::GridCell::cellMinWidth>().type == ReflowUnitType::eRelative) {
+	} else if (this->get<attr::GridCell::cellMinWidth>().type == ReflowUnitType::eRelative) {
 		const auto maxPerRowCount = std::clamp(
-			1.F / slot.valueOf<attr::GridCell::cellMinWidth>().value,
+			1.F / this->get<attr::GridCell::cellMinWidth>().value,
 			1.F,
 			static_cast<f32>(_children.size())
 		);
 		const auto crunchSpace = space.x - (maxPerRowCount - 1.F) * gapping.x;
-		min.x = crunchSpace * slot.valueOf<attr::GridCell::cellMinWidth>().value;
+		min.x = crunchSpace * this->get<attr::GridCell::cellMinWidth>().value;
 	}
 
-	if (slot.valueOf<attr::GridCell::cellMaxWidth>().type == ReflowUnitType::eAbsolute) {
-		max.x = slot.valueOf<attr::GridCell::cellMaxWidth>().value;
+	if (this->get<attr::GridCell::cellMaxWidth>().type == ReflowUnitType::eAbsolute) {
+		max.x = this->get<attr::GridCell::cellMaxWidth>().value;
 
-	} else if (slot.valueOf<attr::GridCell::cellMaxWidth>().type == ReflowUnitType::eRelative) {
+	} else if (this->get<attr::GridCell::cellMaxWidth>().type == ReflowUnitType::eRelative) {
 		const auto minPerRowCount = std::clamp(
-			1.F / slot.valueOf<attr::GridCell::cellMaxWidth>().value,
+			1.F / this->get<attr::GridCell::cellMaxWidth>().value,
 			1.F,
 			static_cast<f32>(_children.size())
 		);
 		const auto crunchSpace = space.x - (minPerRowCount - 1.F) * gapping.x;
-		max.x = crunchSpace * slot.valueOf<attr::GridCell::cellMaxWidth>().value;
+		max.x = crunchSpace * this->get<attr::GridCell::cellMaxWidth>().value;
 	}
 
-	if (slot.valueOf<attr::GridCell::cellMinHeight>().type == ReflowUnitType::eAbsolute) {
-		min.y = slot.valueOf<attr::GridCell::cellMinHeight>().value;
+	if (this->get<attr::GridCell::cellMinHeight>().type == ReflowUnitType::eAbsolute) {
+		min.y = this->get<attr::GridCell::cellMinHeight>().value;
 	}
 
-	if (slot.valueOf<attr::GridCell::cellMaxHeight>().type == ReflowUnitType::eAbsolute) {
-		max.y = slot.valueOf<attr::GridCell::cellMaxHeight>().value;
+	if (this->get<attr::GridCell::cellMaxHeight>().type == ReflowUnitType::eAbsolute) {
+		max.y = this->get<attr::GridCell::cellMaxHeight>().value;
 	}
 
 	return PrefetchSizing {
@@ -137,30 +130,29 @@ PrefetchSizing UniformGridLayout::prefetchSlotSizingY() const {
 
 PassPrefetchSizing UniformGridLayout::passPrefetchSlotSizing(ReflowAxis axis_, PrefetchSizing prefetch_, math::fvec2 reference_) const {
 
-	const auto& slot = std::get<2>(getLayoutAttributes().attributeSets);
 	return {
 		algorithm::nextUnit(
-			slot.valueOf<attr::GridCell::cellMinWidth>(),
-			slot.valueOf<attr::GridCell::cellMinHeight>(),
+			this->get<attr::GridCell::cellMinWidth>(),
+			this->get<attr::GridCell::cellMinHeight>(),
 			reference_,
 			prefetch_.minSizing
 		),
 		math::compMax(
 			algorithm::nextUnit(
-				slot.valueOf<attr::GridCell::cellMinWidth>(),
-				slot.valueOf<attr::GridCell::cellMinHeight>(),
+				this->get<attr::GridCell::cellMinWidth>(),
+				this->get<attr::GridCell::cellMinHeight>(),
 				reference_,
 				prefetch_.sizing
 			),
 			prefetch_.sizing
 		),
 		algorithm::nextUnit(
-			slot.valueOf<attr::GridCell::cellMaxWidth>(),
-			slot.valueOf<attr::GridCell::cellMaxHeight>(),
+			this->get<attr::GridCell::cellMaxWidth>(),
+			this->get<attr::GridCell::cellMaxHeight>(),
 			reference_,
 			algorithm::unitAbsMax(
-				slot.valueOf<attr::GridCell::cellMaxWidth>(),
-				slot.valueOf<attr::GridCell::cellMaxHeight>()
+				this->get<attr::GridCell::cellMaxWidth>(),
+				this->get<attr::GridCell::cellMaxHeight>()
 			)
 		)
 	};
@@ -168,16 +160,12 @@ PassPrefetchSizing UniformGridLayout::passPrefetchSlotSizing(ReflowAxis axis_, P
 
 PrefetchSizing UniformGridLayout::prefetchSizing(ReflowAxis axis_, ref<const ReflowState> state_) const {
 
-	const auto& layout = getLayoutAttributes();
-	const auto& box = std::get<0>(layout.attributeSets);
-	const auto& flex = std::get<1>(layout.attributeSets);
-
 	const auto pb = algorithm::PrefetchBox {
 		.mainAxis = ReflowAxis::eXAxis,
-		.min = algorithm::unitAbsMin(box.valueOf<attr::BoxLayout::minWidth>(), box.valueOf<attr::BoxLayout::minHeight>()),
-		.max = algorithm::unitAbsMax(box.valueOf<attr::BoxLayout::maxWidth>(), box.valueOf<attr::BoxLayout::maxHeight>()),
-		.gapping = { flex.valueOf<attr::FlexLayout::colGap>(), flex.valueOf<attr::FlexLayout::rowGap>() },
-		.padding = box.valueOf<attr::BoxLayout::padding>()
+		.min = algorithm::unitAbsMin(this->get<attr::BoxLayout::minWidth>(), this->get<attr::BoxLayout::minHeight>()),
+		.max = algorithm::unitAbsMax(this->get<attr::BoxLayout::maxWidth>(), this->get<attr::BoxLayout::maxHeight>()),
+		.gapping = { this->get<attr::FlexLayout::colGap>(), this->get<attr::FlexLayout::rowGap>() },
+		.padding = this->get<attr::BoxLayout::padding>()
 	};
 
 	if (pb.min == pb.max) {
@@ -231,30 +219,29 @@ PrefetchSizing UniformGridLayout::prefetchSizing(ReflowAxis axis_, ref<const Ref
 PassPrefetchSizing UniformGridLayout::passPrefetchSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) const {
 
 	// TODO: Compute relative sizing of slots and update sizing constraints
-	const auto& box = std::get<0>(getLayoutAttributes().attributeSets);
 	return {
 		algorithm::nextUnit(
-			box.valueOf<attr::BoxLayout::minWidth>(),
-			box.valueOf<attr::BoxLayout::minHeight>(),
+			this->get<attr::BoxLayout::minWidth>(),
+			this->get<attr::BoxLayout::minHeight>(),
 			passState_.referenceSize,
 			passState_.prefetchMinSize
 		),
 		math::compMax(
 			algorithm::nextUnit(
-				box.valueOf<attr::BoxLayout::minWidth>(),
-				box.valueOf<attr::BoxLayout::minHeight>(),
+				this->get<attr::BoxLayout::minWidth>(),
+				this->get<attr::BoxLayout::minHeight>(),
 				passState_.referenceSize,
 				passState_.prefetchSize
 			),
 			passState_.prefetchSize
 		),
 		algorithm::nextUnit(
-			box.valueOf<attr::BoxLayout::maxWidth>(),
-			box.valueOf<attr::BoxLayout::maxHeight>(),
+			this->get<attr::BoxLayout::maxWidth>(),
+			this->get<attr::BoxLayout::maxHeight>(),
 			passState_.referenceSize,
 			algorithm::unitAbsMax(
-				box.valueOf<attr::BoxLayout::maxWidth>(),
-				box.valueOf<attr::BoxLayout::maxHeight>()
+				this->get<attr::BoxLayout::maxWidth>(),
+				this->get<attr::BoxLayout::maxHeight>()
 			)
 		)
 	};
@@ -262,13 +249,10 @@ PassPrefetchSizing UniformGridLayout::passPrefetchSizing(ReflowAxis axis_, ref<c
 
 math::fvec2 UniformGridLayout::computeReferenceSize(ReflowAxis axis_) const {
 
-	const auto& box = std::get<0>(getLayoutAttributes().attributeSets);
-	const auto& flex = std::get<1>(getLayoutAttributes().attributeSets);
-	const auto& slot = std::get<2>(getLayoutAttributes().attributeSets);
-	const auto& padding = box.valueOf<attr::BoxLayout::padding>();
+	const auto& padding = this->get<attr::BoxLayout::padding>();
 
-	auto min = algorithm::unitAbsMin(slot.valueOf<attr::GridCell::cellMinWidth>(), slot.valueOf<attr::GridCell::cellMinHeight>());
-	auto max = algorithm::unitAbsMax(slot.valueOf<attr::GridCell::cellMaxWidth>(), slot.valueOf<attr::GridCell::cellMaxHeight>());
+	auto min = algorithm::unitAbsMin(this->get<attr::GridCell::cellMinWidth>(), this->get<attr::GridCell::cellMinHeight>());
+	auto max = algorithm::unitAbsMax(this->get<attr::GridCell::cellMaxWidth>(), this->get<attr::GridCell::cellMaxHeight>());
 
 	const auto space = _layoutState.computeSize - math::fvec2 {
 		(padding.x + padding.z),
@@ -276,24 +260,24 @@ math::fvec2 UniformGridLayout::computeReferenceSize(ReflowAxis axis_) const {
 	};
 
 	if (axis_ == ReflowAxis::eXAxis) {
-		if (slot.valueOf<attr::GridCell::cellMinWidth>().type == ReflowUnitType::eRelative) {
+		if (this->get<attr::GridCell::cellMinWidth>().type == ReflowUnitType::eRelative) {
 			const auto intendedPerRowCount = std::clamp(
-				1.F / slot.valueOf<attr::GridCell::cellMinWidth>().value,
+				1.F / this->get<attr::GridCell::cellMinWidth>().value,
 				1.F,
 				static_cast<f32>(_children.size())
 			);
-			const auto crunchSpace = space.x - (intendedPerRowCount - 1.F) * flex.valueOf<attr::FlexLayout::colGap>();
-			min.x = crunchSpace * slot.valueOf<attr::GridCell::cellMinWidth>().value;
+			const auto crunchSpace = space.x - (intendedPerRowCount - 1.F) * this->get<attr::FlexLayout::colGap>();
+			min.x = crunchSpace * this->get<attr::GridCell::cellMinWidth>().value;
 		}
 
-		if (slot.valueOf<attr::GridCell::cellMaxWidth>().type == ReflowUnitType::eRelative) {
+		if (this->get<attr::GridCell::cellMaxWidth>().type == ReflowUnitType::eRelative) {
 			const auto intendedPerRowCount = std::clamp(
-				1.F / slot.valueOf<attr::GridCell::cellMaxWidth>().value,
+				1.F / this->get<attr::GridCell::cellMaxWidth>().value,
 				1.F,
 				static_cast<f32>(_children.size())
 			);
-			const auto crunchSpace = space.x - (intendedPerRowCount - 1.F) * flex.valueOf<attr::FlexLayout::colGap>();
-			max.x = crunchSpace * slot.valueOf<attr::GridCell::cellMaxWidth>().value;
+			const auto crunchSpace = space.x - (intendedPerRowCount - 1.F) * this->get<attr::FlexLayout::colGap>();
+			max.x = crunchSpace * this->get<attr::GridCell::cellMaxWidth>().value;
 		}
 	}
 
@@ -301,26 +285,26 @@ math::fvec2 UniformGridLayout::computeReferenceSize(ReflowAxis axis_) const {
 	 * Attention: Using relative height can possibly blow the sizing constraints
 	 */
 	if (axis_ == ReflowAxis::eYAxis) {
-		const auto rowGap = flex.valueOf<attr::FlexLayout::rowGap>();
+		const auto rowGap = this->get<attr::FlexLayout::rowGap>();
 
-		if (slot.valueOf<attr::GridCell::cellMinHeight>().type == ReflowUnitType::eRelative) {
+		if (this->get<attr::GridCell::cellMinHeight>().type == ReflowUnitType::eRelative) {
 			const auto intendedRowCount = std::clamp(
-				1.F / slot.valueOf<attr::GridCell::cellMinHeight>().value,
+				1.F / this->get<attr::GridCell::cellMinHeight>().value,
 				1.F,
 				static_cast<f32>(_children.size())
 			);
 			const auto crunchSpace = space.y - (intendedRowCount - 1.F) * rowGap;
-			min.y = crunchSpace * slot.valueOf<attr::GridCell::cellMinHeight>().value;
+			min.y = crunchSpace * this->get<attr::GridCell::cellMinHeight>().value;
 		}
 
-		if (slot.valueOf<attr::GridCell::cellMaxHeight>().type == ReflowUnitType::eRelative) {
+		if (this->get<attr::GridCell::cellMaxHeight>().type == ReflowUnitType::eRelative) {
 			const auto intendedRowCount = std::clamp(
-				1.F / slot.valueOf<attr::GridCell::cellMaxHeight>().value,
+				1.F / this->get<attr::GridCell::cellMaxHeight>().value,
 				1.F,
 				static_cast<f32>(_children.size())
 			);
 			const auto crunchSpace = space.y - (intendedRowCount - 1.F) * rowGap;
-			min.y = crunchSpace * slot.valueOf<attr::GridCell::cellMaxHeight>().value;
+			min.y = crunchSpace * this->get<attr::GridCell::cellMaxHeight>().value;
 		}
 	}
 
@@ -329,15 +313,12 @@ math::fvec2 UniformGridLayout::computeReferenceSize(ReflowAxis axis_) const {
 
 void UniformGridLayout::computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) {
 
-	const auto& box = std::get<0>(getLayoutAttributes().attributeSets);
-	const auto& flex = std::get<1>(getLayoutAttributes().attributeSets);
-
 	const auto pb = algorithm::PrefetchBox {
 		.mainAxis = ReflowAxis::eXAxis,
-		.min = algorithm::unitAbsMin(box.valueOf<attr::BoxLayout::minWidth>(), box.valueOf<attr::BoxLayout::minHeight>()),
-		.max = algorithm::unitAbsMax(box.valueOf<attr::BoxLayout::maxWidth>(), box.valueOf<attr::BoxLayout::maxHeight>()),
-		.gapping = { flex.valueOf<attr::FlexLayout::colGap>(), flex.valueOf<attr::FlexLayout::rowGap>() },
-		.padding = box.valueOf<attr::BoxLayout::padding>()
+		.min = algorithm::unitAbsMin(this->get<attr::BoxLayout::minWidth>(), this->get<attr::BoxLayout::minHeight>()),
+		.max = algorithm::unitAbsMax(this->get<attr::BoxLayout::maxWidth>(), this->get<attr::BoxLayout::maxHeight>()),
+		.gapping = { this->get<attr::FlexLayout::colGap>(), this->get<attr::FlexLayout::rowGap>() },
+		.padding = this->get<attr::BoxLayout::padding>()
 	};
 
 	const auto space = getLayoutState().computeSize - math::fvec2 { pb.padding.x + pb.padding.z, pb.padding.y + pb.padding.z };
@@ -373,15 +354,12 @@ void UniformGridLayout::computeSizing(ReflowAxis axis_, ref<const ReflowPassStat
 
 void UniformGridLayout::applyLayout(ref<ReflowState> state_) {
 
-	const auto& box = std::get<0>(getLayoutAttributes().attributeSets);
-	const auto& flex = std::get<1>(getLayoutAttributes().attributeSets);
-
 	const auto pb = algorithm::PrefetchBox {
 		.mainAxis = ReflowAxis::eXAxis,
-		.min = algorithm::unitAbsMin(box.valueOf<attr::BoxLayout::minWidth>(), box.valueOf<attr::BoxLayout::minHeight>()),
-		.max = algorithm::unitAbsMax(box.valueOf<attr::BoxLayout::maxWidth>(), box.valueOf<attr::BoxLayout::maxHeight>()),
-		.gapping = { flex.valueOf<attr::FlexLayout::colGap>(), flex.valueOf<attr::FlexLayout::rowGap>() },
-		.padding = box.valueOf<attr::BoxLayout::padding>()
+		.min = algorithm::unitAbsMin(this->get<attr::BoxLayout::minWidth>(), this->get<attr::BoxLayout::minHeight>()),
+		.max = algorithm::unitAbsMax(this->get<attr::BoxLayout::maxWidth>(), this->get<attr::BoxLayout::maxHeight>()),
+		.gapping = { this->get<attr::FlexLayout::colGap>(), this->get<attr::FlexLayout::rowGap>() },
+		.padding = this->get<attr::BoxLayout::padding>()
 	};
 
 	const auto slotSizing = prefetchSlotSizingY();
@@ -426,14 +404,14 @@ void UniformGridLayout::applyLayout(ref<ReflowState> state_) {
 
 math::fvec2 UniformGridLayout::getGrowFactor() const noexcept {
 	return {
-		std::get<0>(getLayoutAttributes().attributeSets).valueOf<attr::BoxLayout::widthGrow>(),
-		std::get<0>(getLayoutAttributes().attributeSets).valueOf<attr::BoxLayout::heightGrow>()
+		this->get<attr::BoxLayout::widthGrow>(),
+		this->get<attr::BoxLayout::heightGrow>()
 	};
 }
 
 math::fvec2 UniformGridLayout::getShrinkFactor() const noexcept {
 	return {
-		std::get<0>(getLayoutAttributes().attributeSets).valueOf<attr::BoxLayout::widthShrink>(),
-		std::get<0>(getLayoutAttributes().attributeSets).valueOf<attr::BoxLayout::heightShrink>()
+		this->get<attr::BoxLayout::widthShrink>(),
+		this->get<attr::BoxLayout::heightShrink>()
 	};
 }

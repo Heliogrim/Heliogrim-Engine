@@ -38,17 +38,17 @@ void service::initPropertyService(ref<PropertyService> service_) {
 				auto root = data_.as<nmpt<Actor>>()->getRootComponent();
 				auto grid = make_sptr<uikit::UniformGridLayout>();
 
-				std::get<0>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
-				std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMinHeight>(
+				grid->set<attr::BoxLayout::widthGrow>(1.F);
+				grid->set<attr::GridCell::cellMinHeight>(
 					{ ReflowUnitType::eAbsolute, 20.F }
 				);
-				std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMaxHeight>(
+				grid->set<attr::GridCell::cellMaxHeight>(
 					{ ReflowUnitType::eAbsolute, 20.F }
 				);
-				std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMinWidth>(
+				grid->set<attr::GridCell::cellMinWidth>(
 					{ ReflowUnitType::eRelative, 1.F / 4.F }
 				);
-				std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMaxWidth>(
+				grid->set<attr::GridCell::cellMaxWidth>(
 					{ ReflowUnitType::eRelative, 1.F / 4.F }
 				);
 
@@ -149,17 +149,17 @@ void service::initPropertyService(ref<PropertyService> service_) {
 				const auto component = data_.as<nmpt<HierarchyComponent>>();
 				auto grid = make_sptr<uikit::UniformGridLayout>();
 
-				std::get<0>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
-				std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMinHeight>(
+				grid->set<attr::BoxLayout::widthGrow>(1.F);
+				grid->set<attr::GridCell::cellMinHeight>(
 					{ ReflowUnitType::eAbsolute, 20.F }
 				);
-				std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMaxHeight>(
+				grid->set<attr::GridCell::cellMaxHeight>(
 					{ ReflowUnitType::eAbsolute, 20.F }
 				);
-				std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMinWidth>(
+				grid->set<attr::GridCell::cellMinWidth>(
 					{ ReflowUnitType::eRelative, 1.F / 4.F }
 				);
-				std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMaxWidth>(
+				grid->set<attr::GridCell::cellMaxWidth>(
 					{ ReflowUnitType::eRelative, 1.F / 4.F }
 				);
 
@@ -348,14 +348,14 @@ void service::initPropertyService(ref<PropertyService> service_) {
 				const auto component = Cast<CameraComponent>(data_.as<nmpt<HierarchyComponent>>());
 
 				auto list = make_sptr<uikit::VerticalLayout>();
-				std::get<0>(list->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
+				list->set<attr::BoxLayout::widthGrow>(1.F);
 
 				/**/
 
 				{
 					auto row = make_sptr<uikit::HorizontalLayout>();
-					std::get<0>(row->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
-					std::get<1>(row->getLayoutAttributes().attributeSets).update<attr::FlexLayout::justify>(
+					row->set<attr::BoxLayout::widthGrow>(1.F);
+					row->set<attr::FlexLayout::justify>(
 						ReflowSpacing::eSpaceBetween
 					);
 
@@ -377,8 +377,8 @@ void service::initPropertyService(ref<PropertyService> service_) {
 
 				{
 					auto row = make_sptr<uikit::HorizontalLayout>();
-					std::get<0>(row->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
-					std::get<1>(row->getLayoutAttributes().attributeSets).update<attr::FlexLayout::justify>(
+					row->set<attr::BoxLayout::widthGrow>(1.F);
+					row->set<attr::FlexLayout::justify>(
 						ReflowSpacing::eSpaceBetween
 					);
 
@@ -421,17 +421,17 @@ void service::initPropertyService(ref<PropertyService> service_) {
 				{
 					auto grid = make_sptr<uikit::UniformGridLayout>();
 
-					std::get<0>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMinHeight>(
+					grid->set<attr::BoxLayout::widthGrow>(1.F);
+					grid->set<attr::GridCell::cellMinHeight>(
 						{ ReflowUnitType::eAbsolute, 20.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMaxHeight>(
+					grid->set<attr::GridCell::cellMaxHeight>(
 						{ ReflowUnitType::eAbsolute, 20.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMinWidth>(
+					grid->set<attr::GridCell::cellMinWidth>(
 						{ ReflowUnitType::eRelative, 1.F / 4.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMaxWidth>(
+					grid->set<attr::GridCell::cellMaxWidth>(
 						{ ReflowUnitType::eRelative, 1.F / 4.F }
 					);
 
@@ -463,8 +463,8 @@ void service::initPropertyService(ref<PropertyService> service_) {
 
 				{
 					auto row = make_sptr<uikit::HorizontalLayout>();
-					std::get<0>(row->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
-					std::get<1>(row->getLayoutAttributes().attributeSets).update<attr::FlexLayout::justify>(
+					row->set<attr::BoxLayout::widthGrow>(1.F);
+					row->set<attr::FlexLayout::justify>(
 						ReflowSpacing::eSpaceBetween
 					);
 
@@ -510,8 +510,8 @@ void service::initPropertyService(ref<PropertyService> service_) {
 
 				{
 					auto row = make_sptr<uikit::HorizontalLayout>();
-					std::get<0>(row->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
-					std::get<1>(row->getLayoutAttributes().attributeSets).update<attr::FlexLayout::justify>(
+					row->set<attr::BoxLayout::widthGrow>(1.F);
+					row->set<attr::FlexLayout::justify>(
 						ReflowSpacing::eSpaceBetween
 					);
 
@@ -570,24 +570,24 @@ void service::initPropertyService(ref<PropertyService> service_) {
 				const auto component = Cast<DirectionalLightComponent>(data_.as<nmpt<HierarchyComponent>>());
 
 				auto list = make_sptr<uikit::VerticalLayout>();
-				std::get<0>(list->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
+				list->set<attr::BoxLayout::widthGrow>(1.F);
 
 				/**/
 
 				{
 					auto grid = make_sptr<uikit::UniformGridLayout>();
 
-					std::get<0>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMinHeight>(
+					grid->set<attr::BoxLayout::widthGrow>(1.F);
+					grid->set<attr::GridCell::cellMinHeight>(
 						{ ReflowUnitType::eAbsolute, 20.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMaxHeight>(
+					grid->set<attr::GridCell::cellMaxHeight>(
 						{ ReflowUnitType::eAbsolute, 20.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMinWidth>(
+					grid->set<attr::GridCell::cellMinWidth>(
 						{ ReflowUnitType::eRelative, 1.F / 4.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMaxWidth>(
+					grid->set<attr::GridCell::cellMaxWidth>(
 						{ ReflowUnitType::eRelative, 1.F / 4.F }
 					);
 
@@ -656,17 +656,17 @@ void service::initPropertyService(ref<PropertyService> service_) {
 				{
 					auto grid = make_sptr<uikit::UniformGridLayout>();
 
-					std::get<0>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMinHeight>(
+					grid->set<attr::BoxLayout::widthGrow>(1.F);
+					grid->set<attr::GridCell::cellMinHeight>(
 						{ ReflowUnitType::eAbsolute, 20.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMaxHeight>(
+					grid->set<attr::GridCell::cellMaxHeight>(
 						{ ReflowUnitType::eAbsolute, 20.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMinWidth>(
+					grid->set<attr::GridCell::cellMinWidth>(
 						{ ReflowUnitType::eRelative, 1.F / 4.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMaxWidth>(
+					grid->set<attr::GridCell::cellMaxWidth>(
 						{ ReflowUnitType::eRelative, 1.F / 4.F }
 					);
 
@@ -746,24 +746,24 @@ void service::initPropertyService(ref<PropertyService> service_) {
 				const auto component = Cast<PointLightComponent>(data_.as<nmpt<HierarchyComponent>>());
 
 				auto list = make_sptr<uikit::VerticalLayout>();
-				std::get<0>(list->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
+				list->set<attr::BoxLayout::widthGrow>(1.F);
 
 				/**/
 
 				{
 					auto grid = make_sptr<uikit::UniformGridLayout>();
 
-					std::get<0>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMinHeight>(
+					grid->set<attr::BoxLayout::widthGrow>(1.F);
+					grid->set<attr::GridCell::cellMinHeight>(
 						{ ReflowUnitType::eAbsolute, 20.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMaxHeight>(
+					grid->set<attr::GridCell::cellMaxHeight>(
 						{ ReflowUnitType::eAbsolute, 20.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMinWidth>(
+					grid->set<attr::GridCell::cellMinWidth>(
 						{ ReflowUnitType::eRelative, 1.F / 4.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMaxWidth>(
+					grid->set<attr::GridCell::cellMaxWidth>(
 						{ ReflowUnitType::eRelative, 1.F / 4.F }
 					);
 
@@ -810,8 +810,8 @@ void service::initPropertyService(ref<PropertyService> service_) {
 
 				{
 					auto row = make_sptr<uikit::HorizontalLayout>();
-					std::get<0>(row->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
-					std::get<1>(row->getLayoutAttributes().attributeSets).update<attr::FlexLayout::justify>(
+					row->set<attr::BoxLayout::widthGrow>(1.F);
+					row->set<attr::FlexLayout::justify>(
 						ReflowSpacing::eSpaceBetween
 					);
 
@@ -852,14 +852,14 @@ void service::initPropertyService(ref<PropertyService> service_) {
 				const auto component = Cast<SkyboxComponent>(data_.as<nmpt<HierarchyComponent>>());
 
 				auto list = make_sptr<uikit::VerticalLayout>();
-				std::get<0>(list->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
+				list->set<attr::BoxLayout::widthGrow>(1.F);
 
 				/**/
 
 				{
 					auto row = make_sptr<uikit::HorizontalLayout>();
-					std::get<0>(row->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
-					std::get<1>(row->getLayoutAttributes().attributeSets).update<attr::FlexLayout::justify>(
+					row->set<attr::BoxLayout::widthGrow>(1.F);
+					row->set<attr::FlexLayout::justify>(
 						ReflowSpacing::eSpaceBetween
 					);
 
@@ -886,17 +886,17 @@ void service::initPropertyService(ref<PropertyService> service_) {
 				{
 					auto grid = make_sptr<uikit::UniformGridLayout>();
 
-					std::get<0>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMinHeight>(
+					grid->set<attr::BoxLayout::widthGrow>(1.F);
+					grid->set<attr::GridCell::cellMinHeight>(
 						{ ReflowUnitType::eAbsolute, 40.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMaxHeight>(
+					grid->set<attr::GridCell::cellMaxHeight>(
 						{ ReflowUnitType::eAbsolute, 40.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMinWidth>(
+					grid->set<attr::GridCell::cellMinWidth>(
 						{ ReflowUnitType::eRelative, 1.F / 3.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMaxWidth>(
+					grid->set<attr::GridCell::cellMaxWidth>(
 						{ ReflowUnitType::eRelative, 1.F / 3.F }
 					);
 
@@ -942,24 +942,24 @@ void service::initPropertyService(ref<PropertyService> service_) {
 				const auto component = Cast<SpotLightComponent>(data_.as<nmpt<HierarchyComponent>>());
 
 				auto list = make_sptr<uikit::VerticalLayout>();
-				std::get<0>(list->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
+				list->set<attr::BoxLayout::widthGrow>(1.F);
 
 				/**/
 
 				{
 					auto grid = make_sptr<uikit::UniformGridLayout>();
 
-					std::get<0>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMinHeight>(
+					grid->set<attr::BoxLayout::widthGrow>(1.F);
+					grid->set<attr::GridCell::cellMinHeight>(
 						{ ReflowUnitType::eAbsolute, 20.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMaxHeight>(
+					grid->set<attr::GridCell::cellMaxHeight>(
 						{ ReflowUnitType::eAbsolute, 20.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMinWidth>(
+					grid->set<attr::GridCell::cellMinWidth>(
 						{ ReflowUnitType::eRelative, 1.F / 4.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMaxWidth>(
+					grid->set<attr::GridCell::cellMaxWidth>(
 						{ ReflowUnitType::eRelative, 1.F / 4.F }
 					);
 
@@ -1006,8 +1006,8 @@ void service::initPropertyService(ref<PropertyService> service_) {
 
 				{
 					auto row = make_sptr<uikit::HorizontalLayout>();
-					std::get<0>(row->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
-					std::get<1>(row->getLayoutAttributes().attributeSets).update<attr::FlexLayout::justify>(
+					row->set<attr::BoxLayout::widthGrow>(1.F);
+					row->set<attr::FlexLayout::justify>(
 						ReflowSpacing::eSpaceBetween
 					);
 
@@ -1033,8 +1033,8 @@ void service::initPropertyService(ref<PropertyService> service_) {
 
 				{
 					auto row = make_sptr<uikit::HorizontalLayout>();
-					std::get<0>(row->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
-					std::get<1>(row->getLayoutAttributes().attributeSets).update<attr::FlexLayout::justify>(
+					row->set<attr::BoxLayout::widthGrow>(1.F);
+					row->set<attr::FlexLayout::justify>(
 						ReflowSpacing::eSpaceBetween
 					);
 
@@ -1060,8 +1060,8 @@ void service::initPropertyService(ref<PropertyService> service_) {
 
 				{
 					auto row = make_sptr<uikit::HorizontalLayout>();
-					std::get<0>(row->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
-					std::get<1>(row->getLayoutAttributes().attributeSets).update<attr::FlexLayout::justify>(
+					row->set<attr::BoxLayout::widthGrow>(1.F);
+					row->set<attr::FlexLayout::justify>(
 						ReflowSpacing::eSpaceBetween
 					);
 
@@ -1102,14 +1102,14 @@ void service::initPropertyService(ref<PropertyService> service_) {
 				const auto component = Cast<StaticGeometryComponent>(data_.as<nmpt<HierarchyComponent>>());
 
 				auto list = make_sptr<uikit::VerticalLayout>();
-				std::get<0>(list->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
+				list->set<attr::BoxLayout::widthGrow>(1.F);
 
 				/**/
 
 				{
 					auto row = make_sptr<uikit::HorizontalLayout>();
-					std::get<0>(row->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
-					std::get<1>(row->getLayoutAttributes().attributeSets).update<attr::FlexLayout::justify>(
+					row->set<attr::BoxLayout::widthGrow>(1.F);
+					row->set<attr::FlexLayout::justify>(
 						ReflowSpacing::eSpaceBetween
 					);
 
@@ -1190,17 +1190,17 @@ void service::initPropertyService(ref<PropertyService> service_) {
 				{
 					auto grid = make_sptr<uikit::UniformGridLayout>();
 
-					std::get<0>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMinHeight>(
+					grid->set<attr::BoxLayout::widthGrow>(1.F);
+					grid->set<attr::GridCell::cellMinHeight>(
 						{ ReflowUnitType::eAbsolute, 40.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMaxHeight>(
+					grid->set<attr::GridCell::cellMaxHeight>(
 						{ ReflowUnitType::eAbsolute, 40.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMinWidth>(
+					grid->set<attr::GridCell::cellMinWidth>(
 						{ ReflowUnitType::eRelative, 1.F / 3.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMaxWidth>(
+					grid->set<attr::GridCell::cellMaxWidth>(
 						{ ReflowUnitType::eRelative, 1.F / 3.F }
 					);
 
@@ -1335,24 +1335,24 @@ void service::initPropertyService(ref<PropertyService> service_) {
 				const auto component = Cast<BoxShapeCollisionComponent>(data_.as<nmpt<HierarchyComponent>>());
 
 				auto list = make_sptr<uikit::VerticalLayout>();
-				std::get<0>(list->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
+				list->set<attr::BoxLayout::widthGrow>(1.F);
 
 				/**/
 
 				{
 					auto grid = make_sptr<uikit::UniformGridLayout>();
 
-					std::get<0>(grid->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMinHeight>(
+					grid->set<attr::BoxLayout::widthGrow>(1.F);
+					grid->set<attr::GridCell::cellMinHeight>(
 						{ ReflowUnitType::eAbsolute, 20.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMaxHeight>(
+					grid->set<attr::GridCell::cellMaxHeight>(
 						{ ReflowUnitType::eAbsolute, 20.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMinWidth>(
+					grid->set<attr::GridCell::cellMinWidth>(
 						{ ReflowUnitType::eRelative, 1.F / 4.F }
 					);
-					std::get<2>(grid->getLayoutAttributes().attributeSets).update<attr::GridCell::cellMaxWidth>(
+					grid->set<attr::GridCell::cellMaxWidth>(
 						{ ReflowUnitType::eRelative, 1.F / 4.F }
 					);
 
@@ -1399,8 +1399,8 @@ void service::initPropertyService(ref<PropertyService> service_) {
 
 				{
 					auto row = make_sptr<uikit::HorizontalLayout>();
-					std::get<0>(row->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
-					std::get<1>(row->getLayoutAttributes().attributeSets).update<attr::FlexLayout::justify>(
+					row->set<attr::BoxLayout::widthGrow>(1.F);
+					row->set<attr::FlexLayout::justify>(
 						ReflowSpacing::eSpaceBetween
 					);
 
@@ -1442,8 +1442,8 @@ void service::initPropertyService(ref<PropertyService> service_) {
 
 				{
 					auto row = make_sptr<uikit::HorizontalLayout>();
-					std::get<0>(row->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
-					std::get<1>(row->getLayoutAttributes().attributeSets).update<attr::FlexLayout::justify>(
+					row->set<attr::BoxLayout::widthGrow>(1.F);
+					row->set<attr::FlexLayout::justify>(
 						ReflowSpacing::eSpaceBetween
 					);
 

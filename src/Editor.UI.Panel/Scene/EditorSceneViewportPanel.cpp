@@ -159,13 +159,13 @@ sptr<EditorSceneViewportPanel> EditorSceneViewportPanel::make() {
 	auto panel { std::shared_ptr<EditorSceneViewportPanel>(new EditorSceneViewportPanel()) };
 
 	auto ctrls = make_sptr<uikit::HorizontalLayout>();
-	std::get<0>(ctrls->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
-	std::get<0>(ctrls->getLayoutAttributes().attributeSets).update<attr::BoxLayout::padding>(Padding { 4.F });
+	ctrls->set<attr::BoxLayout::widthGrow>(1.F);
+	ctrls->set<attr::BoxLayout::padding>(Padding { 4.F });
 
 	auto wrapper = make_sptr<uikit::HorizontalLayout>();
-	std::get<0>(wrapper->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
-	std::get<0>(wrapper->getLayoutAttributes().attributeSets).update<attr::BoxLayout::heightGrow>(1.F);
-	std::get<1>(wrapper->getLayoutAttributes().attributeSets).update<attr::FlexLayout::justify>(ReflowSpacing::eSpaceAround);
+	wrapper->set<attr::BoxLayout::widthGrow>(1.F);
+	wrapper->set<attr::BoxLayout::heightGrow>(1.F);
+	wrapper->set<attr::FlexLayout::justify>(ReflowSpacing::eSpaceAround);
 
 	/**/
 

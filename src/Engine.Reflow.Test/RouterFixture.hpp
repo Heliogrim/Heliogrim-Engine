@@ -131,18 +131,18 @@ namespace ReflowModule {
 		template <class Type_>
 		static void size(ref<const sptr<Type_>> widget_, const float extent_) {
 			const auto unit = engine::reflow::ReflowUnit { .type = engine::reflow::ReflowUnitType::eAbsolute, .value = extent_ };
-			auto& attributes = [&]() -> decltype(auto) {
-				if constexpr (requires { widget_->getLayoutAttributes().attributeSets; }) {
-					return (std::get<0>(widget_->getLayoutAttributes().attributeSets));
-
-				} else {
-					return (widget_->getLayoutAttributes());
-				}
-			}();
-			attributes.template update<engine::reflow::attr::BoxLayout::minWidth>(unit);
-			attributes.template update<engine::reflow::attr::BoxLayout::maxWidth>(unit);
-			attributes.template update<engine::reflow::attr::BoxLayout::minHeight>(unit);
-			attributes.template update<engine::reflow::attr::BoxLayout::maxHeight>(unit);
+			if constexpr (requires { std::remove_cvref_t<decltype(widget_->getLayoutAttributes())>::isCompositeAttributes; }) {
+				widget_->template set<engine::reflow::attr::BoxLayout::minWidth>(unit);
+				widget_->template set<engine::reflow::attr::BoxLayout::maxWidth>(unit);
+				widget_->template set<engine::reflow::attr::BoxLayout::minHeight>(unit);
+				widget_->template set<engine::reflow::attr::BoxLayout::maxHeight>(unit);
+			} else {
+				auto& attributes = widget_->getLayoutAttributes();
+				attributes.template update<engine::reflow::attr::BoxLayout::minWidth>(unit);
+				attributes.template update<engine::reflow::attr::BoxLayout::maxWidth>(unit);
+				attributes.template update<engine::reflow::attr::BoxLayout::minHeight>(unit);
+				attributes.template update<engine::reflow::attr::BoxLayout::maxHeight>(unit);
+			}
 		}
 
 		void SetUp() override {
