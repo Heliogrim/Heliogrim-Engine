@@ -64,5 +64,10 @@ namespace hg::engine::reflow {
 		}
 	};
 
+	/**
+	 * Swaps the single child of `owner_`, reparenting old and new content, and marks `owner_` pending.
+	 */
+	void replaceSingleChild(ref<Widget> owner_, ref<SingleChildren> children_, const sptr<Widget> content_);
+
 	extern const non_owning_rptr<const NullChildren> get_null_children() noexcept;
 }

@@ -26,6 +26,7 @@
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
 import Engine.Graphics;
+import Engine.Reflect;
 #endif
 
 namespace hg::engine::reflow {
@@ -224,6 +225,27 @@ namespace hg::engine::reflow {
 			bool localInvalidate_
 		) noexcept;
 
+	private:
+		/* Nearest provider per context type, misses as empty entries; cleared for the subtree whenever it moves, re-resolved when the provider died. */
+		InlineAutoArray<std::pair<type_id, wptr<Widget>>, 2> _contextCache;
+
+	public:
+		/**
+		 * Context of the given type this widget provides to its subtree; none by default.
+		 */
+		[[nodiscard]] virtual ptr<void> providedContext(const type_id contextType_) noexcept;
+
+		/**
+		 * Nearest ancestor providing the context type, resolved once and cached until this widget moves.
+		 */
+		[[nodiscard]] nmpt<Widget> contextProvider(const type_id contextType_) noexcept;
+
+		/**
+		 * Context of the nearest provider; defined below.
+		 */
+		template <class Ctx_>
+		[[nodiscard]] Opt<ref<Ctx_>> context();
+
 	protected:
 		Opt<ref<DataWatcher>> _watcher;
 
@@ -288,4 +310,15 @@ namespace hg::engine::reflow {
 
 		virtual void cascadeRenderVersion(const u16 version_, cref<Aabb2d> aabb_);
 	};
+
+	template <class Ctx_>
+	Opt<ref<Ctx_>> Widget::context() {
+		constexpr auto contextType = refl::ctid<Ctx_>();
+		auto provider = contextProvider(contextType);
+		const auto value = provider != nullptr ? provider->providedContext(contextType) : nullptr;
+		if (value == nullptr) {
+			return None;
+		}
+		return Some(*static_cast<ptr<Ctx_>>(value));
+	}
 }
