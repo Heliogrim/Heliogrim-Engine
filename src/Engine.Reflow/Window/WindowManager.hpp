@@ -1,7 +1,7 @@
 #pragma once
 
 #include "__fwd.hpp"
-#include "../Event/EventDispatcher.hpp"
+#include "../Event/EventRouter.hpp"
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
@@ -22,7 +22,7 @@ namespace hg::engine::reflow::schedule {
 
 namespace hg::engine::reflow {
 	class WindowManager :
-		public EventDispatcher {
+		public EventRouter {
 	public:
 		friend class ::hg::engine::reflow::schedule::ReflowFlowStage;
 		friend class ::hg::engine::reflow::schedule::ReflowShiftStage;
@@ -67,7 +67,7 @@ namespace hg::engine::reflow {
 		Vector<wptr<Window>> _focusOrder;
 
 	private:
-		void interceptFocusEvent(cref<sptr<Window>> window_, cref<FocusEvent> event_) override;
+		void onWindowFocusChanged(ref<const sptr<Window>> window_) override;
 
 	public:
 		void destroyWindow(mref<sptr<Window>> window_);

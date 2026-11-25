@@ -94,8 +94,7 @@ EventReply ContextMenuProvider::invokeOnMouseButtonUp(ref<const MouseEvent> even
 	/**/
 
 	menu->markAsPending(true, true);
-	auto focusEvent = FocusEvent { menu };
-	WindowManager::get()->dispatch(window, focusEvent);
+	WindowManager::get()->focus(window, menu);
 
 	/**/
 

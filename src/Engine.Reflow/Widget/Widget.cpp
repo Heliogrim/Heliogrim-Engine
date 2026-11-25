@@ -67,14 +67,14 @@ void Widget::blur() {
 	const auto root = std::static_pointer_cast<Window>(this->root());
 	if (root == nullptr)
 		return;
-	WindowManager::get()->dispatch(root, FocusEvent { root });
+	WindowManager::get()->blur(root);
 }
 
 void Widget::focus() {
 	const auto root = std::static_pointer_cast<Window>(this->root());
 	if (root == nullptr)
 		return;
-	WindowManager::get()->dispatch(root, FocusEvent { shared_from_this() });
+	WindowManager::get()->focus(root, shared_from_this());
 }
 
 EventReply Widget::invokeOnFocus(cref<FocusEvent> event_) {
@@ -101,6 +101,10 @@ bool Widget::dropOnClick(listen_handle_type handle_) {
 	return _emitter.off<MouseEvent>(ReflowEventNames::ClickEvent, ::hg::move(handle_));
 }
 
+EventReply Widget::invokeOnPreviewMouseButtonDown(ref<const MouseEvent> event_) {
+	return EventResponse::eUnhandled;
+}
+
 EventReply Widget::invokeOnMouseButtonDown(ref<const MouseEvent> event_) {
 	return EventResponse::eUnhandled;
 }
@@ -114,13 +118,6 @@ EventReply Widget::invokeOnMouseMove(ref<const MouseMoveEvent> event_) {
 }
 
 EventReply Widget::invokeOnMouseEnter(ref<const MouseMoveEvent> event_) {
-
-	if (not _state.isHover()) {
-		_state |= WidgetStateFlagBits::eHover;
-		// TODO: Check whether we should fully invalidate
-		markAsPending(false, true);
-	}
-
 	return _emitter.emit(ReflowEventNames::MouseEnterEvent, event_);
 }
 
@@ -129,13 +126,6 @@ Widget::listen_handle_type Widget::onMouseEnter(listen_fn_type<MouseMoveEvent> l
 }
 
 EventReply Widget::invokeOnMouseLeave(ref<const MouseMoveEvent> event_) {
-
-	if (_state.isHover()) {
-		_state.unwrap &= (~static_cast<WidgetState::value_type>(WidgetStateFlagBits::eHover));
-		// TODO: Check whether we should fully invalidate
-		markAsPending(false, true);
-	}
-
 	return EventResponse::eUnhandled;
 }
 
@@ -172,6 +162,10 @@ EventReply Widget::invokeOnTouchEnd(ref<const TouchEvent> event_) {
 }
 
 EventReply Widget::invokeOnTouchMove(ref<const TouchEvent> event_) {
+	return EventResponse::eUnhandled;
+}
+
+EventReply Widget::invokeOnPreviewKeyDown(ref<const KeyboardEvent> event_) {
 	return EventResponse::eUnhandled;
 }
 

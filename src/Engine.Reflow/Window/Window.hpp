@@ -13,7 +13,7 @@ import Engine.Platform;
 #endif
 
 namespace hg::engine::reflow {
-	class EventDispatcher;
+	class EventRouter;
 }
 
 namespace hg::engine::reflow {
@@ -21,7 +21,7 @@ namespace hg::engine::reflow {
 		public Widget,
 		public theming::ThemeProvisioner {
 	public:
-		friend class ::hg::engine::reflow::EventDispatcher;
+		friend class ::hg::engine::reflow::EventRouter;
 
 	public:
 		using this_type = Window;

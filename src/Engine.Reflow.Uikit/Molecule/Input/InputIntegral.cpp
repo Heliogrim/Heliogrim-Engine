@@ -215,10 +215,6 @@ EventReply InputIntegral::invokeOnKeyDown(ref<const KeyboardEvent> event_) {
 
 	} else if (event_._key == /* Return */'\r' || event_._key == /* Escape */'\x1B') {
 
-		const auto window { root() };
-		const FocusEvent focusEvent { window };
-		WindowManager::get()->dispatch<FocusEvent>(std::static_pointer_cast<Window, Widget>(window), focusEvent);
-
 		updateValueAndValidity(true, true);
 		return EventResponse::eConsumed;
 	}
