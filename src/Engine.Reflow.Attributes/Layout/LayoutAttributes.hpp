@@ -21,8 +21,12 @@ namespace hg::engine::reflow {
 
 	template <typename... Attributes_>
 	class LayoutAttributes {
+	public:
 		using this_type = LayoutAttributes<Attributes_...>;
-		typename named_attribute_tuple<Attributes_...>::type _attributes;
+		using attributes_type = typename named_attribute_tuple<Attributes_...>::type;
+
+	private:
+		attributes_type _attributes;
 		AttributeOwnerLink _owner;
 
 	private:

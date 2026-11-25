@@ -63,3 +63,21 @@ Opt<ref<const FlexLayoutAttributes>> Theme::getFlexLayout(StringView className_)
 void Theme::addFlexLayout(StringView className_, mref<FlexLayoutAttributes> attributes_) {
 	_flexStyles.insert_or_assign(className_, ::hg::move(attributes_));
 }
+
+Opt<ref<const ComponentStyle>> Theme::getComponentStyle(StringView className_) const {
+	const auto maybeIt = _componentStyles.find(className_);
+	if (maybeIt != _componentStyles.end()) {
+		return Some(maybeIt->second);
+	}
+	return None;
+}
+
+void Theme::addComponentStyle(StringView className_, mref<ComponentStyle> style_) {
+	std::ranges::stable_sort(
+		style_.states,
+		[](ref<const StateLayer> left_, ref<const StateLayer> right_) {
+			return stateLayerOrder(left_.mask) < stateLayerOrder(right_.mask);
+		}
+	);
+	_componentStyles.insert_or_assign(className_, ::hg::move(style_));
+}

@@ -116,3 +116,25 @@ Opt<ref<const BoxLayoutAttributes>> ThemeContext::getBoxLayout(StringView classN
 
 	return None;
 }
+
+Opt<ref<const ComponentStyle>> ThemeContext::getComponentStyle(StringView className_) const {
+
+	const auto maybeLocal = FirstOf<Opt<ref<const ComponentStyle>>>(
+		std::ranges::reverse_view(localThemes),
+		[&](const nmpt<const Theme>& theme_) {
+			return theme_->getComponentStyle(className_);
+		}
+	);
+
+	if (maybeLocal != None) {
+		return maybeLocal;
+	}
+
+	/**/
+
+	if (parentContext != None) {
+		return parentContext->getComponentStyle(className_);
+	}
+
+	return None;
+}

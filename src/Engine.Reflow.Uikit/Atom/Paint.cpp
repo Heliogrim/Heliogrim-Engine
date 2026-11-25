@@ -136,25 +136,13 @@ void Paint::cascadeContextChange(bool invalidate_) {
 	const AttributeBatch batch { *this };
 
 	if (getEffectiveProvisioner() != None) {
-
-		const auto& theme = getEffectiveProvisioner()->getContext();
-
-		Opt<ref<const PaintStyleAttributes>> paint = None;
-		for (const auto& className : _staticClassList) {
-			if (className.is<StringView>() && (paint = theme.getPaintStyle(className.as<StringView>())) != None) {
-				break;
-			}
-		}
-
-		if (paint != None) {
-			getStyleAttributes().update<attr::PaintStyle::tint>(
-				paint->valueOf<attr::PaintStyle::tint>()
-			);
-			getStyleAttributes().update<attr::PaintStyle::borderRadius>(
-				paint->valueOf<attr::PaintStyle::borderRadius>()
-			);
-		}
-
+		theming::resolveStyle<PaintStyleAttributes, attr::PaintStyle::tint, attr::PaintStyle::borderRadius>(
+			getEffectiveProvisioner()->getContext(),
+			_staticClassList,
+			{},
+			theming::StyleRule<PaintStyleAttributes> {},
+			getStyleAttributes()
+		);
 	}
 
 	/**/

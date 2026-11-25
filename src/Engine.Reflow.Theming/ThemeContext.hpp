@@ -30,5 +30,8 @@ namespace hg::engine::reflow::theming {
 		[[nodiscard]] Opt<ref<const BoxLayoutAttributes>> getBoxLayout(StringView className_) const;
 
 		//[[nodiscard]] Opt<FlexLayoutAttributes> getFlexLayout(StringView className_) const;
+
+	public:
+		[[nodiscard]] Opt<ref<const ComponentStyle>> getComponentStyle(StringView className_) const;
 	};
 }

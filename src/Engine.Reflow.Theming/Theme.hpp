@@ -6,6 +6,8 @@
 #include <Engine.Reflow.Attributes/Style/Base/PaintStyle.hpp>
 #include <Engine.Reflow.Attributes/Style/Base/TextStyleAttributes.hpp>
 
+#include "ComponentStyle.hpp"
+
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
 #endif
@@ -26,6 +28,8 @@ namespace hg::engine::reflow::theming {
 
 		std::map<StringView, BoxLayoutAttributes> _boxStyles;
 		std::map<StringView, FlexLayoutAttributes> _flexStyles;
+
+		std::map<StringView, ComponentStyle> _componentStyles;
 
 	public:
 		[[nodiscard]] Opt<ref<const ImageStyleAttributes>> getImageStyle(StringView className_) const;
@@ -48,5 +52,13 @@ namespace hg::engine::reflow::theming {
 		[[nodiscard]] Opt<ref<const FlexLayoutAttributes>> getFlexLayout(StringView className_) const;
 
 		void addFlexLayout(StringView className_, mref<FlexLayoutAttributes> attributes_);
+
+	public:
+		[[nodiscard]] Opt<ref<const ComponentStyle>> getComponentStyle(StringView className_) const;
+
+		/**
+		 * Stores the style with its state layers sorted by `stateLayerOrder`.
+		 */
+		void addComponentStyle(StringView className_, mref<ComponentStyle> style_);
 	};
 }

@@ -62,39 +62,18 @@ void Image::cascadeContextChange(bool invalidate_) {
 	const AttributeBatch batch { *this };
 
 	if (getEffectiveProvisioner() != None) {
-
-		const auto& theme = getEffectiveProvisioner()->getContext();
-
-		Opt<ref<const BoxLayoutAttributes>> layout = None;
-		Opt<ref<const ImageStyleAttributes>> style = None;
-
-		for (const auto& className : _staticClassList) {
-			if (not layout.has_value() && className.is<StringView>()) {
-				layout = theme.getBoxLayout(className.as<StringView>());
-			}
-			if (not style.has_value() && className.is<StringView>()) {
-				style = theme.getImageStyle(className.as<StringView>());
-			}
-			if (layout.has_value() && style.has_value()) {
-				break;
-			}
-		}
-
-		/**/
-
-		if (layout != None) {
-			// TODO: getLayoutAttributes().update<attr::BoxLayout::height>(layout->valueOf<attr::BoxLayout::height>());
-			// TODO: ...
-		}
-
-		if (style != None) {
-			getStyleAttributes().update<attr::ImageStyle::alpha>(style->valueOf<attr::ImageStyle::alpha>());
-			getStyleAttributes().update<attr::ImageStyle::tint>(style->valueOf<attr::ImageStyle::tint>());
-		}
-
+		// TODO: Image layout is not taken from the theme yet; resolve BoxLayoutAttributes here once it is.
+		theming::resolveStyle<ImageStyleAttributes, attr::ImageStyle::alpha, attr::ImageStyle::tint>(
+			getEffectiveProvisioner()->getContext(),
+			_staticClassList,
+			{},
+			theming::StyleRule<ImageStyleAttributes> {},
+			getStyleAttributes()
+		);
 	}
 
 	/**/
+
 	Widget::cascadeContextChange(invalidate_);
 }
 
