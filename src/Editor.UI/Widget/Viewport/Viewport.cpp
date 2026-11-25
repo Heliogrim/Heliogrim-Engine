@@ -224,6 +224,12 @@ bool Viewport::viewHasChanged() const noexcept {
 	return _swapChain->extent() != size;
 }
 
+void Viewport::handleViewListener(cref<smr<graphics::VkSwapchain>> prev_, cref<smr<graphics::VkSwapchain>> next_) {
+	for (const auto& fnc : _viewListen) {
+		fnc(clone(prev_), clone(next_));
+	}
+}
+
 smr<engine::graphics::VkSwapchain> Viewport::buildNextView(cref<math::uivec2> extent_) const {
 
 	auto next = make_smr<graphics::VkSwapchain>();
@@ -314,12 +320,6 @@ void Viewport::rebuildView() {
 
 	handleViewListener(_swapChain, next);
 	_swapChain = std::move(next);
-}
-
-void Viewport::handleViewListener(cref<smr<graphics::VkSwapchain>> prev_, cref<smr<graphics::VkSwapchain>> next_) {
-	for (const auto& fnc : _viewListen) {
-		fnc(clone(prev_), clone(next_));
-	}
 }
 
 void Viewport::resizeView(cref<math::uivec2> extent_) {
@@ -475,6 +475,10 @@ math::fvec2 Viewport::getGrowFactor() const noexcept {
 	};
 }
 
+bool Viewport::isFocusable() const noexcept {
+	return true;
+}
+
 EventReply Viewport::invokeOnFocus(cref<FocusEvent> event_) {
 	_state.set(WidgetStateFlagBits::eFocus);
 	markAsPending(false, true);
@@ -499,10 +503,15 @@ EventReply Viewport::invokeOnBlur(cref<FocusEvent> event_) {
 }
 
 EventReply Viewport::invokeOnKeyDown(ref<const KeyboardEvent> event_) {
+	// Viewport is a leaf, so focus state means it is the window's focus target.
+	if (not _state.isFocus()) {
+		return EventResponse::eUnhandled;
+	}
+
 	// Early exit on ESC Key to drop focus and ctrl
 	if (event_._key == '\x1B') {
-		_state.unset(WidgetStateFlagBits::eFocus);
-		markAsPending(false, true);
+		// Blur through the router so its focus target matches; invokeOnBlur clears eFocus and the camera controls.
+		WindowManager::get()->blur(std::static_pointer_cast<Window>(root()));
 		return EventResponse::eConsumed;
 	}
 
@@ -553,11 +562,12 @@ EventReply Viewport::invokeOnKeyDown(ref<const KeyboardEvent> event_) {
 }
 
 EventReply Viewport::invokeOnKeyUp(ref<const KeyboardEvent> event_) {
+	if (not _state.isFocus()) {
+		return EventResponse::eUnhandled;
+	}
 
 	// Early exit on ESC Key to drop focus and ctrl
 	if (event_._key == '\x1B') {
-		_state.unset(WidgetStateFlagBits::eFocus);
-		markAsPending(false, true);
 		return EventResponse::eConsumed;
 	}
 
@@ -605,6 +615,14 @@ EventReply Viewport::invokeOnKeyUp(ref<const KeyboardEvent> event_) {
 	}
 
 	return response;
+}
+
+EventReply Viewport::invokeOnMouseButtonDown(ref<const MouseEvent> event_) {
+	// Right button drives the camera rotation; capture keeps the drag on the viewport until the button is released.
+	if (event_._button == 3u) {
+		return EventReply { EventResponse::eConsumed }.withCapture();
+	}
+	return Widget::invokeOnMouseButtonDown(event_);
 }
 
 EventReply Viewport::invokeOnMouseEnter(ref<const MouseMoveEvent> event_) {
