@@ -88,6 +88,14 @@ ref<ReflowClassList> Widget::getStaticClassList() noexcept {
 	return _staticClassList;
 }
 
+StringView Widget::getName() const noexcept {
+	return _name;
+}
+
+void Widget::setName(const StringView name_) {
+	_name = String { name_ };
+}
+
 bool Widget::shouldTick() const noexcept {
 	return false;
 }
