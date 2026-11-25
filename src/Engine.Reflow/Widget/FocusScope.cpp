@@ -29,7 +29,12 @@ sptr<Widget> FocusScope::remembered() const noexcept {
 }
 
 void FocusScope::setContent(sptr<Widget> content_) {
-	content_->setParent(shared_from_this());
+	if (const auto& previous = _children.getChild(); previous != nullptr && previous != content_) {
+		previous->setParent(nullptr);
+	}
+	if (content_ != nullptr) {
+		content_->setParent(shared_from_this());
+	}
 	_children.setChild(content_);
 	markAsPending(true, true);
 }

@@ -45,7 +45,13 @@ static sptr<Widget> clickTarget(ref<const sptr<Window>> window_, ref<const Vecto
 
 	const auto scope = nearestScope(hit_.back());
 	if (scope == nullptr) {
-		return windowContent(window_);
+		// The implicit window scope remembers the current target while it is still mounted below the content.
+		const auto current = window_->getFocusTarget();
+		const auto content = windowContent(window_);
+		if (current != nullptr && current != window_ && current != content && current->root() == window_) {
+			return current;
+		}
+		return content;
 	}
 	auto remembered = scope->remembered();
 	return remembered != nullptr ? remembered : scope;
