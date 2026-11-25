@@ -45,6 +45,7 @@ void TreeItem::setSelected(const bool selected_) {
 	}
 
 	_selected = selected_;
+	setStyleState(InteractiveStateFlagBits::eSelected, selected_);
 }
 
 sptr<void> TreeItem::getTreeDataItem() const noexcept {

@@ -49,6 +49,36 @@ ref<ReflowPassState> Widget::getLayoutState() noexcept {
 	return _layoutState;
 }
 
+StyleStates Widget::styleStates() const noexcept {
+	StyleStates result { _storedStyleStates };
+	if (_state.isFocus()) {
+		result |= InteractiveStateFlagBits::eFocus;
+	}
+	if (_state.isHover()) {
+		result |= InteractiveStateFlagBits::eHover;
+	}
+	if (_state.isPressed()) {
+		result |= InteractiveStateFlagBits::ePress;
+	}
+	return result;
+}
+
+void Widget::setStyleState(const InteractiveStateFlagBits state_, const bool value_) noexcept {
+	const auto bit = static_cast<u8>(state_);
+	const auto before = _storedStyleStates.unwrap;
+	if (value_) {
+		_storedStyleStates.unwrap |= bit;
+	} else {
+		_storedStyleStates.unwrap &= static_cast<u8>(~bit);
+	}
+
+	if (before != _storedStyleStates.unwrap) {
+		onStyleStatesChanged();
+	}
+}
+
+void Widget::onStyleStatesChanged() {}
+
 ref<const ReflowClassList> Widget::getStaticClassList() const noexcept {
 	return _staticClassList;
 }

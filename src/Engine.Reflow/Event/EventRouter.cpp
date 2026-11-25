@@ -900,13 +900,18 @@ void EventRouter::activateModal(mref<Modal> modal_) {
 
 namespace {
 	void markState(ref<const sptr<Widget>> widget_, const WidgetStateFlagBits flag_, const bool value_) {
+		const auto before = widget_->state().unwrap;
 		if (value_) {
 			widget_->state().set(flag_);
 
 		} else {
 			widget_->state().unset(flag_);
 		}
+
 		widget_->markAsPending(false, true);
+		if (before != widget_->state().unwrap) {
+			widget_->onStyleStatesChanged();
+		}
 	}
 
 	template <typename Event_, typename Invoke_>
