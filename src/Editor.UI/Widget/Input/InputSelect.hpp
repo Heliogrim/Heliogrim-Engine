@@ -42,7 +42,7 @@ namespace hg::editor::ui {
 
 	private:
 		SharedPtr<engine::reflow::uikit::Text> _text;
-		SharedPtr<engine::reflow::Host> _runtimeMenuHost;
+		Opt<engine::reflow::PopupHandle> _menu;
 
 	private:
 		void openMenu();
@@ -62,7 +62,6 @@ namespace hg::editor::ui {
 
 		engine::reflow::EventReply invokeOnFocus(cref<engine::reflow::FocusEvent> event_) override;
 
-		engine::reflow::EventReply invokeOnBlur(cref<engine::reflow::FocusEvent> event_) override;
 
 	public:
 		void onAttachDataWatcher(ref<engine::reflow::DataWatcher> watcher_) override;

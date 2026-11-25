@@ -4,10 +4,6 @@
 import Engine.Reflow;
 #endif
 
-namespace hg::engine::reflow {
-	class Host;
-}
-
 namespace hg::editor::ui {
 	class Menu;
 }
@@ -28,7 +24,7 @@ namespace hg::editor::ui {
 
 	private:
 		SharedPtr<Menu> _subMenu;
-		SharedPtr<engine::reflow::Host> _runtimeHost;
+		Opt<engine::reflow::PopupHandle> _subMenuPopup;
 
 	public:
 		void setContent(mref<SharedPtr<Widget>> content_);

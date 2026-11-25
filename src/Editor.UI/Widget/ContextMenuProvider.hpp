@@ -6,10 +6,6 @@
 import Engine.Reflow;
 #endif
 
-namespace hg::engine::reflow {
-	class Host;
-}
-
 namespace hg::editor::ui {
 	class ContextMenuProvider :
 		public engine::reflow::CompoundWidget {
@@ -29,7 +25,7 @@ namespace hg::editor::ui {
 		[[nodiscard]] string getTag() const noexcept override;
 
 	private:
-		SharedPtr<engine::reflow::Host> _runtimeMenuHost;
+		Opt<engine::reflow::PopupHandle> _menu;
 
 	public:
 		void setContent(mref<SharedPtr<Widget>> content_);
