@@ -359,51 +359,30 @@ void Text::cascadeContextChange(bool invalidate_) {
 	const AttributeBatch batch { *this };
 
 	if (getEffectiveProvisioner() != None) {
-
-		const auto& theme = getEffectiveProvisioner()->getContext();
-
-		Opt<ref<const BoxLayoutAttributes>> layout = None;
-		Opt<ref<const TextStyleAttributes>> style = None;
-
-		for (const auto& className : _staticClassList) {
-			if (not layout.has_value() && className.is<StringView>()) {
-				layout = theme.getBoxLayout(className.as<StringView>());
-			}
-			if (not style.has_value() && className.is<StringView>()) {
-				style = theme.getTextStyle(className.as<StringView>());
-			}
-			if (layout.has_value() && style.has_value()) {
-				break;
-			}
-		}
-
-		if (layout != None) {
-			auto& stored = getLayoutAttributes();
-
-			stored.update<attr::BoxLayout::minWidth>(layout->valueOf<attr::BoxLayout::minWidth>());
-			stored.update<attr::BoxLayout::maxWidth>(layout->valueOf<attr::BoxLayout::maxWidth>());
-			stored.update<attr::BoxLayout::widthGrow>(layout->valueOf<attr::BoxLayout::widthGrow>());
-			stored.update<attr::BoxLayout::widthShrink>(layout->valueOf<attr::BoxLayout::widthShrink>());
-			stored.update<attr::BoxLayout::minHeight>(layout->valueOf<attr::BoxLayout::minHeight>());
-			stored.update<attr::BoxLayout::maxHeight>(layout->valueOf<attr::BoxLayout::maxHeight>());
-			stored.update<attr::BoxLayout::heightGrow>(layout->valueOf<attr::BoxLayout::heightGrow>());
-			stored.update<attr::BoxLayout::heightShrink>(layout->valueOf<attr::BoxLayout::heightShrink>());
-			stored.update<attr::BoxLayout::padding>(layout->valueOf<attr::BoxLayout::padding>());
-			stored.update<attr::BoxLayout::placement>(layout->valueOf<attr::BoxLayout::placement>());
-		}
-
-		if (style != None) {
-			auto& stored = getStyleAttributes();
-
-			stored.update<attr::TextStyle::font>(style->valueOf<attr::TextStyle::font>());
-			stored.update<attr::TextStyle::fontSize>(style->valueOf<attr::TextStyle::fontSize>());
-			stored.update<attr::TextStyle::lineHeight>(style->valueOf<attr::TextStyle::lineHeight>());
-			stored.update<attr::TextStyle::textAlign>(style->valueOf<attr::TextStyle::textAlign>());
-			stored.update<attr::TextStyle::textEllipse>(style->valueOf<attr::TextStyle::textEllipse>());
-			stored.update<attr::TextStyle::textWrap>(style->valueOf<attr::TextStyle::textWrap>());
-			stored.update<attr::TextStyle::color>(style->valueOf<attr::TextStyle::color>());
-		}
-
+		const auto& context = getEffectiveProvisioner()->getContext();
+		theming::resolveStyle<
+			BoxLayoutAttributes,
+			attr::BoxLayout::minWidth,
+			attr::BoxLayout::maxWidth,
+			attr::BoxLayout::widthGrow,
+			attr::BoxLayout::widthShrink,
+			attr::BoxLayout::minHeight,
+			attr::BoxLayout::maxHeight,
+			attr::BoxLayout::heightGrow,
+			attr::BoxLayout::heightShrink,
+			attr::BoxLayout::padding,
+			attr::BoxLayout::placement
+		>(context, _staticClassList, {}, theming::StyleRule<BoxLayoutAttributes> {}, getLayoutAttributes());
+		theming::resolveStyle<
+			TextStyleAttributes,
+			attr::TextStyle::font,
+			attr::TextStyle::fontSize,
+			attr::TextStyle::lineHeight,
+			attr::TextStyle::textAlign,
+			attr::TextStyle::textEllipse,
+			attr::TextStyle::textWrap,
+			attr::TextStyle::color
+		>(context, _staticClassList, {}, theming::StyleRule<TextStyleAttributes> {}, getStyleAttributes());
 	}
 
 	/**/
