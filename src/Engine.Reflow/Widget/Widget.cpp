@@ -3,6 +3,7 @@
 #include "NullWidget.hpp"
 #include "../Children.hpp"
 #include "../DataWatcher.hpp"
+#include "../Context/ContextLookup.hpp"
 #include "../Window/Window.hpp"
 #include "../Window/WindowManager.hpp"
 
@@ -301,6 +302,41 @@ Opt<ref<const theming::ThemeProvisioner>> Widget::cachedUpdateNearestProvisioner
 	return None;
 }
 
+ptr<void> Widget::providedContext([[maybe_unused]] const type_id contextType_) noexcept {
+	return nullptr;
+}
+
+nmpt<Widget> Widget::contextProvider(const type_id contextType_) noexcept {
+	const auto resolve = [&] {
+		const auto provider = findContextProvider(*this, contextType_);
+		return provider != nullptr ? provider->weak_from_this() : wptr<Widget> {};
+	};
+
+	for (auto& [type, provider] : _contextCache) {
+		if (type != contextType_) {
+			continue;
+		}
+
+		if (const auto alive = provider.lock(); alive != nullptr) {
+			return alive.get();
+		}
+
+		// An empty entry is a cached miss; an expired one is a provider destroyed while this widget outlived it
+		const auto miss = not provider.owner_before(wptr<Widget> {}) && not wptr<Widget> {}.owner_before(provider);
+		if (miss) {
+			return nullptr;
+		}
+
+		provider = resolve();
+		return provider.lock().get();
+	}
+
+	auto resolved = resolve();
+	const auto result = resolved.lock();
+	_contextCache.emplace_back(contextType_, std::move(resolved));
+	return result.get();
+}
+
 void Widget::onAttachDataWatcher([[maybe_unused]] ref<DataWatcher> watcher_) {}
 
 void Widget::onDetachDataWatcher([[maybe_unused]] ref<DataWatcher> watcher_) {}
@@ -310,18 +346,17 @@ Opt<ref<DataWatcher>> Widget::getDataWatcher() const noexcept {
 }
 
 bool Widget::updateDataWatcherReference(const bool invalidate_) noexcept {
+	if (invalidate_) {
+		_contextCache.clear();
+	}
+
 	if (not invalidate_ && _watcher.has_value()) {
 		return false;
 	}
 
 	auto watcher = hasParent() ? parent()->getDataWatcher() : None;
-	if (watcher == None && _watcher == None) {
-		return false;
-	}
-
-	if (_watcher.has_value() && watcher.has_value() && std::addressof(*_watcher) == std::addressof(*watcher)) {
-		return false;
-	}
+	const auto unchanged = (watcher == None && _watcher == None) ||
+		(_watcher.has_value() && watcher.has_value() && std::addressof(*_watcher) == std::addressof(*watcher));
 
 	if (not _watcher.has_value() && watcher.has_value()) {
 		_watcher = watcher;
@@ -333,10 +368,15 @@ bool Widget::updateDataWatcherReference(const bool invalidate_) noexcept {
 		_watcher = None;
 	}
 
+	// An invalidation always reaches the whole subtree, as the context caches below must be cleared
+	if (unchanged && not invalidate_) {
+		return false;
+	}
+
 	for (const auto& child : *children()) {
 		child->updateDataWatcherReference(invalidate_);
 	}
-	return true;
+	return not unchanged;
 }
 
 void Widget::cascadeContextChange(const bool invalidate_) {
