@@ -56,9 +56,9 @@ void WindowManager::setup() {
 	emitter.on<input::event::MouseButtonEvent>(
 		[this](const auto& event_) {
 			auto wnd { resolveWindow(event_._pointer) };
-			// The capture releases on its button up, even when the pointer left every window.
-			if (wnd == nullptr && captured() != nullptr) {
-				wnd = std::static_pointer_cast<Window>(captured()->root());
+			// route() redirects to the capture's window; outside every window the capture or press still owns the release.
+			if (wnd == nullptr) {
+				wnd = pointerOwner();
 			}
 			if (wnd) {
 				route(wnd, event_);
@@ -67,6 +67,12 @@ void WindowManager::setup() {
 	);
 	emitter.on<input::event::MouseMoveEvent>(
 		[this](const auto& event_) {
+			// route() redirects to the capture's window; route once so the capturer does not see the move twice.
+			if (const auto capturer = captured(); capturer != nullptr && capturer->root() != nullptr) {
+				route(std::static_pointer_cast<Window>(capturer->root()), event_);
+				return;
+			}
+
 			const auto prevWnd { resolveWindow(event_._pointer - event_._delta) };
 			const auto nextWnd { resolveWindow(event_._pointer) };
 

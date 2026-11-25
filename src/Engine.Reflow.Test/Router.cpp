@@ -136,4 +136,43 @@ namespace ReflowModule {
 		router.route(window, engine::input::event::KeyboardEvent { 'a', true, 0u });
 		EXPECT_EQ(log, (Log { "preview-key:a", "preview-key:b", "preview-key:c", "key-down:c", "key-down:b", "key-down:a" }));
 	}
+
+	TEST_F(RouterFixture, CaptureFollowsAcrossWindows) {
+		auto other = make_sptr<engine::reflow::Window>();
+		other->setClientSize(math::vec2 { 320.F, 240.F });
+		other->setContent(make_sptr<Leaf>("o", &log));
+		router.registerWindow(other);
+		tick(other);
+
+		b->down = EventReply::handled().withCapture();
+		mouse(5, 5, true);
+		ASSERT_EQ(router.captured(), b);
+
+		log.clear();
+		router.route(other, engine::input::event::MouseButtonEvent { math::ivec2 { 5, 5 }, 0u, false, 0u });
+		EXPECT_EQ(filtered("up"), (Log { "up:b", "up:a" }));
+		EXPECT_EQ(router.captured(), nullptr);
+
+		router.unregisterWindow(other.get());
+	}
+
+	TEST_F(RouterFixture, ReleaseOutsideEveryWindowOwnedByPress) {
+		mouse(5, 5, true);
+		ASSERT_EQ(router.pointerOwner(), window);
+
+		router.route(router.pointerOwner(), engine::input::event::MouseButtonEvent { math::ivec2 { -5, -5 }, 0u, false, 0u });
+		EXPECT_FALSE(c->state().isPressed());
+		EXPECT_FALSE(a->state().isPressed());
+		EXPECT_EQ(router.pointerOwner(), nullptr);
+	}
+
+	TEST_F(RouterFixture, PointerOwnerDropsUnmountedCapture) {
+		b->down = EventReply::handled().withCapture();
+		mouse(5, 5, true);
+		ASSERT_EQ(router.captured(), b);
+
+		a->removeChild(b);
+		EXPECT_EQ(router.pointerOwner(), window);
+		EXPECT_EQ(router.captured(), nullptr);
+	}
 }

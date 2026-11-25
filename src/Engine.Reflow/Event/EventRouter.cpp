@@ -124,6 +124,33 @@ sptr<Widget> EventRouter::captured() const noexcept {
 	return _captured.lock();
 }
 
+sptr<Window> EventRouter::pointerOwner() {
+
+	// The capturing widget may have unmounted mid-drag, e.g. with its popup.
+	if (const auto target = _captured.lock(); target != nullptr && target->root() == nullptr) {
+		_captured.reset();
+	}
+
+	if (const auto target = _captured.lock()) {
+		return std::static_pointer_cast<Window>(target->root());
+	}
+
+	for (const auto& press : _pressed) {
+		if (const auto widget = press.widget.lock(); widget != nullptr && widget->root() != nullptr) {
+			return std::static_pointer_cast<Window>(widget->root());
+		}
+	}
+	return nullptr;
+}
+
+sptr<Window> EventRouter::captureWindow(ref<const sptr<Window>> window_) const {
+	const auto target = _captured.lock();
+	if (target == nullptr || target->root() == nullptr) {
+		return window_;
+	}
+	return std::static_pointer_cast<Window>(target->root());
+}
+
 Vector<sptr<Widget>> EventRouter::capturePath(ref<const sptr<Window>> window_) {
 
 	const auto target = _captured.lock();
@@ -192,7 +219,10 @@ void EventRouter::apply(
 	}
 }
 
-EventReply EventRouter::route(cref<sptr<Window>> window_, ref<const input::event::MouseButtonEvent> event_) {
+EventReply EventRouter::route(ref<const sptr<Window>> requested_, ref<const input::event::MouseButtonEvent> event_) {
+
+	// A held capture receives the pointer whichever window reported it.
+	const auto window_ = captureWindow(requested_);
 
 	const auto hit = hitPath(window_, math::vec2 { static_cast<float>(event_._pointer.x), static_cast<float>(event_._pointer.y) });
 
@@ -248,7 +278,10 @@ EventReply EventRouter::route(cref<sptr<Window>> window_, ref<const input::event
 	return reply;
 }
 
-EventReply EventRouter::route(cref<sptr<Window>> window_, ref<const input::event::MouseMoveEvent> event_) {
+EventReply EventRouter::route(ref<const sptr<Window>> requested_, ref<const input::event::MouseMoveEvent> event_) {
+
+	// A held capture receives the pointer whichever window reported it.
+	const auto window_ = captureWindow(requested_);
 
 	const auto hit = hitPath(window_, math::vec2 { event_._pointer.x, event_._pointer.y });
 

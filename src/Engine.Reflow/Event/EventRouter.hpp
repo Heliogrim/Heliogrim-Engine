@@ -90,6 +90,8 @@ namespace hg::engine::reflow {
 	private:
 		[[nodiscard]] ptr<WindowRoute> findRoute(const ptr<const Window> window_) noexcept;
 
+		[[nodiscard]] sptr<Window> captureWindow(cref<sptr<Window>> window_) const;
+
 		[[nodiscard]] Vector<sptr<Widget>> capturePath(cref<sptr<Window>> window_);
 
 		// Drops the presses of button_, a widget stays pressed while another button still holds it.
