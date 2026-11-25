@@ -33,6 +33,10 @@ math::vec2 Host::getHostOffset() const noexcept {
 	return _hostOffset;
 }
 
+void Host::setHostOffset(const math::vec2 hostOffset_) noexcept {
+	_hostOffset = hostOffset_;
+}
+
 math::vec2 Host::getHostSize() const noexcept {
 	return _hostSize;
 }

@@ -32,6 +32,8 @@ static EventReply bubble(ref<const Vector<sptr<Widget>>> path_, ref<const Event_
 	return reply;
 }
 
+static constexpr char escape = 0x1B;
+
 static sptr<Widget> windowContent(ref<const sptr<Window>> window_) {
 	return (*window_->children())[1];
 }
@@ -55,6 +57,21 @@ static sptr<Widget> clickTarget(ref<const sptr<Window>> window_, ref<const Vecto
 	}
 	auto remembered = scope->remembered();
 	return remembered != nullptr ? remembered : scope;
+}
+
+static LayerBand anchorBand(ref<const sptr<Window>> window_, ref<const sptr<Widget>> anchor_) {
+	for (auto next = anchor_; next != nullptr; next = next->parent()) {
+		if (next->parent() != window_) {
+			continue;
+		}
+		for (const auto& layer : window_->layers()) {
+			if (layer->host.lock() == next) {
+				return layer->band;
+			}
+		}
+		break;
+	}
+	return LayerBand::eContent;
 }
 
 bool EventRouter::intersects(ref<const math::vec2> off_, ref<const math::vec2> size_, ref<const math::vec2> point_) noexcept {
@@ -247,10 +264,24 @@ void EventRouter::apply(
 
 EventReply EventRouter::route(ref<const sptr<Window>> requested_, ref<const input::event::MouseButtonEvent> event_) {
 
+	maintainPopups();
+
 	// A held capture receives the pointer whichever window reported it.
 	const auto window_ = captureWindow(requested_);
 
-	const auto hit = hitPath(window_, math::vec2 { static_cast<float>(event_._pointer.x), static_cast<float>(event_._pointer.y) });
+	const auto point = math::vec2 { static_cast<float>(event_._pointer.x), static_cast<float>(event_._pointer.y) };
+	if (event_._down && closeOnOutsideDown(window_, point)) {
+		_dismissButton = event_._button;
+		return EventReply::consumed();
+	}
+
+	// The release of a dismissing press must not click whatever lies below the closed popup.
+	if (not event_._down && _dismissButton == event_._button) {
+		_dismissButton.reset();
+		return EventReply::consumed();
+	}
+
+	const auto hit = hitPath(window_, point);
 
 	if (event_._down) {
 
@@ -308,6 +339,8 @@ EventReply EventRouter::route(ref<const sptr<Window>> requested_, ref<const inpu
 
 EventReply EventRouter::route(ref<const sptr<Window>> requested_, ref<const input::event::MouseMoveEvent> event_) {
 
+	maintainPopups();
+
 	// A held capture receives the pointer whichever window reported it.
 	const auto window_ = captureWindow(requested_);
 
@@ -351,14 +384,17 @@ EventReply EventRouter::route(ref<const sptr<Window>> requested_, ref<const inpu
 	return reply;
 }
 
-EventReply EventRouter::route(cref<sptr<Window>> window_, ref<const input::event::MouseWheelEvent> event_) {
+EventReply EventRouter::route(ref<const sptr<Window>> window_, ref<const input::event::MouseWheelEvent> event_) {
+	maintainPopups();
 	const auto path = hitPath(window_, math::vec2 { static_cast<float>(event_._pointer.x), static_cast<float>(event_._pointer.y) });
 	const auto reply = bubble(path, event_, &Widget::invokeOnWheel);
 	apply(window_, reply, nullptr, 0uL);
 	return reply;
 }
 
-EventReply EventRouter::route(cref<sptr<Window>> window_, ref<const input::event::KeyboardEvent> event_) {
+EventReply EventRouter::route(ref<const sptr<Window>> window_, ref<const input::event::KeyboardEvent> event_) {
+
+	maintainPopups();
 
 	// Attention: Copy the focus path, handlers may move the focus while we walk it.
 	Vector<sptr<Widget>> path {};
@@ -394,10 +430,20 @@ EventReply EventRouter::route(cref<sptr<Window>> window_, ref<const input::event
 		}
 	}
 
+	if (event_._down && event_._key == escape && not reply.isConsumed()) {
+		for (auto it = _popups.rbegin(); it != _popups.rend(); ++it) {
+			if (it->window.lock() == window_) {
+				closePopup(PopupHandle { it->id });
+				break;
+			}
+		}
+	}
+
 	return reply;
 }
 
-EventReply EventRouter::route(cref<sptr<Window>> window_, ref<const input::event::DragDropEvent> event_) {
+EventReply EventRouter::route(ref<const sptr<Window>> window_, ref<const input::event::DragDropEvent> event_) {
+	maintainPopups();
 	const auto path = hitPath(window_, math::vec2 { static_cast<float>(event_._pointer.x), static_cast<float>(event_._pointer.y) });
 	const auto reply = bubble(path, event_, &Widget::invokeOnDrop);
 	apply(window_, reply, nullptr, 0uL);
@@ -410,6 +456,15 @@ void EventRouter::focus(ref<const sptr<Window>> window_, ref<const sptr<Widget>>
 	if (target_ == nullptr || target_->root() != window_) {
 		return;
 	}
+
+	// Moving the focus to another window means the popup windows lost theirs.
+	Vector<u64> lost {};
+	for (const auto& popup : _popups) {
+		if (popup.window.lock() != window_) {
+			lost.push_back(popup.id);
+		}
+	}
+	closePopups(lost);
 
 	onWindowFocusChanged(window_);
 
@@ -476,4 +531,141 @@ void EventRouter::restoreFocus(ref<const sptr<Window>> window_, ref<const FocusS
 		}
 	}
 	focus(window_, windowContent(window_));
+}
+
+PopupHandle EventRouter::openPopup(
+	ref<const sptr<Window>> window_,
+	sptr<Widget> content_,
+	ref<const PopupAnchor> anchor_,
+	wptr<Widget> anchorWidget_,
+	Opt<PopupHandle> parent_,
+	std::function<void()> onClosed_
+) {
+	auto snapshot = snapshotFocus(window_);
+
+	// The content has no layout size before its first pass; maintainPopups re-places it once it has one.
+	const auto size = content_->getLayoutState().layoutSize;
+	const auto scope = make_sptr<FocusScope>(FocusScopeKind::ePopup);
+	scope->setContent(::hg::move(content_));
+
+	const auto host = make_sptr<Host>(scope, placePopup(anchor_, size, window_->getClientSize()), window_->getClientSize());
+	discard = window_->requestLayer(std::max(LayerBand::ePopup, anchorBand(window_, anchorWidget_.lock())), host);
+	scope->setParent(host);
+	host->markAsPending(true, true);
+
+	const auto id = ++_popupIds;
+	const bool anchored = not anchorWidget_.expired();
+	_popups.emplace_back(
+		Popup {
+			.id = id,
+			.parent = parent_.has_value() ? parent_->id : 0uLL,
+			.window = window_,
+			.host = host,
+			.anchor = anchor_,
+			.anchorWidget = ::hg::move(anchorWidget_),
+			.anchored = anchored,
+			.placed = size.x > 0.F && size.y > 0.F,
+			.snapshot = ::hg::move(snapshot),
+			.onClosed = ::hg::move(onClosed_)
+		}
+	);
+
+	const auto first = nextFocusable(scope, nullptr, false);
+	focus(window_, first != nullptr ? first : scope);
+
+	return PopupHandle { id };
+}
+
+void EventRouter::closePopup(const PopupHandle handle_) {
+
+	Vector<u64> children {};
+	for (const auto& popup : _popups) {
+		if (popup.parent == handle_.id) {
+			children.push_back(popup.id);
+		}
+	}
+	closePopups(children);
+
+	const auto it = std::ranges::find_if(_popups, [&handle_](const auto& popup_) { return popup_.id == handle_.id; });
+	if (it == _popups.end()) {
+		return;
+	}
+
+	auto popup = ::hg::move(*it);
+	_popups.erase(it);
+
+	if (const auto window = popup.window.lock()) {
+		window->dropLayer(popup.host.get());
+		restoreFocus(window, popup.snapshot);
+	}
+
+	if (popup.onClosed) {
+		popup.onClosed();
+	}
+}
+
+bool EventRouter::hasOpenPopup(nmpt<const Window> window_) const noexcept {
+	return std::ranges::any_of(_popups, [window_](const auto& popup_) { return popup_.window.lock().get() == window_.get(); });
+}
+
+void EventRouter::closePopups(ref<const Vector<u64>> ids_) {
+	// Top first, a popup closes after the ones opened above it.
+	for (auto it = ids_.rbegin(); it != ids_.rend(); ++it) {
+		closePopup(PopupHandle { *it });
+	}
+}
+
+void EventRouter::maintainPopups() {
+
+	Vector<u64> stale {};
+	for (auto& popup : _popups) {
+
+		const auto window = popup.window.lock();
+		const auto anchor = popup.anchorWidget.lock();
+		if (window == nullptr || (popup.anchored && (anchor == nullptr || anchor->root() != window))) {
+			stale.push_back(popup.id);
+			continue;
+		}
+
+		const auto size = popup.host->getLayoutState().layoutSize;
+		if (not popup.placed && size.x > 0.F && size.y > 0.F) {
+			popup.host->setHostOffset(placePopup(popup.anchor, size, window->getClientSize()));
+			popup.host->markAsPending(true, true);
+			popup.placed = true;
+		}
+	}
+
+	closePopups(stale);
+}
+
+bool EventRouter::closeOnOutsideDown(ref<const sptr<Window>> window_, const math::vec2 point_) {
+
+	bool inside = false;
+	ptr<const Popup> top = nullptr;
+	for (const auto& popup : _popups) {
+		if (popup.window.lock() == window_) {
+			inside = inside || contains(*popup.host, point_);
+			top = &popup;
+		}
+	}
+
+	// A flipped or shifted popup may cover its own anchor, a down inside it belongs to the popup.
+	if (top == nullptr || inside) {
+		return false;
+	}
+
+	// A down on the top anchor toggles it closed, its own handler must not reopen it.
+	if (const auto anchor = top->anchorWidget.lock(); anchor != nullptr && contains(*anchor, point_)) {
+		closePopup(PopupHandle { top->id });
+		return true;
+	}
+
+	Vector<u64> outside {};
+	for (const auto& popup : _popups) {
+		if (popup.window.lock() == window_) {
+			outside.push_back(popup.id);
+		}
+	}
+	closePopups(outside);
+	return true;
 }
