@@ -4,11 +4,18 @@
 
 import Editor.UI.Main;
 import Editor.UI.Panel;
+import Engine.Reflow;
 import Engine.Reflow.Uikit;
 
 using namespace hg::editor::ui;
 using namespace hg::engine::reflow;
 using namespace hg;
+
+[[nodiscard]] static sptr<FocusScope> makePanelScope(sptr<Widget> card_) {
+	auto scope = make_sptr<FocusScope>(FocusScopeKind::ePanel);
+	scope->setContent(::hg::move(card_));
+	return scope;
+}
 
 UniquePtr<SceneEditorView> editor::ui::makeSceneEditorView(
 	ref<const SceneEditorController> controller_
@@ -82,7 +89,7 @@ UniquePtr<SceneEditorView> editor::ui::makeSceneEditorView(
 		sceneViewBox->getLayoutAttributes().update<attr::BoxLayout::minHeight>(ReflowUnit { ReflowUnitType::eRelative, 1.F });
 		sceneViewBox->getLayoutAttributes().update<attr::BoxLayout::maxHeight>(ReflowUnit { ReflowUnitType::eRelative, 1.F });
 
-		sceneViewBox->setChild(sceneViewCard);
+		sceneViewBox->setChild(makePanelScope(::hg::move(sceneViewCard)));
 		top->addChild(::hg::move(sceneViewBox));
 
 		/**/
@@ -102,7 +109,7 @@ UniquePtr<SceneEditorView> editor::ui::makeSceneEditorView(
 
 		std::get<1>(esvp->getLayoutAttributes().attributeSets).update<attr::FlexLayout::rowGap>(8.F);
 
-		top->addChild(esvp);
+		top->addChild(makePanelScope(::hg::move(esvp)));
 		mainRest_->addChild(::hg::move(top));
 	}(controller_, mainRest);
 
@@ -115,7 +122,7 @@ UniquePtr<SceneEditorView> editor::ui::makeSceneEditorView(
 		assetBrowserCard->getLayoutAttributes().update<attr::BoxLayout::minHeight>(ReflowUnit { ReflowUnitType::eAbsolute, 320.F });
 		assetBrowserCard->getLayoutAttributes().update<attr::BoxLayout::maxHeight>(ReflowUnit { ReflowUnitType::eAbsolute, 320.F });
 
-		mainRest_->addChild(::hg::move(assetBrowserCard));
+		mainRest_->addChild(makePanelScope(::hg::move(assetBrowserCard)));
 	}(controller_, mainRest);
 
 	/**/
@@ -150,7 +157,7 @@ UniquePtr<SceneEditorView> editor::ui::makeSceneEditorView(
 		propertiesBox->getLayoutAttributes().update<attr::BoxLayout::maxWidth>({ ReflowUnitType::eRelative, 1.F });
 		propertiesBox->getLayoutAttributes().update<attr::BoxLayout::heightGrow>(1.F);
 
-		propertiesBox->setChild(::hg::move(propertiesCard));
+		propertiesBox->setChild(makePanelScope(::hg::move(propertiesCard)));
 		right_->addChild(::hg::move(propertiesBox));
 	}(controller_, right);
 
