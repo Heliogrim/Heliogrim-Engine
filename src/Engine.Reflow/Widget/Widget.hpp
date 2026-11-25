@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Engine.Common/Sal.hpp>
+#include <Engine.Reflow.Theming/StyleStates.hpp>
 #include <Engine.Reflow.Theming/ThemeProvisioner.hpp>
 #include <Engine.Reflow/ReflowPhase.hpp>
 
@@ -84,6 +85,22 @@ namespace hg::engine::reflow {
 		[[nodiscard]] cref<ReflowPassState> getLayoutState() const noexcept;
 
 		[[nodiscard]] ref<ReflowPassState> getLayoutState() noexcept;
+
+	private:
+		StyleStates _storedStyleStates {};
+
+	public:
+		/**
+		 * Focus, hover and press derive from the widget state; disable, drag, selected and invalid are stored.
+		 */
+		[[nodiscard]] StyleStates styleStates() const noexcept;
+
+		void setStyleState(const InteractiveStateFlagBits state_, const bool value_) noexcept;
+
+		/**
+		 * Called after any style state changed; the default does nothing.
+		 */
+		virtual void onStyleStatesChanged();
 
 	protected:
 		ReflowClassList _staticClassList;
