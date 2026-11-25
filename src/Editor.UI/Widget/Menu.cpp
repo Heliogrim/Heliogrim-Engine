@@ -63,7 +63,7 @@ SharedPtr<editor::ui::Menu> editor::ui::makeMenu() {
 	stack->addChild(::hg::move(paint));
 
 	auto layout = make_sptr<uikit::VerticalLayout>();
-	std::get<0>(layout->getLayoutAttributes().attributeSets).update<attr::BoxLayout::padding>(Padding { 4.F });
+	layout->set<attr::BoxLayout::padding>(Padding { 4.F });
 	stack->addChild(clone(layout));
 
 	auto menu = make_sptr<Menu>(clone(stack), hg::move(layout));

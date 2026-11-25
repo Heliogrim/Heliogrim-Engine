@@ -327,8 +327,8 @@ UniquePtr<SceneHierarchyView> editor::ui::makeSceneHierarchyView(ref<SceneHierar
 	contentStack->getLayoutAttributes().update<attr::BoxLayout::widthGrow>(1.F);
 	contentStack->getLayoutAttributes().update<attr::BoxLayout::heightGrow>(1.F);
 	contentStack->getLayoutAttributes().update<attr::BoxLayout::padding>(Padding { 8.F });
-	(std::get<0>(tree->getLayoutAttributes().attributeSets)).update < attr::BoxLayout::widthGrow > (1.F);
-	(std::get<0>(tree->getLayoutAttributes().attributeSets)).update < attr::BoxLayout::heightGrow > (1.F);
+	tree->set<attr::BoxLayout::widthGrow>(1.F);
+	tree->set<attr::BoxLayout::heightGrow>(1.F);
 
 	//content->addChild(clone(tree));
 	contentStack->addChild(::hg::move(contentBg));
@@ -338,8 +338,8 @@ UniquePtr<SceneHierarchyView> editor::ui::makeSceneHierarchyView(ref<SceneHierar
 
 	auto wrapper = make_sptr<uikit::VerticalLayout>();
 
-	(std::get<0>(wrapper->getLayoutAttributes().attributeSets)).update<attr::BoxLayout::widthGrow>(1.F);
-	(std::get<0>(wrapper->getLayoutAttributes().attributeSets)).update<attr::BoxLayout::heightGrow>(1.F);
+	wrapper->set<attr::BoxLayout::widthGrow>(1.F);
+	wrapper->set<attr::BoxLayout::heightGrow>(1.F);
 
 	wrapper->addChild(::hg::move(header));
 	wrapper->addChild(::hg::move(contentStack));

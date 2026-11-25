@@ -16,7 +16,7 @@ HorizontalLayout::HorizontalLayout(mref<ReflowClassList> classList_, mref<Shared
 		{},
 		{
 			.layoutAttributes = {
-				.attributeSets = std::make_tuple(
+				std::make_tuple(
 					BoxLayoutAttributes {
 						ReflowUnit { ReflowUnitType::eAuto, 0.F },
 						ReflowUnit { ReflowUnitType::eAuto, 0.F },
@@ -134,18 +134,14 @@ void HorizontalLayout::render(const ptr<ReflowCommandBuffer> cmd_) {
 
 PrefetchSizing HorizontalLayout::prefetchSizing(ReflowAxis axis_, ref<const ReflowState> state_) const {
 
-	const auto& layout = getLayoutAttributes();
-	const auto& box = std::get<0>(layout.attributeSets);
-	const auto& flex = std::get<1>(layout.attributeSets);
-
 	return algorithm::prefetch(
 		axis_,
 		{
 			.mainAxis = ReflowAxis::eXAxis,
-			.min = algorithm::unitAbsMin(box.valueOf<attr::BoxLayout::minWidth>(), box.valueOf<attr::BoxLayout::minHeight>()),
-			.max = algorithm::unitAbsMax(box.valueOf<attr::BoxLayout::maxWidth>(), box.valueOf<attr::BoxLayout::maxHeight>()),
-			.gapping = { flex.valueOf<attr::FlexLayout::colGap>(), flex.valueOf<attr::FlexLayout::rowGap>() },
-			.padding = box.valueOf<attr::BoxLayout::padding>()
+			.min = algorithm::unitAbsMin(this->get<attr::BoxLayout::minWidth>(), this->get<attr::BoxLayout::minHeight>()),
+			.max = algorithm::unitAbsMax(this->get<attr::BoxLayout::maxWidth>(), this->get<attr::BoxLayout::maxHeight>()),
+			.gapping = { this->get<attr::FlexLayout::colGap>(), this->get<attr::FlexLayout::rowGap>() },
+			.padding = this->get<attr::BoxLayout::padding>()
 		},
 		children()
 	);
@@ -153,30 +149,29 @@ PrefetchSizing HorizontalLayout::prefetchSizing(ReflowAxis axis_, ref<const Refl
 
 PassPrefetchSizing HorizontalLayout::passPrefetchSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) const {
 
-	const auto& box = std::get<0>(getLayoutAttributes().attributeSets);
 	return {
 		algorithm::nextUnit(
-			box.valueOf<attr::BoxLayout::minWidth>(),
-			box.valueOf<attr::BoxLayout::minHeight>(),
+			this->get<attr::BoxLayout::minWidth>(),
+			this->get<attr::BoxLayout::minHeight>(),
 			passState_.referenceSize,
 			passState_.prefetchMinSize
 		),
 		math::compMax(
 			algorithm::nextUnit(
-				box.valueOf<attr::BoxLayout::minWidth>(),
-				box.valueOf<attr::BoxLayout::minHeight>(),
+				this->get<attr::BoxLayout::minWidth>(),
+				this->get<attr::BoxLayout::minHeight>(),
 				passState_.referenceSize,
 				passState_.prefetchSize
 			),
 			passState_.prefetchSize
 		),
 		algorithm::nextUnit(
-			box.valueOf<attr::BoxLayout::maxWidth>(),
-			box.valueOf<attr::BoxLayout::maxHeight>(),
+			this->get<attr::BoxLayout::maxWidth>(),
+			this->get<attr::BoxLayout::maxHeight>(),
 			passState_.referenceSize,
 			algorithm::unitAbsMax(
-				box.valueOf<attr::BoxLayout::maxWidth>(),
-				box.valueOf<attr::BoxLayout::maxHeight>()
+				this->get<attr::BoxLayout::maxWidth>(),
+				this->get<attr::BoxLayout::maxHeight>()
 			)
 		)
 	};
@@ -184,40 +179,30 @@ PassPrefetchSizing HorizontalLayout::passPrefetchSizing(ReflowAxis axis_, ref<co
 
 math::fvec2 HorizontalLayout::computeReferenceSize(ReflowAxis axis_) const {
 
-	const auto& box = std::get<0>(getLayoutAttributes().attributeSets);
-	const auto& flex = std::get<1>(getLayoutAttributes().attributeSets);
-
-	const auto& padding = box.valueOf<attr::BoxLayout::padding>();
+	const auto& padding = this->get<attr::BoxLayout::padding>();
 
 	auto result = _layoutState.computeSize;
 	const auto gapCount = _children.empty() ? 0uLL : _children.size() - 1uLL;
-	result.x -= (padding.x + padding.z + flex.valueOf<attr::FlexLayout::colGap>() * static_cast<f32>(gapCount));
+	result.x -= (padding.x + padding.z + this->get<attr::FlexLayout::colGap>() * static_cast<f32>(gapCount));
 	result.y -= (padding.y + padding.w);
 	return result;
 }
 
 void HorizontalLayout::computeSizing(ReflowAxis axis_, ref<const ReflowPassState> passState_) {
 
-	const auto& box = std::get<0>(getLayoutAttributes().attributeSets);
-	const auto& flex = std::get<1>(getLayoutAttributes().attributeSets);
-
 	algorithm::compute(
 		axis_,
 		{
 			.mainAxis = ReflowAxis::eXAxis,
 			.size = passState_.computeSize,
-			.gapping = { flex.valueOf<attr::FlexLayout::colGap>(), flex.valueOf<attr::FlexLayout::rowGap>() },
-			.padding = box.valueOf<attr::BoxLayout::padding>()
+			.gapping = { this->get<attr::FlexLayout::colGap>(), this->get<attr::FlexLayout::rowGap>() },
+			.padding = this->get<attr::BoxLayout::padding>()
 		},
 		*children()
 	);
 }
 
 void HorizontalLayout::applyLayout(ref<ReflowState> state_) {
-
-	const auto& layout = getLayoutAttributes();
-	const auto& box = std::get<0>(layout.attributeSets);
-	const auto& flex = std::get<1>(layout.attributeSets);
 
 	/**/
 
@@ -226,10 +211,10 @@ void HorizontalLayout::applyLayout(ref<ReflowState> state_) {
 			.mainAxis = ReflowAxis::eXAxis,
 			.anchor = getLayoutState().layoutOffset,
 			.span = getLayoutState().layoutSize,
-			.gapping = { flex.valueOf<attr::FlexLayout::colGap>(), flex.valueOf<attr::FlexLayout::rowGap>() },
-			.padding = box.valueOf<attr::BoxLayout::padding>(),
-			.align = flex.valueOf<attr::FlexLayout::align>(),
-			.justify = flex.valueOf<attr::FlexLayout::justify>()
+			.gapping = { this->get<attr::FlexLayout::colGap>(), this->get<attr::FlexLayout::rowGap>() },
+			.padding = this->get<attr::BoxLayout::padding>(),
+			.align = this->get<attr::FlexLayout::align>(),
+			.justify = this->get<attr::FlexLayout::justify>()
 		},
 		children()
 	);
@@ -248,19 +233,17 @@ void HorizontalLayout::applyLayout(ref<ReflowState> state_) {
 }
 
 math::fvec2 HorizontalLayout::getShrinkFactor() const noexcept {
-	const auto& box = std::get<0>(getLayoutAttributes().attributeSets);
 
 	return {
-		box.valueOf<attr::BoxLayout::widthShrink>(),
-		box.valueOf<attr::BoxLayout::heightShrink>()
+		this->get<attr::BoxLayout::widthShrink>(),
+		this->get<attr::BoxLayout::heightShrink>()
 	};
 };
 
 math::fvec2 HorizontalLayout::getGrowFactor() const noexcept {
-	const auto& box = std::get<0>(getLayoutAttributes().attributeSets);
 
 	return {
-		box.valueOf<attr::BoxLayout::widthGrow>(),
-		box.valueOf<attr::BoxLayout::heightGrow>()
+		this->get<attr::BoxLayout::widthGrow>(),
+		this->get<attr::BoxLayout::heightGrow>()
 	};
 }

@@ -58,8 +58,30 @@ namespace hg::engine::reflow {
 
 		constexpr static auto slotNames = concatSlotNames<AttributeSets_...>();
 
-	public:
+		constexpr static bool isCompositeAttributes = true;
+
+	private:
 		attribute_set_tuple attributeSets;
+
+	public:
+		constexpr CompositeLayoutAttributes() = default;
+
+		constexpr CompositeLayoutAttributes(AttributeSets_... sets_) :
+			attributeSets(::hg::move(sets_)...) {}
+
+		constexpr CompositeLayoutAttributes(attribute_set_tuple sets_) :
+			attributeSets(::hg::move(sets_)) {}
+
+	public:
+		template <class Fn_>
+		constexpr void forEachSet(Fn_&& fn_) {
+			std::apply([&fn_](auto&... sets_) { (fn_(sets_), ...); }, attributeSets);
+		}
+
+		template <class Fn_>
+		constexpr void forEachSet(Fn_&& fn_) const {
+			std::apply([&fn_](const auto&... sets_) { (fn_(sets_), ...); }, attributeSets);
+		}
 
 	public:
 		template <ref<const StringView> Name_>

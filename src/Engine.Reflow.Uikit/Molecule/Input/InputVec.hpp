@@ -58,13 +58,12 @@ namespace hg::engine::reflow::uikit {
 		void prepare() {
 			::hg::assertd(static_cast<bool>(_content));
 
-			auto& attrs = _content->getLayoutAttributes().attributeSets;
-			std::get<0>(attrs).update<engine::reflow::attr::BoxLayout::maxWidth>({ engine::reflow::ReflowUnitType::eRelative, 1.F });
-			std::get<0>(attrs).update<engine::reflow::attr::BoxLayout::minHeight>({ engine::reflow::ReflowUnitType::eAbsolute, 20.F });
-			std::get<0>(attrs).update<engine::reflow::attr::BoxLayout::maxHeight>({ engine::reflow::ReflowUnitType::eAbsolute, 20.F });
-			std::get<1>(attrs).update<engine::reflow::attr::FlexLayout::colGap>(4.F);
-			std::get<1>(attrs).update<engine::reflow::attr::FlexLayout::rowGap>(8.F);
-			std::get<1>(attrs).update<engine::reflow::attr::FlexLayout::justify>(engine::reflow::ReflowSpacing::eSpaceBetween);
+			_content->template set<engine::reflow::attr::BoxLayout::maxWidth>({ engine::reflow::ReflowUnitType::eRelative, 1.F });
+			_content->template set<engine::reflow::attr::BoxLayout::minHeight>({ engine::reflow::ReflowUnitType::eAbsolute, 20.F });
+			_content->template set<engine::reflow::attr::BoxLayout::maxHeight>({ engine::reflow::ReflowUnitType::eAbsolute, 20.F });
+			_content->template set<engine::reflow::attr::FlexLayout::colGap>(4.F);
+			_content->template set<engine::reflow::attr::FlexLayout::rowGap>(8.F);
+			_content->template set<engine::reflow::attr::FlexLayout::justify>(engine::reflow::ReflowSpacing::eSpaceBetween);
 
 			/**/
 
@@ -220,12 +219,11 @@ namespace hg::engine::reflow::uikit {
 				/**/
 
 				auto wrapper = make_sptr<uikit::HorizontalLayout>();
-				auto& attrs = wrapper->getLayoutAttributes().attributeSets;
-				std::get<0>(attrs).update<engine::reflow::attr::BoxLayout::minWidth>({ ReflowUnitType::eRelative, frac });
-				std::get<0>(attrs).update<engine::reflow::attr::BoxLayout::maxWidth>({ ReflowUnitType::eRelative, frac });
-				std::get<0>(attrs).update<engine::reflow::attr::BoxLayout::minHeight>({ ReflowUnitType::eAbsolute, 20.F });
-				std::get<0>(attrs).update<engine::reflow::attr::BoxLayout::maxHeight>({ ReflowUnitType::eAbsolute, 20.F });
-				std::get<1>(attrs).update<engine::reflow::attr::FlexLayout::rowGap>(4.F);
+				wrapper->template set<engine::reflow::attr::BoxLayout::minWidth>({ ReflowUnitType::eRelative, frac });
+				wrapper->template set<engine::reflow::attr::BoxLayout::maxWidth>({ ReflowUnitType::eRelative, frac });
+				wrapper->template set<engine::reflow::attr::BoxLayout::minHeight>({ ReflowUnitType::eAbsolute, 20.F });
+				wrapper->template set<engine::reflow::attr::BoxLayout::maxHeight>({ ReflowUnitType::eAbsolute, 20.F });
+				wrapper->template set<engine::reflow::attr::FlexLayout::rowGap>(4.F);
 
 				/**/
 

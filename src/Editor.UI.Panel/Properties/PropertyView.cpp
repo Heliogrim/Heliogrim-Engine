@@ -53,8 +53,8 @@ void PropertyView::displayProperties(
 			/**/
 
 			auto content = make_sptr<uikit::VerticalLayout>();
-			std::get<0>(content->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
-			std::get<0>(content->getLayoutAttributes().attributeSets).update<attr::BoxLayout::padding>(Padding { 4.F });
+			content->set<attr::BoxLayout::widthGrow>(1.F);
+			content->set<attr::BoxLayout::padding>(Padding { 4.F });
 
 			section->setHeader(::hg::move(sectionTitle));
 			section->setContent(clone(content));
@@ -71,9 +71,9 @@ void PropertyView::displayProperties(
 UniquePtr<PropertyView> editor::ui::makePropertyView(ref<PropertyController> controller_) {
 
 	const auto container = make_sptr<uikit::VScrollBox>();
-	std::get<0>(container->getLayoutAttributes().attributeSets).update<attr::BoxLayout::widthGrow>(1.F);
-	std::get<0>(container->getLayoutAttributes().attributeSets).update<attr::BoxLayout::heightGrow>(1.F);
-	std::get<0>(container->getLayoutAttributes().attributeSets).update<attr::BoxLayout::padding>(Padding { 8.F });
+	container->set<attr::BoxLayout::widthGrow>(1.F);
+	container->set<attr::BoxLayout::heightGrow>(1.F);
+	container->set<attr::BoxLayout::padding>(Padding { 8.F });
 
 	auto card = uikit::makeCard({ .level = 1, .children = clone(container) });
 

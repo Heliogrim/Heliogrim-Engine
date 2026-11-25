@@ -88,10 +88,7 @@ void VScrollBox::scrollTo(cref<math::vec2> point_, cref<math::vec2> size_) {
 
 void VScrollBox::render(const ptr<ReflowCommandBuffer> cmd_) {
 
-	const auto& layout = getLayoutAttributes();
-	const auto& box = std::get<0>(layout.attributeSets);
-
-	const auto padding = box.valueOf<attr::BoxLayout::padding>();
+	const auto padding = this->get<attr::BoxLayout::padding>();
 
 	const auto off = _layoutState.layoutOffset + math::fvec2 { padding.x, padding.y };
 	const auto size = _layoutState.layoutSize - math::fvec2 { padding.x + padding.z, padding.y + padding.w };
@@ -120,10 +117,8 @@ void VScrollBox::render(const ptr<ReflowCommandBuffer> cmd_) {
 
 PrefetchSizing VScrollBox::prefetchSizing(ReflowAxis axis_, ref<const ReflowState> state_) const {
 
-	const auto& box = std::get<0>(getLayoutAttributes().attributeSets);
-
-	const auto min = algorithm::unitAbsMin(box.valueOf<attr::BoxLayout::minWidth>(), box.valueOf<attr::BoxLayout::minHeight>());
-	const auto max = algorithm::unitAbsMax(box.valueOf<attr::BoxLayout::maxWidth>(), box.valueOf<attr::BoxLayout::maxHeight>());
+	const auto min = algorithm::unitAbsMin(this->get<attr::BoxLayout::minWidth>(), this->get<attr::BoxLayout::minHeight>());
+	const auto max = algorithm::unitAbsMax(this->get<attr::BoxLayout::maxWidth>(), this->get<attr::BoxLayout::maxHeight>());
 
 	auto layout = VerticalLayout::prefetchSizing(axis_, state_);
 	layout.minSizing.y = std::clamp(0.F, min.y, max.y);
@@ -136,16 +131,12 @@ void VScrollBox::computeSizing(ReflowAxis axis_, ref<const ReflowPassState> pass
 
 void VScrollBox::applyLayout(ref<ReflowState> state_) {
 
-	const auto& layout = getLayoutAttributes();
-	const auto& box = std::get<0>(layout.attributeSets);
-	const auto& flex = std::get<1>(layout.attributeSets);
-
 	/**/
 
 	const auto gaps = _children.empty() ? 0uLL : _children.size() - 1uLL;
-	auto mayOccupiedSpace = box.valueOf<attr::BoxLayout::padding>().x +
-		box.valueOf<attr::BoxLayout::padding>().y +
-		flex.valueOf<attr::FlexLayout::rowGap>() * gaps;
+	auto mayOccupiedSpace = this->get<attr::BoxLayout::padding>().x +
+		this->get<attr::BoxLayout::padding>().y +
+		this->get<attr::FlexLayout::rowGap>() * gaps;
 
 	for (const auto& child : *children()) {
 		mayOccupiedSpace += child->getLayoutState().computeSize.y;
@@ -164,10 +155,10 @@ void VScrollBox::applyLayout(ref<ReflowState> state_) {
 			.mainAxis = ReflowAxis::eYAxis,
 			.anchor = getLayoutState().layoutOffset,
 			.span = getLayoutState().layoutSize,
-			.gapping = { flex.valueOf<attr::FlexLayout::colGap>(), flex.valueOf<attr::FlexLayout::rowGap>() },
-			.padding = box.valueOf<attr::BoxLayout::padding>(),
-			.align = flex.valueOf<attr::FlexLayout::align>(),
-			.justify = flex.valueOf<attr::FlexLayout::justify>()
+			.gapping = { this->get<attr::FlexLayout::colGap>(), this->get<attr::FlexLayout::rowGap>() },
+			.padding = this->get<attr::BoxLayout::padding>(),
+			.align = this->get<attr::FlexLayout::align>(),
+			.justify = this->get<attr::FlexLayout::justify>()
 		},
 		children()
 	);

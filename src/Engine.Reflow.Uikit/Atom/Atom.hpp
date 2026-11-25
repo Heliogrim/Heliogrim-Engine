@@ -80,7 +80,7 @@ namespace hg::engine::reflow::uikit {
 
 		template <ref<const StringView> Name_>
 		static bool assign(auto& set_, auto&& next_) noexcept {
-			if constexpr (requires { set_.attributeSets; }) {
+			if constexpr (requires { std::remove_cvref_t<decltype(set_)>::isCompositeAttributes; }) {
 				return set_.template set<Name_>(::hg::forward<decltype(next_)>(next_));
 
 			} else {
@@ -95,7 +95,7 @@ namespace hg::engine::reflow::uikit {
 		template <ref<const StringView> Name_>
 		[[nodiscard]] decltype(auto) get() const noexcept {
 			const auto& set_ = slotSet<Name_>(*this);
-			if constexpr (requires { set_.attributeSets; }) {
+			if constexpr (requires { std::remove_cvref_t<decltype(set_)>::isCompositeAttributes; }) {
 				return set_.template get<Name_>();
 
 			} else {
@@ -116,8 +116,8 @@ namespace hg::engine::reflow::uikit {
 	public:
 		void bindAttributeOwner(nmpt<Widget> owner_) noexcept {
 			const auto bind = [owner_]<typename Set_>(Set_& set_) {
-				if constexpr (requires { set_.attributeSets; }) {
-					std::apply([owner_](auto&... sets_) { (sets_.bindOwner(owner_), ...); }, set_.attributeSets);
+				if constexpr (requires { std::remove_cvref_t<decltype(set_)>::isCompositeAttributes; }) {
+					set_.forEachSet([owner_](auto& inner_) { inner_.bindOwner(owner_); });
 				} else {
 					set_.bindOwner(owner_);
 				}

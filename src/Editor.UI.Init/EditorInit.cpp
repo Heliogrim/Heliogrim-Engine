@@ -64,10 +64,9 @@ static void initDefaultUi(ref<editor::EditorUI> editorUi_, nmpt<Window> window_)
 
 	auto layout = make_sptr<uikit::VerticalLayout>();
 
-	auto& attributes = layout->getLayoutAttributes().attributeSets;
-	std::get<0>(attributes).update<attr::BoxLayout::widthGrow>(1.F);
-	std::get<0>(attributes).update<attr::BoxLayout::heightGrow>(1.F);
-	std::get<1>(attributes).update<attr::FlexLayout::rowGap>(8.F);
+	layout->set<attr::BoxLayout::widthGrow>(1.F);
+	layout->set<attr::BoxLayout::heightGrow>(1.F);
+	layout->set<attr::FlexLayout::rowGap>(8.F);
 
 	/**/
 

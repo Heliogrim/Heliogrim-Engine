@@ -44,15 +44,14 @@ void InputAsset::setup() {
 	/**/
 
 	auto upper { make_sptr<uikit::HorizontalLayout>() }; {
-		auto& attr = upper->getLayoutAttributes().attributeSets;
 		//attr.maxWidth.setValue({ ReflowUnitType::eAbsolute, 72.F + 4.F + 16.F });
-		std::get<0>(attr).update<attr::BoxLayout::minWidth>({ ReflowUnitType::eAbsolute, 72.F + 4.F + 16.F });
-		std::get<0>(attr).update<attr::BoxLayout::minHeight>({ ReflowUnitType::eAbsolute, 72.F });
-		std::get<0>(attr).update<attr::BoxLayout::minHeight>({ ReflowUnitType::eAbsolute, 72.F });
-		std::get<0>(attr).update<attr::BoxLayout::maxHeight>({ ReflowUnitType::eAbsolute, 72.F });
-		std::get<1>(attr).update<attr::FlexLayout::rowGap>(4.F);
-		std::get<1>(attr).update<attr::FlexLayout::justify>(ReflowSpacing::eSpaceAround);
-		std::get<1>(attr).update<attr::FlexLayout::align>(ReflowAlignment::eCenter);
+		upper->set<attr::BoxLayout::minWidth>({ ReflowUnitType::eAbsolute, 72.F + 4.F + 16.F });
+		upper->set<attr::BoxLayout::minHeight>({ ReflowUnitType::eAbsolute, 72.F });
+		upper->set<attr::BoxLayout::minHeight>({ ReflowUnitType::eAbsolute, 72.F });
+		upper->set<attr::BoxLayout::maxHeight>({ ReflowUnitType::eAbsolute, 72.F });
+		upper->set<attr::FlexLayout::rowGap>(4.F);
+		upper->set<attr::FlexLayout::justify>(ReflowSpacing::eSpaceAround);
+		upper->set<attr::FlexLayout::align>(ReflowAlignment::eCenter);
 	}
 	_content->addChild(upper);
 
@@ -102,11 +101,10 @@ void InputAsset::setup() {
 	/**/
 
 	auto lower { make_sptr<uikit::HorizontalLayout>() }; {
-		auto& attr = lower->getLayoutAttributes().attributeSets;
-		std::get<0>(attr).update<attr::BoxLayout::minWidth>({ ReflowUnitType::eAbsolute, 72.F + 4.F + 16.F });
-		std::get<0>(attr).update<attr::BoxLayout::maxWidth>({ ReflowUnitType::eRelative, 1.F });
-		std::get<0>(attr).update<attr::BoxLayout::minHeight>({ ReflowUnitType::eAbsolute, 20.F });
-		std::get<0>(attr).update<attr::BoxLayout::maxHeight>({ ReflowUnitType::eAbsolute, 20.F });
+		lower->set<attr::BoxLayout::minWidth>({ ReflowUnitType::eAbsolute, 72.F + 4.F + 16.F });
+		lower->set<attr::BoxLayout::maxWidth>({ ReflowUnitType::eRelative, 1.F });
+		lower->set<attr::BoxLayout::minHeight>({ ReflowUnitType::eAbsolute, 20.F });
+		lower->set<attr::BoxLayout::maxHeight>({ ReflowUnitType::eAbsolute, 20.F });
 	}
 
 	_content->addChild(lower);
