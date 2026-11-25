@@ -256,6 +256,88 @@ namespace ReflowModule {
 		EXPECT_NE(window->getFocusTarget(), nullptr);
 	}
 
+	TEST_F(ModalFixture, NestedFromPopupInsideModal) {
+		const auto m = modalLeaf("m", &log);
+		const auto p = modalLeaf("p", &log);
+		const auto outer = router.openModal(window, m, []() {});
+		settle();
+
+		const auto& layout = m->getLayoutState();
+		const auto popup = router.openPopup(
+			window,
+			p,
+			PopupAnchor { .offset = layout.layoutOffset, .size = layout.layoutSize, .side = PopupSide::eBelow, .align = PopupAlign::eStart },
+			m,
+			None,
+			[]() {}
+		);
+		settle();
+
+		ModalHandle nested {};
+		p->downHook = [&]() { nested = router.openModal(window, modalLeaf("inner", &log), []() {}); };
+		mouse(150, 150, true);
+		mouse(150, 150, false);
+
+		ASSERT_NE(nested.id, 0uLL);
+		ASSERT_TRUE(router.activeModal().has_value());
+		EXPECT_EQ(router.activeModal()->id, nested.id);
+
+		router.closeModal(nested);
+		router.closePopup(popup);
+		router.closeModal(outer);
+	}
+
+	TEST_F(ModalFixture, PopupBelowModalDoesNotStealFocus) {
+		const auto& layout = c->getLayoutState();
+		const auto popup = router.openPopup(
+			window,
+			modalLeaf("p", &log),
+			PopupAnchor { .offset = layout.layoutOffset, .size = layout.layoutSize, .side = PopupSide::eBelow, .align = PopupAlign::eStart },
+			c,
+			None,
+			[]() {}
+		);
+		tick(window);
+
+		const auto m = modalLeaf("m", &log);
+		const auto handle = router.openModal(window, m, []() {});
+		settle();
+		ASSERT_EQ(window->getFocusTarget(), m);
+
+		router.closePopup(popup);
+		EXPECT_EQ(window->getFocusTarget(), m);
+
+		router.closeModal(handle);
+	}
+
+	TEST_F(ModalFixture, ClickIntoModalNotConsumedByPopupBelow) {
+		bool popupClosed = false;
+		const auto& layout = c->getLayoutState();
+		const auto popup = router.openPopup(
+			window,
+			modalLeaf("p", &log),
+			PopupAnchor { .offset = layout.layoutOffset, .size = layout.layoutSize, .side = PopupSide::eBelow, .align = PopupAlign::eStart },
+			c,
+			None,
+			[&popupClosed]() { popupClosed = true; }
+		);
+		tick(window);
+
+		const auto handle = router.openModal(window, modalLeaf("m", &log), []() {});
+		settle();
+
+		mouse(150, 110, true);
+		mouse(150, 110, false);
+		EXPECT_EQ(filtered("down:"), Vector<string> { "down:m" });
+		EXPECT_FALSE(popupClosed);
+
+		key(escape);
+		EXPECT_FALSE(popupClosed);
+
+		router.closeModal(handle);
+		router.closePopup(popup);
+	}
+
 	TEST_F(ModalFixture, NotificationBandStaysLive) {
 		const auto handle = router.openModal(window, modalLeaf("m", &log), []() {});
 

@@ -263,6 +263,8 @@ void WindowManager::destroyWindow(mref<sptr<Window>> window_) {
 	auto bound = std::move(*iter);
 	_windows.erase(iter);
 	unregisterWindow(wnd.get());
+	// The native window dies with the surface below, a later raise must not reach it.
+	wnd->setNativeWindow(nullptr);
 
 	/**/
 
@@ -377,6 +379,7 @@ sptr<Window> WindowManager::requestWindow(
 	/**/
 
 	auto wnd { make_sptr<Window>() };
+	wnd->setNativeWindow(surface->getNativeWindow().get());
 	auto bound {
 		make_uptr<BoundWindow>(
 			std::move(renderTarget),

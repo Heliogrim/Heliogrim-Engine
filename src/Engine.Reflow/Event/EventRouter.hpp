@@ -28,31 +28,16 @@ namespace hg::engine::reflow {
 	public:
 		using this_type = EventRouter;
 
-	public:
-		EventRouter() noexcept = default;
-
-		virtual ~EventRouter() noexcept = default;
-
 	private:
 		struct WindowRoute {
 			wptr<Window> window;
 			Vector<wptr<Widget>> hover;
 		};
 
-		Vector<WindowRoute> _routes;
 		struct Press {
 			wptr<Widget> widget;
 			u32 button;
 		};
-
-		Vector<Press> _pressed;
-
-		wptr<Widget> _captured;
-		u32 _captureButton = 0uL;
-		Opt<u32> _dismissButton;
-
-		// Bumped on every focus change, lets a focus change detect a nested one from its blur or focus handlers.
-		u64 _focusVersion = 0uLL;
 
 		struct Popup {
 			u64 id;
@@ -67,10 +52,6 @@ namespace hg::engine::reflow {
 			std::function<void()> onClosed;
 		};
 
-		// Open order, the last popup of a window is its top one.
-		Vector<Popup> _popups;
-		u64 _popupIds = 0uLL;
-
 		struct Modal {
 			u64 id;
 			wptr<Window> window;
@@ -80,6 +61,27 @@ namespace hg::engine::reflow {
 			FocusSnapshot snapshot;
 			std::function<void()> onClosed;
 		};
+
+	public:
+		EventRouter() noexcept = default;
+
+		virtual ~EventRouter() noexcept = default;
+
+	private:
+		Vector<WindowRoute> _routes;
+
+		Vector<Press> _pressed;
+
+		wptr<Widget> _captured;
+		u32 _captureButton = 0uL;
+		Opt<u32> _dismissButton;
+
+		// Bumped on every focus change, lets a focus change detect a nested one from its blur or focus handlers.
+		u64 _focusVersion = 0uLL;
+
+		// Open order, the last popup of a window is its top one.
+		Vector<Popup> _popups;
+		u64 _popupIds = 0uLL;
 
 		// Open order, the last modal is the active one.
 		Vector<Modal> _modals;
@@ -185,7 +187,6 @@ namespace hg::engine::reflow {
 	private:
 		[[nodiscard]] static bool contains(ref<const Widget> widget_, ref<const math::vec2> point_) noexcept;
 
-	private:
 		[[nodiscard]] ptr<WindowRoute> findRoute(const ptr<const Window> window_) noexcept;
 
 		[[nodiscard]] sptr<Window> captureWindow(ref<const sptr<Window>> window_) const;
@@ -210,6 +211,9 @@ namespace hg::engine::reflow {
 		void closePopups(ref<const Vector<u64>> ids_);
 
 		[[nodiscard]] bool closeOnOutsideDown(ref<const sptr<Window>> window_, const math::vec2 point_);
+
+		// Whether popup_ lies below the active modal on its window, hidden from input.
+		[[nodiscard]] bool belowModal(ref<const Popup> popup_) const;
 
 		// Window of the active modal, null without one.
 		[[nodiscard]] sptr<Window> modalWindow() const;

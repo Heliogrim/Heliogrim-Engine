@@ -43,6 +43,9 @@ namespace hg::engine::reflow {
 	public:
 		[[nodiscard]] nmpt<platform::NativeWindow> nativeWindow() const noexcept;
 
+		// Set by the WindowManager that owns the native window.
+		void setNativeWindow(const ptr<platform::NativeWindow> nativeWindow_) noexcept;
+
 	private:
 		WindowType _type;
 
