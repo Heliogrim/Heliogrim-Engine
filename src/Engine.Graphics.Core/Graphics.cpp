@@ -82,18 +82,9 @@ void Graphics::hookEngineState() {
 				return;
 			}
 
-			// Posted to Teardown, never RenderTick: the scene manager is lock-free and must not mutate during a frame.
-			// Fire-and-forget, as this hook may run on a frame task. The universe keeps the scene alive; `this` outlives
-			// the post as `Graphics::stop` drains Teardown before the pipeline stops, so a stop-time post still runs.
-			scheduler::execOnStage(
-				[this, universe = event_.getUniverse(), scene]() mutable {
-					_sceneManager->unregisterScene(scene);
-					cleanupTargetsByScene(scene);
-					// Usually the last owner: destroy the universe off the Teardown frame task, whose keys it doesn't declare.
-					scheduler::exec([u = std::move(universe)] {});
-				},
-				core::schedule::CorePipeline::Teardown
-			);
+			// Runs inside the Teardown drain; the target tables are guarded by _targetsMtx, scene registration only mutates here.
+			_sceneManager->unregisterScene(scene);
+			cleanupTargetsByScene(scene);
 		}
 	);
 	_hooks.push_back({ core::UniverseRemoveEvent::typeId.data, owre });
@@ -209,13 +200,7 @@ void Graphics::setup() {
 
 void Graphics::start() {}
 
-void Graphics::stop() {
-	// Only called from the stop task (a fiber, `Signal::wait` parks it), never from a frame task.
-	// Runs in stop phase 2, before the pipeline stops: drains posts to Teardown made by removeUniverse in phase 1.
-	scheduler::Signal drained {};
-	scheduler::execOnStage([&drained] { drained.set(); }, core::schedule::CorePipeline::Teardown);
-	drained.wait();
-}
+void Graphics::stop() {}
 
 void Graphics::destroy() {
 	SCOPED_STOPWATCH

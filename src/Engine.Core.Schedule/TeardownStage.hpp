@@ -1,6 +1,7 @@
 #pragma once
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Core;
 import Engine.Scheduler;
 #endif
 
@@ -14,6 +15,12 @@ namespace hg::engine::core::schedule {
 		TeardownStage(mref<identifier_type> identifier_, pipeline_handle_type pipeline_);
 
 		~TeardownStage() noexcept override;
+
+	public:
+		/**
+		 * Wait until Teardown drained every removed universe of the engine; safe to call from a fiber.
+		 */
+		static void waitRemovedUniversesDrained(ref<const Engine> engine_);
 
 	public:
 		void staticDispatch(cref<scheduler::StaticStageDispatcher> dispatcher_) override;

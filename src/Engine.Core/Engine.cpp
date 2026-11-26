@@ -7,7 +7,17 @@ using namespace hg::engine::core;
 using namespace hg::engine;
 using namespace hg;
 
-constinit std::atomic<ptr<Engine>> Engine::_cached { nullptr };
+namespace {
+	// Releases a drained batch from the pending count even when a remove listener throws, or the teardown wait never ends.
+	struct PendingRelease {
+		ref<std::atomic_size_t> count;
+		size_t taken;
+
+		~PendingRelease() {
+			count.fetch_sub(taken);
+		}
+	};
+}
 
 Engine::Engine() {
 	Engine::_cached.store(this, std::memory_order_release);
@@ -16,9 +26,14 @@ Engine::Engine() {
 
 Engine::~Engine() {
 	tidy();
+	// Teardown must have drained removals while the modules were alive.
+	::hg::assertrt(not hasPendingRemovedUniverses());
+
 	Logger::destroy();
 	Engine::_cached.store(nullptr, std::memory_order_release);
 }
+
+constinit std::atomic<ptr<Engine>> Engine::_cached { nullptr };
 
 nmpt<Engine> Engine::getEngine() noexcept {
 	return _cached.load(std::memory_order_acquire);
@@ -60,4 +75,34 @@ bool Engine::setEngineState(core::EngineState state_) {
 
 core::EngineState Engine::getEngineState() const noexcept {
 	return static_cast<core::EngineState>(_engineState.load());
+}
+
+void Engine::enqueueRemovedUniverse(mref<SharedPtr<core::Universe>> universe_) {
+	_removedPending.fetch_add(1uz);
+	concurrent::SpinLock lck { _removedMtx };
+	_removedUniverses.push_back(std::move(universe_));
+}
+
+void Engine::drainRemovedUniverses() {
+	Vector<SharedPtr<core::Universe>> taken;
+
+	/**/
+
+	{
+		concurrent::SpinLock lck { _removedMtx };
+		taken.swap(_removedUniverses);
+	}
+
+	const PendingRelease release { _removedPending, taken.size() };
+
+	// Serial on purpose: universe destruction mutates the shared actor registry unlocked.
+	for (auto& universe : taken) {
+		getEmitter().emit<UniverseRemoveEvent>(clone(universe));
+		universe->teardown();
+		universe.reset();
+	}
+}
+
+bool Engine::hasPendingRemovedUniverses() const noexcept {
+	return _removedPending.load() != 0uz;
 }

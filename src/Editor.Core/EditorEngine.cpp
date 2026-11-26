@@ -293,6 +293,9 @@ bool EditorEngine::stop() {
 	/**/
 	subStoppedSignal.wait();
 
+	// Teardown still runs (the pipeline stops last) and destroys the universes removed above.
+	core::schedule::TeardownStage::waitRemovedUniversesDrained(*this);
+
 	/**/
 	scheduler::Signal coreStoppedSignal;
 	scheduler::exec(
@@ -322,6 +325,9 @@ bool EditorEngine::stop() {
 
 	/**/
 	schedulerStoppedSignal.wait();
+
+	// No frame runs any more: drain removals that missed Teardown (late async Destroy) before shutdown destroys modules.
+	drainRemovedUniverses();
 	return setEngineState(EngineState::eStopped);
 }
 
@@ -445,7 +451,7 @@ void EditorEngine::addUniverse(mref<SharedPtr<engine::core::Universe>> universe_
 }
 
 void EditorEngine::removeUniverse(mref<SharedPtr<engine::core::Universe>> universe_) {
-	_emitter.emit<UniverseRemoveEvent>(std::move(universe_));
+	enqueueRemovedUniverse(std::move(universe_));
 }
 
 nmpt<engine::core::Session> EditorEngine::getEditorSession() const noexcept {

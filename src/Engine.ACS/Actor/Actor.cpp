@@ -29,7 +29,7 @@ using namespace hg;
 namespace {
 	[[nodiscard]] ref<engine::acs::Registry> actorRegistry() noexcept;
 
-	[[nodiscard]] Vector<ActorRef<>> spawnInto(
+	[[nodiscard]] Opt<Vector<ActorRef<>>> spawnInto(
 		const ptr<const ActorClass> class_,
 		const size_t count_,
 		const FnRef<void(ref<Actor>, size_t)> init_,
@@ -303,9 +303,12 @@ Future<Opt<ActorRef<>>> hg::CloneActorInto(cref<Actor> actor_, cref<Universe> un
 }
 
 Future<Opt<ActorRef<>>> hg::SpawnActor(ptr<const ActorClass> class_, cref<Universe> universe_) noexcept {
-	return Future<Opt<ActorRef<>>>::ready(
-		Some(spawnInto(class_, 1uLL, [](ref<Actor>, size_t) {}, universe_, None).front())
-	);
+	auto refs = spawnInto(class_, 1uLL, [](ref<Actor>, size_t) {}, universe_, None);
+	if (refs == None || refs.value().empty()) {
+		return Future<Opt<ActorRef<>>>::ready(None);
+	}
+
+	return Future<Opt<ActorRef<>>>::ready(Some(refs.value().front()));
 }
 
 Future<Opt<ActorRef<>>> hg::SpawnActor(
@@ -317,7 +320,12 @@ Future<Opt<ActorRef<>>> hg::SpawnActor(
 	if (created == nullptr) {
 		return Future<Opt<ActorRef<>>>::ready(None);
 	}
+
 	const auto level = universe_.unwrap()->getRootLevel();
+	if (level == nullptr) {
+		return Future<Opt<ActorRef<>>>::ready(None);
+	}
+
 	return Future<Opt<ActorRef<>>>::ready(ActorRef<>::of(level->addActor(::hg::move(created))));
 }
 
@@ -328,7 +336,12 @@ Future<Vector<ActorRef<>>> hg::SpawnActors(
 	cref<Universe> universe_,
 	Opt<ref<engine::core::Level>> level_
 ) {
-	return Future<Vector<ActorRef<>>>::ready(spawnInto(class_, count_, init_, universe_, level_));
+	auto refs = spawnInto(class_, count_, init_, universe_, level_);
+	if (refs == None) {
+		return Future<Vector<ActorRef<>>>::ready(Vector<ActorRef<>> {});
+	}
+
+	return Future<Vector<ActorRef<>>>::ready(::hg::move(refs).value());
 }
 
 bool hg::Destroy(mref<VolatileActor<>> actor_) noexcept {
@@ -343,7 +356,7 @@ namespace {
 		return *engine::ActorModule::get()->getRegistry();
 	}
 
-	[[nodiscard]] Vector<ActorRef<>> spawnInto(
+	[[nodiscard]] Opt<Vector<ActorRef<>>> spawnInto(
 		const ptr<const ActorClass> class_,
 		const size_t count_,
 		const FnRef<void(ref<Actor>, size_t)> init_,
@@ -351,6 +364,9 @@ namespace {
 		Opt<ref<engine::core::Level>> level_
 	) {
 		const auto root = universe_.unwrap()->getRootLevel();
+		if (root == nullptr and not level_.has_value()) {
+			return None;
+		}
 		auto* const level = level_.has_value() ? std::addressof(level_.value()) : root.get();
 
 		auto actors = actorRegistry().createActors(class_, count_, level->space());
@@ -366,7 +382,7 @@ namespace {
 			::hg::assertrt([&mounted] { return mounted.has_value(); });
 			refs.emplace_back(mounted.value());
 		}
-		return refs;
+		return Some(::hg::move(refs));
 	}
 
 	/**

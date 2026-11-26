@@ -29,6 +29,12 @@ namespace hg::engine::core {
 
 		~Universe();
 
+	public:
+		/**
+		 * Releases levels and scene registrations; idempotent.
+		 */
+		void teardown();
+
 	private:
 		uptr<scene::SceneBase> _scene;
 
@@ -50,6 +56,9 @@ namespace hg::engine::core {
 
 		[[nodiscard]] std::span<const Arci<core::Level>> getLevels() const noexcept;
 
+		/**
+		 * @returns The root level, or an empty Arci after teardown().
+		 */
 		[[nodiscard]] Arci<core::Level> getRootLevel() const noexcept;
 
 		void removeLevel(cref<Arci<core::Level>> level_);
