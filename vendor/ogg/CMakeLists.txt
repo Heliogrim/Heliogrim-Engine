@@ -23,6 +23,8 @@ function(library_ogg_init)
             GIT_TAG v1.3.5
             GIT_SHALLOW ON
             SOURCE_DIR "${vendor_src_path}"
+            PATCH_COMMAND git restore CMakeLists.txt
+            COMMAND git apply ../ogg.patch --ignore-space-change
             EXCLUDE_FROM_ALL
             OVERRIDE_FIND_PACKAGE
     )

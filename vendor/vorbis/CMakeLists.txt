@@ -24,7 +24,7 @@ function(library_vorbis_init)
             GIT_REPOSITORY https://github.com/xiph/vorbis.git
             GIT_TAG v1.3.7
             SOURCE_DIR "${vendor_src_path}"
-            PATCH_COMMAND git restore cmake/FindOgg.cmake
+            PATCH_COMMAND git restore CMakeLists.txt cmake/FindOgg.cmake
             COMMAND git apply ../vorbis.patch --ignore-space-change
             EXCLUDE_FROM_ALL
     )
