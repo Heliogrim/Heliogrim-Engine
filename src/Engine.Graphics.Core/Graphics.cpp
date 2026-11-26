@@ -110,7 +110,7 @@ void Graphics::unhookEngineState() {
 				break;
 			}
 			case core::UniverseRemoveEvent::typeId.data: {
-				_engine->getEmitter().remove<core::UniverseChangeEvent>(entry.second);
+				_engine->getEmitter().remove<core::UniverseRemoveEvent>(entry.second);
 				break;
 			}
 			case core::UniverseChangeEvent::typeId.data: {
