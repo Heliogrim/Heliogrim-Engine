@@ -2,6 +2,13 @@
 
 /**/
 
+#include <algorithm>
+#include <chrono>
+#include <cstdio>
+#include <cstdlib>
+#include <filesystem>
+#include <limits>
+
 import Engine.Common;
 import Engine.Async;
 import Engine.Resource.Archive;
@@ -679,6 +686,98 @@ namespace Commit {
 			sum += size;
 		}
 		EXPECT_EQ(sum, 5uLL * gib);
+	}
+
+	// W03.9 (#234) cost check: replace commits of one 64 KiB archive in a 100 MiB package on an LfsSyncBlob,
+	// at least `minRounds_` rounds and until `duration_` passed. The commit flushes inside finishReplace.
+	// Set HG_COMMIT_BENCH_DIR to a directory on the drive under test.
+	void benchReplaceCommits(const int minRounds_, const std::chrono::seconds duration_) {
+
+		const auto* const dir = std::getenv("HG_COMMIT_BENCH_DIR");
+		ASSERT_NE(dir, nullptr);
+
+		constexpr auto archiveSize = 64uz * 1024uz;
+		constexpr auto archiveCount = 1600uz;
+
+		std::filesystem::create_directories(dir);
+		const auto file = std::filesystem::path { dir } / "engine-commit-bench.hgpkg";
+		std::filesystem::remove(file);
+
+		auto archives = Vector<uptr<BufferArchive>> {};
+		auto target = ArchiveGuid {};
+		{
+			auto blob = LfsSyncBlob { fs::Path { file } };
+			auto package = make_read_write_package(blob);
+			// Note: As BlobPack does for an empty blob.
+			ASSERT_TRUE(writeHeader(package.getHeader(), blob));
+			ASSERT_TRUE(writeLinker(package.getHeader(), package.getLinker(), blob));
+			ASSERT_TRUE(writeFooter(package.getHeader(), package.getFooter(), blob));
+
+			for (auto index = 0uz; index < archiveCount; ++index) {
+				auto archive = make_uptr<BufferArchive>();
+				archive->resize(archiveSize);
+				archive->setType(ArchiveType::eRaw);
+				const auto guid = ArchiveGuid::random();
+				if (index == archiveCount / 2) {
+					target = guid;
+				}
+				auto& linked = package.getLinker().add({ .type = ArchiveType::eUndefined, .guid = guid });
+				linked.changes.emplace_back(package::ArchiveDeltaAdd { .where = streamoff {}, .sizedData = *archive });
+				archives.emplace_back(::hg::move(archive));
+			}
+			ASSERT_TRUE(commit_package_changes(package).has_value());
+		}
+
+		// Note: A committed file blob is spent, so every round opens the package anew (not timed).
+		auto rounds = 0;
+		auto totalMs = 0.0;
+		auto minMs = std::numeric_limits<double>::max();
+		auto maxMs = 0.0;
+		const auto until = std::chrono::steady_clock::now() + duration_;
+		for (; rounds < minRounds_ || std::chrono::steady_clock::now() < until; ++rounds) {
+			auto blob = LfsSyncBlob { fs::Path { file } };
+			auto sink = engine::diag::CollectingSink {};
+			auto opened = open_read_write_package(blob, "bench.hgpkg", sink);
+			ASSERT_TRUE(opened.has_value());
+			auto& package = opened.value();
+
+			auto replacement = make_uptr<BufferArchive>();
+			replacement->resize(archiveSize);
+			replacement->setType(ArchiveType::eRaw);
+			auto linked = package.getLinker()[target];
+			ASSERT_NE(linked, None);
+			linked->changes.emplace_back(
+				package::ArchiveDeltaReplace { .where = streamoff {}, .byteCount = static_cast<streamsize>(archiveSize), .withSizedData = *replacement }
+			);
+
+			auto stats = CommitStats {};
+			const auto start = std::chrono::steady_clock::now();
+			const auto result = commit_package_changes(package, &stats);
+			const auto elapsed = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - start).count();
+			ASSERT_TRUE(result.has_value()) << "kind " << static_cast<int>(result.error().kind) << " os " << result.error().osError;
+			std::printf(
+				"replace commit (flushed), one 64 KiB archive: %.2f ms, old %llu B, new %llu B, written %llu B\n",
+				elapsed,
+				static_cast<unsigned long long>(stats.oldSize),
+				static_cast<unsigned long long>(stats.newSize),
+				static_cast<unsigned long long>(stats.written)
+			);
+			totalMs += elapsed;
+			minMs = (std::min)(minMs, elapsed);
+			maxMs = (std::max)(maxMs, elapsed);
+		}
+		std::printf("%d rounds: mean %.2f ms, min %.2f ms, max %.2f ms\n", rounds, totalMs / rounds, minMs, maxMs);
+		std::filesystem::remove(file);
+	}
+
+	TEST(PackageBench, DISABLED_CommitReplaceOneArchive) {
+		benchReplaceCommits(5, std::chrono::seconds { 0 });
+	}
+
+	// For profiler sessions (uProf, ETW): loops replace commits for HG_COMMIT_BENCH_SECONDS (default 30).
+	TEST(PackageBench, DISABLED_CommitReplaceLoop) {
+		const auto* const seconds = std::getenv("HG_COMMIT_BENCH_SECONDS");
+		benchReplaceCommits(1, std::chrono::seconds { seconds != nullptr ? std::atoi(seconds) : 30 });
 	}
 
 	TEST(Commit, ReplacedFlushFailureSaysDurabilityUnconfirmed) {
