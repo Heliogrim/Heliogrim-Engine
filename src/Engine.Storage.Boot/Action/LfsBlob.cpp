@@ -119,7 +119,12 @@ namespace {
 		}
 
 		// Note: One queue per blob; the blob owns it and releases it with the file.
-		auto blob = Rc<IoFileBlob>::create(*io, ::hg::move(opened).value(), io->createQueue(engine::io::IoPriority::eNormal));
+		auto blob = Rc<IoFileBlob>::create(
+			*io,
+			::hg::move(opened).value(),
+			io->createQueue(engine::io::IoPriority::eNormal),
+			static_cast<std::filesystem::path>(storage_->_lfsPath)
+		);
 		if (blob->size() < 0LL) {
 			return nullptr;
 		}

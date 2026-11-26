@@ -22,19 +22,26 @@ namespace hg::engine::resource {
 		constexpr static size_t max_read_request = 256uz * 1024uz;
 
 	public:
-		IoFileBlob(ref<io::IoSystem> system_, Arci<io::IoFile> file_, Arci<io::IoQueue> queue_);
+		IoFileBlob(ref<io::IoSystem> system_, Arci<io::IoFile> file_, Arci<io::IoQueue> queue_, const std::filesystem::path path_);
 
 		IoFileBlob(ref<const IoFileBlob>) = delete;
 
 		IoFileBlob(mref<IoFileBlob>) = delete;
 
-		~IoFileBlob() override = default;
+		~IoFileBlob() override;
 
 	private:
 		ref<io::IoSystem> _system;
 		Arci<io::IoFile> _file;
 		Arci<io::IoQueue> _queue;
 		streamsize _size;
+		std::filesystem::path _path;
+		mutable std::atomic<u32> _lastError = 0u;
+
+	private:
+		// Replacement state: _temp marks an unfinished temp blob, _finished one that took the target's name.
+		bool _temp = false;
+		bool _finished = false;
 
 	private:
 		// Bytes done from the start of buffer_, up to the first piece that did not complete in full.
@@ -46,6 +53,12 @@ namespace hg::engine::resource {
 		std::span<_::byte> write(streamoff offset_, mref<std::span<_::byte>> src_) override;
 
 		bool trim(size_t tailSize_) override;
+
+		[[nodiscard]] Result<Rc<Blob>, io::CommitError> beginReplace(const streamsize size_) override;
+
+		[[nodiscard]] Result<void, io::CommitError> finishReplace(mref<Rc<Blob>> replacement_) override;
+
+		[[nodiscard]] u32 lastError() const noexcept override;
 
 	public:
 		[[nodiscard]] streamsize size() const noexcept override;
