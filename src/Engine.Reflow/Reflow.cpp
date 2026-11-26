@@ -8,6 +8,7 @@
 
 import Engine.Common;
 import Engine.Core;
+import Engine.Core.Schedule;
 import Engine.Reflow.Schedule;
 import Engine.Scheduler;
 
@@ -56,7 +57,17 @@ void Reflow::start() {
 }
 
 void Reflow::stop() {
-	reflow::WindowManager::destroy();
+	// Only called from the stop task (a fiber, `Signal::wait` parks it), never from a frame task.
+	// Posts in stop phases 1 and 2 always run, as the pipeline stops in phase 3.
+	scheduler::Signal destroyed {};
+	scheduler::execOnStage(
+		[&destroyed] {
+			reflow::WindowManager::destroy();
+			destroyed.set();
+		},
+		core::schedule::CorePipeline::Teardown
+	);
+	destroyed.wait();
 }
 
 void Reflow::destroy() {
