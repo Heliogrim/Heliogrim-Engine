@@ -17,6 +17,7 @@ import Engine.Async;
 import Engine.Common;
 import Engine.Config;
 import Engine.IO.Dispatcher;
+import Engine.Logging;
 import Engine.Resource.Archive;
 import Engine.Resource.Blob;
 import Engine.Resource.Package;
@@ -262,6 +263,8 @@ namespace StorageModule {
 
 	TEST_F(AsyncStorageTest, QueryAsyncReadsArchive) {
 		makePackage();
+		// Note: The test engine sets up its own logger.
+		::hg::Logger::destroy();
 		SchedulerModule::structuredRuntimeTest(
 			[&](nmpt<Scheduler>) {
 				auto bytes = std::string {};
@@ -282,6 +285,8 @@ namespace StorageModule {
 
 	TEST_F(AsyncStorageTest, MutateAsyncCommits) {
 		makePackage();
+		// Note: The test engine sets up its own logger.
+		::hg::Logger::destroy();
 		SchedulerModule::structuredRuntimeTest(
 			[&](nmpt<Scheduler>) {
 				const auto guidC = ArchiveGuid::random();
@@ -318,6 +323,8 @@ namespace StorageModule {
 
 	TEST_F(AsyncStorageTest, ConcurrentQueryAsync) {
 		makePackage();
+		// Note: The test engine sets up its own logger.
+		::hg::Logger::destroy();
 		SchedulerModule::structuredRuntimeTest(
 			[&](nmpt<Scheduler>) {
 				std::atomic<u32> okCount { 0 };

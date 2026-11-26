@@ -34,7 +34,7 @@ namespace IoModule {
 
 			auto opened = await(sys.open(path, io::IoOpenMode::eReadWrite));
 			ASSERT_TRUE(opened.has_value());
-			resource::IoFileBlob blob { sys, std::move(opened.value()), sys.createQueue(io::IoPriority::eNormal) };
+			resource::IoFileBlob blob { sys, std::move(opened.value()), sys.createQueue(io::IoPriority::eNormal), path };
 
 			std::array<_::byte, 100> src {};
 			for (size_t i = 0; i < src.size(); ++i) {
@@ -88,7 +88,7 @@ namespace IoModule {
 			auto opened = await(sys.open(path, io::IoOpenMode::eUnbuffered));
 			ASSERT_TRUE(opened.has_value());
 			EXPECT_EQ(opened.value()->alignment(), 4096u);
-			resource::IoFileBlob blob { sys, std::move(opened.value()), sys.createQueue(io::IoPriority::eNormal) };
+			resource::IoFileBlob blob { sys, std::move(opened.value()), sys.createQueue(io::IoPriority::eNormal), path };
 			EXPECT_EQ(blob.size(), static_cast<streamsize>(fileSize));
 
 			// Room for an aligned window inside, so one case takes the direct path.
