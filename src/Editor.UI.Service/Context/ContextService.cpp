@@ -12,43 +12,22 @@ ContextService::ContextService() = default;
 
 ContextService::~ContextService() = default;
 
-void ContextService::push(mref<SharedPtr<ContextMenuProvider>> contextMenuProvider_) {
-	::hg::assertd(not std::ranges::contains(_pushed, contextMenuProvider_));
-	_pushed.emplace_back(::hg::move(contextMenuProvider_));
-}
+SharedPtr<Menu> ContextService::buildContextMenu(
+	[[maybe_unused]] ref<const engine::reflow::Window> window_,
+	ref<engine::reflow::Widget> target_
+) const {
 
-void ContextService::pop(mref<SharedPtr<ContextMenuProvider>> contextMenuProvider_) {
-	_pushed.erase(std::ranges::find(_pushed, ::hg::move(contextMenuProvider_)));
-}
-
-SharedPtr<Menu> ContextService::buildContextMenu(ref<const engine::reflow::Window> window_) const {
-
-	auto active = Vector<nmpt<const engine::reflow::Widget>> {};
-	const auto& focus = window_.getFocusPath();
-	active.reserve(focus.size());
-
-	for (const auto& focused : focus) {
-		const auto widget = focused.lock();
-		if (focused.expired() || widget == nullptr || widget == engine::reflow::NullWidget::instance()) {
-			continue;
-		}
-
-		active.emplace_back(widget.get());
-	}
-
-	/**/
+	const auto scopeAbove = [](ref<engine::reflow::Widget> widget_) -> ptr<ContextMenuProvider> {
+		const auto scope = widget_.context<ContextMenuScope>();
+		return scope.has_value() ? scope->provider.get() : nullptr;
+	};
 
 	auto builder = MenuBuilder {};
 	auto event = engine::reflow::ContextMenuEvent { builder };
 
-	for (const auto& pushed : _pushed) {
-		const auto pt = nmpt<const ContextMenuProvider> { pushed.get() };
-		if (not std::ranges::any_of(active, [&](const auto& active_) { return active_ == pt; })) {
-			continue;
-		}
-
-		auto result = pt->invokeOnContextMenu(event);
-		if (result == engine::reflow::EventResponse::eConsumed) {
+	auto* provider = dynamic_cast<ptr<ContextMenuProvider>>(std::addressof(target_));
+	for (provider = provider != nullptr ? provider : scopeAbove(target_); provider != nullptr; provider = scopeAbove(*provider)) {
+		if (provider->invokeOnContextMenu(event) == engine::reflow::EventResponse::eConsumed) {
 			break;
 		}
 	}

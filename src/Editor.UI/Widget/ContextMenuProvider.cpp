@@ -6,6 +6,7 @@ import Editor.UI.Main;
 import Editor.UI.Service;
 import Engine.Common;
 import Engine.Core;
+import Engine.Reflect;
 import Engine.Reflow;
 
 using namespace hg::editor::ui;
@@ -14,11 +15,13 @@ using namespace hg;
 
 ContextMenuProvider::ContextMenuProvider() :
 	CompoundWidget(ReflowClassList {}, nullptr),
-	_menu() {}
+	_menu(),
+	_scope { .provider = this } {}
 
 ContextMenuProvider::ContextMenuProvider(mref<SharedPtr<Widget>> content_) :
 	CompoundWidget(::hg::move(content_), ReflowClassList {}, nullptr),
-	_menu() {}
+	_menu(),
+	_scope { .provider = this } {}
 
 ContextMenuProvider::~ContextMenuProvider() = default;
 
@@ -45,26 +48,13 @@ bool ContextMenuProvider::dropOnContextMenu(listen_handle_type handle_) {
 	return _emitter.off<ContextMenuEvent>(EditorUiEventNames::ContextMenuEvent, ::hg::move(handle_));
 }
 
-EventReply ContextMenuProvider::invokeOnFocus(cref<FocusEvent> event_) {
-
-	const auto subModule = engine::Engine::getEngine()->getModules().getSubModule(EditorUIDepKey);
-	::hg::assertd(subModule != nullptr);
-	static_cast<const ptr<const EditorUI>>(subModule.get())->getEditorServices().contextService->push(
-		std::static_pointer_cast<ContextMenuProvider>(shared_from_this())
-	);
-
-	return CompoundWidget::invokeOnFocus(event_);
+ptr<void> ContextMenuProvider::providedContext(const type_id contextType_) noexcept {
+	if (contextType_ == refl::ctid<ContextMenuScope>()) {
+		return std::addressof(_scope);
+	}
+	return CompoundWidget::providedContext(contextType_);
 }
-EventReply ContextMenuProvider::invokeOnBlur(cref<FocusEvent> event_) {
 
-	const auto subModule = engine::Engine::getEngine()->getModules().getSubModule(EditorUIDepKey);
-	::hg::assertd(subModule != nullptr);
-	static_cast<const ptr<const EditorUI>>(subModule.get())->getEditorServices().contextService->pop(
-		std::static_pointer_cast<ContextMenuProvider>(shared_from_this())
-	);
-
-	return CompoundWidget::invokeOnBlur(event_);
-}
 EventReply ContextMenuProvider::invokeOnMouseButtonUp(ref<const MouseEvent> event_) {
 
 	if (event_._button != 3u) {
@@ -83,7 +73,7 @@ EventReply ContextMenuProvider::invokeOnMouseButtonUp(ref<const MouseEvent> even
 
 	_menu = WindowManager::get()->openPopup(
 		window,
-		service.buildContextMenu(*window),
+		service.buildContextMenu(*window, *this),
 		PopupAnchor { .offset = event_._pointer, .size = math::vec2 {}, .side = PopupSide::eBelow, .align = PopupAlign::eStart },
 		{},
 		None,
