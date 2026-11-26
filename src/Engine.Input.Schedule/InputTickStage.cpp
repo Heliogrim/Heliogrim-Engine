@@ -38,7 +38,7 @@ namespace {
 }
 
 graph::StageDecl InputTickStage::decl() const noexcept {
-	static const string_view after[] = { engine::core::schedule::CorePipeline::TickBegin };
+	static const string_view after[] = { engine::core::schedule::CorePipeline::TickBegin, engine::core::schedule::CorePipeline::Teardown };
 	return {
 		.name = engine::input::schedule::InputPipeline::InputTick,
 		.reads = {},

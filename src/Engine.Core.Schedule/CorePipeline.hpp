@@ -17,6 +17,7 @@ namespace hg::engine::core::schedule {
 
 		static const inline StageIdentifier TickBegin = "::Core::TickBegin";
 		static const inline StageIdentifier TickEnd = "::Core::TickEnd";
+		static const inline StageIdentifier Teardown = "::Core::Teardown";
 
 	public:
 		CorePipeline();
@@ -24,7 +25,7 @@ namespace hg::engine::core::schedule {
 		~CorePipeline() override;
 
 	private:
-		Array<Opt<ref<const ::hg::engine::scheduler::Stage>>, 2> _stages;
+		Array<Opt<ref<const ::hg::engine::scheduler::Stage>>, 3> _stages;
 
 	public:
 		void mount(ref<scheduler::StageRegister> register_) override;

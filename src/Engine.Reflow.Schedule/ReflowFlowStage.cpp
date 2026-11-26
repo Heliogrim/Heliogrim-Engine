@@ -4,6 +4,7 @@
 #include <Engine.Reflow.Schedule/ReflowPipeline.hpp>
 
 import Engine.Core;
+import Engine.Core.Schedule;
 import Engine.Graphics.Schedule;
 import Engine.Logging;
 import Engine.Reflow;
@@ -94,7 +95,7 @@ namespace {
 }
 
 graph::StageDecl ReflowFlowStage::decl() const noexcept {
-	static const string_view after[] = { engine::scene::schedule::ScenePipeline::SceneUpdatePostPhysics };
+	static const string_view after[] = { engine::scene::schedule::ScenePipeline::SceneUpdatePostPhysics, engine::core::schedule::CorePipeline::Teardown };
 	static const string_view before[] = { engine::graphics::schedule::RenderScenePipeline::RenderTick };
 	return {
 		.name = engine::reflow::schedule::ReflowPipeline::Tick,
