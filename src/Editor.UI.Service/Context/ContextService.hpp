@@ -7,6 +7,7 @@ import Engine.Common;
 #endif
 
 namespace hg::engine::reflow {
+	class Widget;
 	class Window;
 }
 
@@ -26,14 +27,13 @@ namespace hg::editor::ui::service {
 
 		~ContextService() override;
 
-	private:
-		Vector<SharedPtr<ContextMenuProvider>> _pushed;
-
 	public:
-		void push(mref<SharedPtr<ContextMenuProvider>> contextMenuProvider_);
-
-		void pop(mref<SharedPtr<ContextMenuProvider>> contextMenuProvider_);
-
-		[[nodiscard]] SharedPtr<Menu> buildContextMenu(ref<const engine::reflow::Window> window_) const;
+		/**
+		 * Collects the `ContextMenuScope` providers from the target (itself included) upward, nearest first, until one consumes.
+		 */
+		[[nodiscard]] SharedPtr<Menu> buildContextMenu(
+			ref<const engine::reflow::Window> window_,
+			ref<engine::reflow::Widget> target_
+		) const;
 	};
 }

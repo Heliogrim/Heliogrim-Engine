@@ -7,6 +7,16 @@ import Engine.Reflow;
 #endif
 
 namespace hg::editor::ui {
+	class ContextMenuProvider;
+
+	/**
+	 * Nearest context-menu provider above a widget; right click collects these from the clicked widget upward.
+	 */
+	struct ContextMenuScope {
+		constexpr static bool isStatic = true;
+		nmpt<ContextMenuProvider> provider;
+	};
+
 	class ContextMenuProvider :
 		public engine::reflow::CompoundWidget {
 	public:
@@ -26,6 +36,7 @@ namespace hg::editor::ui {
 
 	private:
 		Opt<engine::reflow::PopupHandle> _menu;
+		ContextMenuScope _scope;
 
 	public:
 		void setContent(mref<SharedPtr<Widget>> content_);
@@ -36,11 +47,9 @@ namespace hg::editor::ui {
 
 		bool dropOnContextMenu(listen_handle_type handle_);
 
+		[[nodiscard]] ptr<void> providedContext(const type_id contextType_) noexcept override;
+
 	public:
-		engine::reflow::EventReply invokeOnFocus(cref<engine::reflow::FocusEvent> event_) override;
-
-		engine::reflow::EventReply invokeOnBlur(cref<engine::reflow::FocusEvent> event_) override;
-
 		engine::reflow::EventReply invokeOnMouseButtonUp(ref<const engine::reflow::MouseEvent> event_) override;
 	};
 }
