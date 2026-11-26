@@ -6,6 +6,7 @@
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.IO.Dispatcher;
 import Engine.Pedantic.Resource;
 import Engine.Reflect.Utils;
 #endif
@@ -26,7 +27,7 @@ namespace hg::engine::storage {
 		using accessor_type = IoResourceAccessor<Type_>;
 		using error_type = Variant<
 			std::invalid_argument, std::bad_alloc, std::runtime_error,
-			AccessError, IllegalArgumentError, IllegalTypeError
+			AccessError, IllegalArgumentError, IllegalTypeError, io::CommitError
 		>;
 
 		template <typename Fn_>

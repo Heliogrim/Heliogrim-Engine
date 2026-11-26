@@ -5,6 +5,7 @@
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.IO.Dispatcher;
 import Engine.Reflect.Utils;
 import Engine.Storage.Registry;
 #endif
@@ -74,7 +75,7 @@ namespace hg::engine::storage {
 
 		[[nodiscard]] virtual Result<void, acq_error_type> acquire(_Inout_ ref<Context> ctx_) = 0;
 
-		virtual void release(_Inout_ ref<Context> ctx_) = 0;
+		virtual Result<void, io::CommitError> release(_Inout_ ref<Context> ctx_) = 0;
 
 		virtual void cleanup() = 0;
 	};

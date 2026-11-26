@@ -49,6 +49,8 @@ Result<void, IoMutationGuard<void>::error_type> ExtendedStorageSystem::execMutat
 
 	// Note: Mutation stages are not cached; invalidate even on failure or throw, as a partial commit may have changed the data.
 	const auto invalidate = InvalidateOnExit { .stacks = context.stacks, .primary = query_.primary() };
+	// Cached query chains keep the target open, which blocks the by-name replace fallback.
+	context.stacks.invalidateFrom(query_.primary());
 
 	/**/
 
@@ -60,8 +62,9 @@ Result<void, IoMutationGuard<void>::error_type> ExtendedStorageSystem::execMutat
 
 	query_.exec(::hg::move(mutationFn_));
 
-	/* auto relResult = */
-	query_.release(context);
+	if (auto released = query_.release(context); not released.has_value()) {
+		return Unexpected { IoMutationGuard<void>::error_type { ::hg::move(released).error() } };
+	}
 	// Warning: query_.cleanup() should be auto called after guard release.
 
 	return {};
@@ -83,6 +86,8 @@ Result<Mutation::exec_valreturn_type, IoMutationGuard<void>::error_type> Extende
 
 	// Note: Mutation stages are not cached; invalidate even on failure or throw, as a partial commit may have changed the data.
 	const auto invalidate = InvalidateOnExit { .stacks = context.stacks, .primary = mutation_.primary() };
+	// Cached query chains keep the target open, which blocks the by-name replace fallback.
+	context.stacks.invalidateFrom(mutation_.primary());
 
 	/**/
 
@@ -93,7 +98,9 @@ Result<Mutation::exec_valreturn_type, IoMutationGuard<void>::error_type> Extende
 
 	auto execResult = mutation_.exec(::hg::move(mutationFn_));
 
-	mutation_.release(context);
+	if (auto released = mutation_.release(context); not released.has_value()) {
+		return Unexpected { IoMutationGuard<void>::error_type { ::hg::move(released).error() } };
+	}
 	// Warning: query_.cleanup() should be auto called after guard release.
 
 	return Expected { ::hg::move(execResult) };

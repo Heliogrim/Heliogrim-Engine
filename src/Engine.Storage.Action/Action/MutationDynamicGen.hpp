@@ -115,7 +115,7 @@ namespace hg::engine::storage::system {
 			return {};
 		}
 
-		void release(ref<Context> ctx_) override {
+		Result<void, io::CommitError> release(ref<Context> ctx_) override {
 			#if _DEBUG
 			bool stride = false;
 			for (auto& stage : _stages) {
@@ -133,6 +133,12 @@ namespace hg::engine::storage::system {
 				}
 			}
 			#endif
+
+			// shortcut: dynamic stages type-erase `relFn` to void, so commit errors are dropped; every package mutation is static today.
+			for (const auto& stage : _stages) {
+				::hg::assertrt(not stage.storage->getMetaClass()->exact<PackageStorage>());
+			}
+			return Result<void, io::CommitError>::expected();
 		}
 
 		void cleanup() override {
