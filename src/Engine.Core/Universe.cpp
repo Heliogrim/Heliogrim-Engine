@@ -19,6 +19,10 @@ engine::core::Universe::Universe(mref<uptr<scene::SceneBase>> scene_, mref<Dense
 }
 
 engine::core::Universe::~Universe() {
+	teardown();
+}
+
+void engine::core::Universe::teardown() {
 	for (auto& level : _levels) {
 		uncommitLevel(*level.get());
 	}
@@ -53,6 +57,11 @@ void engine::core::Universe::uncommitLevel(ref<core::Level> level_) {
 }
 
 void engine::core::Universe::addLevel(mref<Arci<core::Level>> level_) {
+	if (not _rootLevel.has_value()) {
+		::hg::assertd(false);// A removed universe accepts no levels.
+		return;
+	}
+
 	_levels.emplace(clone(level_));
 	commitLevel(*level_);
 }
@@ -62,7 +71,7 @@ std::span<const Arci<engine::core::Level>> engine::core::Universe::getLevels() c
 }
 
 Arci<engine::core::Level> engine::core::Universe::getRootLevel() const noexcept {
-	return *_rootLevel;
+	return _rootLevel.has_value() ? *_rootLevel : Arci<core::Level> {};
 }
 
 void engine::core::Universe::removeLevel(cref<Arci<core::Level>> level_) {

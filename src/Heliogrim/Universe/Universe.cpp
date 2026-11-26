@@ -56,7 +56,10 @@ bool Universe::removeLevel(cref<Level> level_) {
 Opt<ActorRef<>> Universe::addActor(mref<VolatileActor<>> actor_) {
 
 	auto* const universe = _internal.get();
-	const auto& suitableLevel = universe->getRootLevel();
+	const auto suitableLevel = universe->getRootLevel();
+	if (suitableLevel == nullptr) {
+		return None;
+	}
 
 	// Archetype actors may move into the level's region; the level returns the new address.
 	return ActorRef<>::of(suitableLevel->addActor(::hg::move(actor_)));
@@ -64,14 +67,23 @@ Opt<ActorRef<>> Universe::addActor(mref<VolatileActor<>> actor_) {
 
 Opt<VolatileActor<>> Universe::removeActor(ptr<Actor> actor_) {
 	const auto* const universe = _internal.get();
-	return universe->getRootLevel()->removeActor(actor_);
+	const auto level = universe->getRootLevel();
+	if (level == nullptr) {
+		return None;
+	}
+
+	return level->removeActor(actor_);
 }
 
 void Universe::dropActor(mref<ptr<Actor>> actor_) {
 
 	const auto* const universe = _internal.get();
-	auto removed = universe->getRootLevel()->removeActor(actor_);
+	const auto level = universe->getRootLevel();
+	if (level == nullptr) {
+		return;
+	}
 
+	auto removed = level->removeActor(actor_);
 	if (removed == None) {
 		return;
 	}

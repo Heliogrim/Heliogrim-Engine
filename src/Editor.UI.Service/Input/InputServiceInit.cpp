@@ -26,6 +26,9 @@ void editor::ui::service::init_input_service(ref<InputService> service_) {
 				auto universe = engine->getPrimaryGameSession()->getUniverseContext().getCurrentUniverse();
 
 				auto level = universe->getRootLevel();
+				if (level == nullptr) {
+					return {};
+				}
 
 				auto asset = assets->getRegistry()->findAssetByGuid(level->assetGuid());
 				if (asset == None || not IsType<engine::assets::LevelAsset>(**asset)) {

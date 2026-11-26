@@ -227,9 +227,30 @@ namespace hg::engine {
 	public:
 		[[nodiscard]] virtual std::span<const nmpt<core::UniverseContext>> getUniverseContexts() const noexcept = 0;
 
+	protected:
+		/**
+		 * Queue a universe for removal; the teardown stage emits the remove event and releases it.
+		 */
+		void enqueueRemovedUniverse(mref<SharedPtr<core::Universe>> universe_);
+
 	public:
 		virtual void addUniverse(mref<SharedPtr<core::Universe>> universe_) = 0;
 
 		virtual void removeUniverse(mref<SharedPtr<core::Universe>> universe_) = 0;
+
+		/**
+		 * Remove queued universes one at a time (emit remove event, then release); called by the teardown stage.
+		 */
+		void drainRemovedUniverses();
+
+		/**
+		 * Whether queued universes are still waiting for (or inside) a drain.
+		 */
+		[[nodiscard]] bool hasPendingRemovedUniverses() const noexcept;
+
+	private:
+		concurrent::SpinMutex _removedMtx;
+		Vector<SharedPtr<core::Universe>> _removedUniverses;
+		std::atomic_size_t _removedPending;
 	};
 }

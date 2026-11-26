@@ -231,6 +231,7 @@ bool GameEngine::stop() {
 			auto prevUniverse = _gameSession->getUniverseContext().getCurrentUniverse();
 			_gameSession->getUniverseContext().setCurrentUniverse(nullptr);
 			removeUniverse(clone(prevUniverse));
+			prevUniverse.reset();
 
 			/**/
 
@@ -240,6 +241,9 @@ bool GameEngine::stop() {
 
 	/**/
 	subStoppedSignal.wait();
+
+	// Teardown still runs (the pipeline stops last) and destroys the universes removed above.
+	core::schedule::TeardownStage::waitRemovedUniversesDrained(*this);
 
 	/**/
 	scheduler::Signal coreStoppedSignal;
@@ -270,6 +274,9 @@ bool GameEngine::stop() {
 
 	/**/
 	schedulerStoppedSignal.wait();
+
+	// No frame runs any more: drain removals that missed Teardown (late async Destroy) before shutdown destroys modules.
+	drainRemovedUniverses();
 	return setEngineState(EngineState::eStopped);
 }
 
@@ -388,7 +395,7 @@ void GameEngine::addUniverse(mref<SharedPtr<core::Universe>> universe_) {
 }
 
 void GameEngine::removeUniverse(mref<SharedPtr<core::Universe>> universe_) {
-	_emitter.emit<UniverseRemoveEvent>(std::move(universe_));
+	enqueueRemovedUniverse(std::move(universe_));
 }
 
 nmpt<core::Session> GameEngine::getGameSession() const noexcept {
