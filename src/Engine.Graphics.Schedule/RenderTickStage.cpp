@@ -10,6 +10,7 @@
 
 import Engine.Common;
 import Engine.Core;
+import Engine.Core.Schedule;
 import Engine.Graphics;
 import Engine.Graphics.Core;
 import Engine.Graphics.Render;
@@ -131,7 +132,7 @@ namespace {
 }
 
 graph::StageDecl RenderTickStage::decl() const noexcept {
-	static const string_view after[] = { engine::scene::schedule::ScenePipeline::SceneUpdatePostPhysics };
+	static const string_view after[] = { engine::scene::schedule::ScenePipeline::SceneUpdatePostPhysics, engine::core::schedule::CorePipeline::Teardown };
 	static const string_view before[] = { engine::scene::schedule::ScenePipeline::ScenePostProcess };
 	return {
 		.name = engine::graphics::schedule::RenderScenePipeline::RenderTick,

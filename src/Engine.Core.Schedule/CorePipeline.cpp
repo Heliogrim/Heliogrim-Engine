@@ -1,5 +1,6 @@
 #include "CorePipeline.hpp"
 
+#include "TeardownStage.hpp"
 #include "TickTimingStage.hpp"
 
 import Engine.ACS.Schedule;
@@ -26,6 +27,9 @@ void CorePipeline::mount(ref<StageRegister> register_) {
 	_stages = {
 		register_.registerStage(
 			make_uptr<TickTimingStage>(PipelineStage::identifier_type::from(TickBegin), this)
+		),
+		register_.registerStage(
+			make_uptr<TeardownStage>(PipelineStage::identifier_type::from(Teardown), this)
 		),
 		register_.registerStage(
 			make_uptr<EmptyPipelineStage>(

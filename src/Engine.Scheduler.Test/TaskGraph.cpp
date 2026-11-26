@@ -262,6 +262,7 @@ namespace SchedulerModule {
 
 			Vector<uptr<PipelineStage>> stages {};
 			stages.push_back(make_uptr<core::schedule::TickTimingStage>(eid(CorePipeline::TickBegin), nullptr));
+			stages.push_back(make_uptr<core::schedule::TeardownStage>(eid(CorePipeline::Teardown), nullptr));
 			stages.push_back(make_uptr<input::schedule::InputTickStage>(id(InputPipeline::InputTick), nullptr));
 			stages.push_back(make_uptr<acs::schedule::ActorTickStagePrePhysics>(id(ActorPipeline::ActorTickPrePhysics), nullptr));
 			stages.push_back(
@@ -327,12 +328,13 @@ namespace SchedulerModule {
 		const auto decls = declsOf(stages);
 		const auto result = build(decls);
 		ASSERT_TRUE(result.has_value());
-		ASSERT_EQ(result->order.size(), 17u);
+		ASSERT_EQ(result->order.size(), 18u);
 
 		const auto names = namedOrder(result.value());
-		ASSERT_EQ(names.size(), 17u);
+		ASSERT_EQ(names.size(), 18u);
 		const string_view want[] = {
 			hg::engine::core::schedule::CorePipeline::TickBegin,
+			hg::engine::core::schedule::CorePipeline::Teardown,
 			hg::engine::input::schedule::InputPipeline::InputTick,
 			hg::engine::acs::schedule::ActorPipeline::ActorTickPrePhysics,
 			hg::engine::scene::schedule::ScenePipeline::SceneBroadcastPrePhysics,
@@ -350,7 +352,7 @@ namespace SchedulerModule {
 			hg::engine::acs::schedule::ActorPipeline::ActorHousekeeping,
 			hg::engine::core::schedule::CorePipeline::TickEnd
 		};
-		for (size_t idx = 0; idx < 17; ++idx) {
+		for (size_t idx = 0; idx < 18; ++idx) {
 			EXPECT_EQ(names[idx], want[idx]) << "at " << idx;
 		}
 	}
@@ -360,12 +362,36 @@ namespace SchedulerModule {
 		const auto decls = declsOf(stages);
 		const auto result = build(decls);
 		ASSERT_TRUE(result.has_value());
-		ASSERT_EQ(result->order.size(), 16u);
+		ASSERT_EQ(result->order.size(), 17u);
 
 		const auto names = namedOrder(result.value());
 		const auto post = std::ranges::find(names, string { hg::engine::scene::schedule::ScenePipeline::SceneUpdatePostPhysics });
 		ASSERT_NE(post, names.end());
 		ASSERT_NE(post + 1, names.end());
 		EXPECT_EQ(*(post + 1), string { hg::engine::graphics::schedule::RenderScenePipeline::RenderTick });
+	}
+
+	TEST(TaskGraphTest, TeardownPrecedesWindowAndRenderReaders) {
+		for (const auto withReflow : { true, false }) {
+			const auto stages = makeFrame(withReflow);
+			const auto decls = declsOf(stages);
+			const auto result = build(decls);
+			ASSERT_TRUE(result.has_value());
+
+			const auto names = namedOrder(result.value());
+			const auto teardown = std::ranges::find(names, string { hg::engine::core::schedule::CorePipeline::Teardown });
+			const auto render = std::ranges::find(names, string { hg::engine::graphics::schedule::RenderScenePipeline::RenderTick });
+			const auto input = std::ranges::find(names, string { hg::engine::input::schedule::InputPipeline::InputTick });
+			ASSERT_NE(teardown, names.end());
+			ASSERT_NE(render, names.end());
+			ASSERT_NE(input, names.end());
+			EXPECT_LT(teardown, render);
+			EXPECT_LT(teardown, input);
+			if (withReflow) {
+				const auto tick = std::ranges::find(names, string { hg::engine::reflow::schedule::ReflowPipeline::Tick });
+				ASSERT_NE(tick, names.end());
+				EXPECT_LT(teardown, tick);
+			}
+		}
 	}
 }
