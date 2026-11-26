@@ -116,10 +116,31 @@ void Viewport::tick() {
 }
 
 void Viewport::tidy() {
-	if (_swapChain) {
-		_swapChain->destroy();
-		_swapChain.reset();
+	// Runs inside CorePipeline::Teardown at stop (holds the RenderSceneManager write); at runtime after RenderTick via Housekeeping::commit.
+	if (_renderTarget != nullptr) {
+		const auto gfx = engine::Graphics::get();
+		const auto sceneManager = gfx.has_value() ? gfx->getSceneManager() : nullptr;
+		if (sceneManager != nullptr) {
+			CompactArray<smr<engine::graphics::RenderTarget>> targets {};
+			sceneManager->selectPrimaryTargets(
+				targets,
+				[this](ref<const smr<engine::graphics::RenderTarget>> target_) {
+					return target_.get() == _renderTarget.get();
+				}
+			);
+			for (auto&& target : targets) {
+				target->setActive(false);
+				sceneManager->dropPrimaryTarget(target);
+			}
+		}
+		_renderTarget = nullptr;
 	}
+
+	// The image and semaphores belong to the swapchain; drop them before it may die.
+	_currentSwapChainImage = nullptr;
+	_currentImageSignal = nullptr;
+	_currentImageWaits.clear();
+	_swapChain.reset();
 
 	/**/
 
