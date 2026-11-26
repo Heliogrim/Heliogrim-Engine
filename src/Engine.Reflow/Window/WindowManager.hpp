@@ -66,6 +66,9 @@ namespace hg::engine::reflow {
 	private:
 		Vector<wptr<Window>> _focusOrder;
 
+		// removes the input listeners registered by setup(), which capture `this`
+		Vector<std::function<void()>> _unsubscribeEvents;
+
 	private:
 		void onWindowFocusChanged(ref<const sptr<Window>> window_) override;
 
