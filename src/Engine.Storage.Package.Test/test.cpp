@@ -731,6 +731,13 @@ namespace PackageModule {
 			}
 
 			bool trim(size_t tailSize_) override { return inner.trim(tailSize_); }
+			[[nodiscard]] Result<Rc<Blob>, engine::io::CommitError> beginReplace(const streamsize size_) override {
+				return inner.beginReplace(size_);
+			}
+
+			[[nodiscard]] Result<void, engine::io::CommitError> finishReplace(mref<Rc<Blob>> replacement_) override {
+				return inner.finishReplace(::hg::move(replacement_));
+			}
 
 			[[nodiscard]] streamsize size() const noexcept override { return inner.size(); }
 		};
@@ -740,7 +747,7 @@ namespace PackageModule {
 
 		constexpr auto dataSize = 512uLL;
 		auto raw = Array<_::byte, sizeof(PackageHeader) + sizeof(PackageFooter) + sizeof(package::Indexed) + dataSize> {};
-		ShortReadBlob blob { raw, 256uLL };
+		ShortReadBlob blob { raw, raw.size() };
 
 		auto package = make_read_write_package(blob);
 		ASSERT_TRUE(commit_package_changes(package).has_value());
@@ -753,7 +760,11 @@ namespace PackageModule {
 		auto& linked = package.getLinker().add({ .type = ArchiveType::eUndefined, .guid = ArchiveGuid::random() });
 		linked.changes.emplace_back(package::ArchiveDeltaAdd { .where = streamoff {}, .sizedData = *archive });
 
-		// The checksum pass reads the content back; a short read must not yield a checksum over stale bytes.
+		ASSERT_TRUE(commit_package_changes(package).has_value());
+
+		// The next commit checksums the old content while streaming; a short read must not yield a checksum over stale bytes.
+		blob.limit = 256uLL;
+		linked.changes.emplace_back(package::ArchiveDeltaDrop { .where = streamoff {}, .byteCount = static_cast<streamsize>(dataSize) });
 		EXPECT_FALSE(commit_package_changes(package).has_value());
 	}
 }
