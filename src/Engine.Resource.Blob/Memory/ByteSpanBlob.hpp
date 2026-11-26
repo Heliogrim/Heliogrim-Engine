@@ -7,6 +7,7 @@
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Asserts;
 import Engine.Common;
+import Engine.IO.Dispatcher;
 import Engine.Reflect;
 #endif
 
@@ -69,6 +70,11 @@ namespace hg::engine::resource {
 			_used -= std::min(_used, tailSize_);
 			return true;
 		}
+
+	public:
+		[[nodiscard]] Result<Rc<Blob>, io::CommitError> beginReplace(const streamsize size_) override;
+
+		[[nodiscard]] Result<void, io::CommitError> finishReplace(mref<Rc<Blob>> replacement_) override;
 
 	public:
 		[[nodiscard]] constexpr streamsize capacity() const noexcept {
