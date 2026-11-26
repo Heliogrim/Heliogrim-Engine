@@ -4,6 +4,7 @@
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Common;
+import Engine.IO.Dispatcher;
 import Engine.Resource.Blob;
 import Engine.Resource.Package;
 import Engine.Storage.Action;
@@ -20,7 +21,7 @@ namespace hg::engine::storage {
 		_In_ cref<IoResourceAccessor<resource::Blob>> accessor_
 	);
 
-	void releaseStaticPackMutation(
+	[[nodiscard]] Result<void, io::CommitError> releaseStaticPackMutation(
 		_Inout_ ref<Context> ctx_,
 		_In_ cref<Arci<system::PackageStorage>> storage_,
 		_Inout_ mref<IoResourceAccessor<resource::ReadWritePackage>> accessor_

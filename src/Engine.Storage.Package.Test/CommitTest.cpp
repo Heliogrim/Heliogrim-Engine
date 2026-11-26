@@ -680,4 +680,13 @@ namespace Commit {
 		}
 		EXPECT_EQ(sum, 5uLL * gib);
 	}
+
+	TEST(Commit, ReplacedFlushFailureSaysDurabilityUnconfirmed) {
+		const engine::io::CommitError replaced { .kind = Kind::eFlushFailed, .path = "p.hgpk", .replaced = true };
+		const engine::io::CommitError kept { .kind = Kind::eFlushFailed, .path = "p.hgpk" };
+
+		EXPECT_NE(describe(replaced).find("durability is unconfirmed"), String::npos);
+		EXPECT_EQ(describe(kept).find("durability is unconfirmed"), String::npos);
+		EXPECT_NE(engine::diag::render(toDiagnostic(replaced, "p.hgpk")).find("durability is unconfirmed"), String::npos);
+	}
 }

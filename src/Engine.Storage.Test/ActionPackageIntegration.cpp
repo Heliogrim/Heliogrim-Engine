@@ -8,6 +8,7 @@
 
 import Engine.Common;
 import Engine.Config;
+import Engine.IO.Dispatcher;
 import Engine.Resource.Archive;
 import Engine.Resource.Blob;
 import Engine.Resource.Package;
@@ -405,6 +406,33 @@ namespace StorageModule {
 		auto referrers = Vector<Arci<IStorage>> {};
 		_registry.findReferrerStorages(clone(PackageScheme), memory, referrers);
 		EXPECT_EQ(referrers.size(), 1uLL);
+	}
+
+	TEST_F(MutationIntegrationFixture, MemoryPackageOutgrowingSpanFailsWithDiskFull) {
+		auto memory = makeMemoryStorage(*this);
+		const auto package = _system.requestPackage(RequestPackageStorageOptions { .storage = clone(memory).into<MemoryStorage>() });
+		ASSERT_TRUE(package.has_value());
+
+		// Note: The memory span holds 512 bytes; the archive does not fit.
+		auto data = BufferArchive {};
+		const auto payload = std::string(4096uz, 'x');
+		data.reserve(payload.size());
+		data.serializeBytes(const_cast<char*>(payload.data()), payload.size(), ArchiveStreamMode::eStore);
+		data.setType(ArchiveType::eRaw);
+
+		const auto result = _system.mutate(
+			clone(package.value()),
+			[&](_Inout_ ref<ReadWritePackage> rwp_) -> bool {
+				auto& linked = rwp_.getLinker().add({ .type = ArchiveType::eUndefined, .guid = ArchiveGuid::random() });
+				linked.changes.emplace_back(::hg::engine::resource::package::ArchiveDeltaAdd { .where = streamoff {}, .sizedData = data });
+				return true;
+			}
+		);
+		ASSERT_FALSE(result.has_value());
+		ASSERT_TRUE(result.error().is<::hg::engine::io::CommitError>());
+		const auto& error = result.error().as<::hg::engine::io::CommitError>();
+		EXPECT_EQ(error.kind, ::hg::engine::io::CommitError::Kind::eDiskFull);
+		EXPECT_FALSE(error.path.empty());
 	}
 
 	TEST_F(MutationIntegrationFixture, RequestPackageRejectsCorruptBlob) {

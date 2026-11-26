@@ -28,4 +28,27 @@ namespace hg::engine::storage::package {
 			}
 		}
 	}
+
+	diag::Diagnostic toDiagnostic(ref<const io::CommitError> error_, mref<String> blob_) {
+		const auto unconfirmed = error_.replaced && error_.kind == io::CommitError::Kind::eFlushFailed;
+		return diag::Diagnostic::error(
+			codes::sto("package-commit-failed"),
+			std::format("package commit failed for `{}`", error_.path.empty() ? blob_ : error_.path)
+		).note(
+			unconfirmed
+				? std::format("{}: the new file is in place, but its durability is unconfirmed", io::kindName(error_.kind))
+				: String { io::kindName(error_.kind) }
+		);
+	}
+
+	String describe(ref<const io::CommitError> error_) {
+		if (error_.replaced && error_.kind == io::CommitError::Kind::eFlushFailed) {
+			return std::format(
+				"commit failed ({}) at `{}`: the new file is in place, but its durability is unconfirmed",
+				io::kindName(error_.kind),
+				error_.path
+			);
+		}
+		return std::format("commit failed ({}) at `{}`", io::kindName(error_.kind), error_.path);
+	}
 }

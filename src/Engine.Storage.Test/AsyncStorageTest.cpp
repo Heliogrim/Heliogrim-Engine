@@ -321,6 +321,143 @@ namespace StorageModule {
 		);
 	}
 
+	/** Queues a same-size rewrite of one linked archive and returns the pending commit. */
+	[[nodiscard]] static auto rewriteAsync(ref<StorageSystem> system_, ref<const Arci<PackageStorage>> pack_, ref<const ArchiveGuid> guid_, ref<BufferArchive> buffer_) {
+		return system_.mutateAsync(
+			clone(pack_),
+			[&guid_, &buffer_](_Inout_ ref<ReadWritePackage> rwp_) -> bool {
+				auto linked = rwp_.getLinker()[guid_];
+				linked->changes.emplace_back(
+					package::ArchiveDeltaReplace { .where = streamoff {}, .byteCount = linked->data.size, .withSizedData = buffer_ }
+				);
+				return true;
+			}
+		);
+	}
+
+	[[nodiscard]] static BufferArchive bufferOfText(ref<const std::string> data_) {
+		auto buffer = BufferArchive {};
+		buffer.reserve(data_.size());
+		buffer.serializeBytes(const_cast<ptr<char>>(data_.data()), data_.size(), ArchiveStreamMode::eStore);
+		buffer.setType(ArchiveType::eRaw);
+		return buffer;
+	}
+
+	TEST_F(AsyncStorageTest, ConcurrentQueryDuringMutate) {
+		makePackage();
+		// Note: The test engine sets up its own logger.
+		::hg::Logger::destroy();
+		SchedulerModule::structuredRuntimeTest(
+
+			[&](nmpt<Scheduler>) {
+				const auto oldBytes = pattern(kSizeA, 'a');
+				const auto newBytes = pattern(kSizeA, 'k');
+				auto buffer = bufferOfText(newBytes);
+
+				auto pending = Vector<Future<void, query_archive_error>> {};
+				auto torn = std::atomic<u32> { 0u };
+				const auto spawnRead = [&] {
+					pending.emplace_back(
+						_system.queryAsync(
+							archive(_guidA),
+							[&](_In_ ref<StorageReadonlyArchive> arch_) {
+								auto bytes = std::string(static_cast<size_t>(arch_.totalSize()), ' ');
+								arch_.seek(0);
+								arch_.serializeBytes(bytes.data(), bytes.size(), ArchiveStreamMode::eLoad);
+								if (bytes != oldBytes && bytes != newBytes) {
+									torn.fetch_add(1u);
+								}
+							}
+						)
+					);
+				};
+
+				for (auto i = 0u; i < 25u; ++i) {
+					spawnRead();
+				}
+				auto commit = rewriteAsync(_system, _pack, _guidA, buffer);
+				for (auto i = 0u; i < 25u; ++i) {
+					spawnRead();
+				}
+
+				ASSERT_TRUE(await(::hg::move(commit)).has_value());
+				for (auto& future : pending) {
+					EXPECT_TRUE(await(::hg::move(future)).has_value());
+				}
+				EXPECT_EQ(torn.load(), 0u);
+				EXPECT_EQ(readArchive(_guidA), newBytes);
+			}
+
+		);
+	}
+
+	#if defined(_WIN32)
+	TEST_F(AsyncStorageTest, MutateAsyncRetriesLockOnFiber) {
+		makePackage();
+		// Note: The test engine sets up its own logger.
+		::hg::Logger::destroy();
+		SchedulerModule::structuredRuntimeTest(
+
+			[&](nmpt<Scheduler>) {
+				const auto path = _scratch.path / "pack.imp";
+				const auto newBytes = pattern(kSizeA, 'k');
+				auto buffer = bufferOfText(newBytes);
+
+				const auto lock = ::CreateFileW(
+					path.c_str(),
+					GENERIC_READ,
+					FILE_SHARE_READ | FILE_SHARE_WRITE,
+					nullptr,
+					OPEN_EXISTING,
+					0,
+					nullptr
+				);
+				ASSERT_NE(lock, INVALID_HANDLE_VALUE);
+				auto releaser = std::thread {
+					[lock] {
+						std::this_thread::sleep_for(std::chrono::milliseconds { 150 });
+						::CloseHandle(lock);
+					}
+				};
+
+				const auto start = std::chrono::steady_clock::now();
+				const auto result = await(rewriteAsync(_system, _pack, _guidA, buffer));
+				const auto elapsed = std::chrono::steady_clock::now() - start;
+				releaser.join();
+
+				ASSERT_TRUE(result.has_value());
+				EXPECT_GE(elapsed, std::chrono::milliseconds { 100 });
+				EXPECT_EQ(readArchive(_guidA), newBytes);
+			}
+
+		);
+	}
+	#endif
+
+	TEST_F(AsyncStorageTest, StopDuringCommitLeavesOldOrNew) {
+		makePackage();
+		// Note: The test engine sets up its own logger.
+		::hg::Logger::destroy();
+		SchedulerModule::structuredRuntimeTest(
+
+			[&](nmpt<Scheduler>) {
+				const auto oldBytes = pattern(kSizeB, 'A');
+				const auto newBytes = pattern(kSizeB, 'K');
+				auto buffer = bufferOfText(newBytes);
+
+				auto commit = rewriteAsync(_system, _pack, _guidB, buffer);
+				// Note: Same order as StorageModule::stopIo.
+				_io.stop();
+				_system.detachIo();
+				std::ignore = await(::hg::move(commit));
+
+				const auto seen = readArchive(_guidB);
+				EXPECT_TRUE(seen == oldBytes || seen == newBytes);
+			}
+
+		);
+	}
+
 	TEST_F(AsyncStorageTest, ConcurrentQueryAsync) {
 		makePackage();
 		// Note: The test engine sets up its own logger.

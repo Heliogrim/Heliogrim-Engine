@@ -75,8 +75,8 @@ namespace hg::engine::storage::system {
 		}
 
 	public:
-		void release(_Inout_ ref<Context> ctx_) override {
-			releaseTypeOrdered(ctx_);
+		Result<void, io::CommitError> release(_Inout_ ref<Context> ctx_) override {
+			return releaseTypeOrdered(ctx_);
 		}
 
 	private:

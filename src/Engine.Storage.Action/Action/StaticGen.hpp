@@ -8,6 +8,7 @@
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Asserts;
 import Engine.Common;
+import Engine.IO.Dispatcher;
 import Engine.Reflect;
 #endif
 
@@ -124,32 +125,41 @@ namespace hg::engine::storage::system {
 	template <typename Type_, typename... Stages_>
 	struct RelInvOrdered;
 
+	/* A stage release either cannot fail (`void`) or reports a failed commit. */
+	Result<void, io::CommitError> releaseStage(_Inout_ auto& stage_, _Inout_ ref<Context> ctx_) noexcept {
+		if constexpr (std::is_void_v<decltype(stage_.relFn(ctx_, stage_.storage, ::hg::move(stage_.access)))>) {
+			stage_.relFn(ctx_, stage_.storage, ::hg::move(stage_.access));
+			return {};
+		} else {
+			return stage_.relFn(ctx_, stage_.storage, ::hg::move(stage_.access));
+		}
+	}
+
 	template <typename Type_>
 	struct RelInvOrdered<Type_> {
-		void operator()(
+		Result<void, io::CommitError> operator()(
 			_Inout_ auto& stages_,
 			_Inout_ ref<Context> ctx_
 		) const noexcept {
-
-			auto& stage = std::get<Type_>(stages_);
-			stage.relFn(ctx_, stage.storage, ::hg::move(stage.access));
+			return releaseStage(std::get<Type_>(stages_), ctx_);
 		}
 	};
 
 	template <typename Type_, typename Next_, typename... Stages_>
 	struct RelInvOrdered<Type_, Next_, Stages_...> {
-		void operator()(
+		Result<void, io::CommitError> operator()(
 			_Inout_ auto& stages_,
 			_Inout_ ref<Context> ctx_
 		) const noexcept {
 
-			auto& stage = std::get<Type_>(stages_);
-			stage.relFn(ctx_, stage.storage, ::hg::move(stage.access));
+			auto result = releaseStage(std::get<Type_>(stages_), ctx_);
 
 			/**/
 
+			// Note: Every stage is released even after a failure; the first error wins.
 			constexpr auto nextFn = RelInvOrdered<Next_, Stages_...> {};
-			nextFn(stages_, ctx_);
+			auto next = nextFn(stages_, ctx_);
+			return result.has_value() ? ::hg::move(next) : ::hg::move(result);
 		}
 	};
 

@@ -1,6 +1,10 @@
 #include "BlobPack.hpp"
 
+#include <Engine.Common/__macro.hpp>
+
 import Engine.Common;
+import Engine.IO.Dispatcher;
+import Engine.Logging;
 import Engine.Pedantic.Resource;
 import Engine.Storage.Action;
 import Engine.Storage.Package;
@@ -36,13 +40,8 @@ Result<
 
 	auto value = Rc<ReadWritePackage> {};
 	if (accessor_->size() < 1uLL) {
+		// Note: Built in memory only; release commits it, so a failed creation never leaves a partial package.
 		value = Rc<ReadWritePackage>::create(package::make_read_write_package(accessor_.get()));
-
-		// TODO: Cleanup!? Not sure whether we should do this here.
-		auto& blob = accessor_.get();
-		::hg::assertrt(package::writeHeader(value->getHeader(), blob));
-		::hg::assertrt(package::writeLinker(value->getHeader(), value->getLinker(), blob));
-		::hg::assertrt(package::writeFooter(value->getHeader(), value->getFooter(), blob));
 
 	} else {
 		auto sink = diag::CollectingSink {};
@@ -81,7 +80,7 @@ Result<
 	return Expected(storedResource->acquireReadWrite());
 }
 
-void engine::storage::releaseStaticPackMutation(
+Result<void, engine::io::CommitError> engine::storage::releaseStaticPackMutation(
 	ref<Context> ctx_,
 	cref<Arci<system::PackageStorage>> storage_,
 	mref<IoResourceAccessor<resource::ReadWritePackage>> accessor_
@@ -90,9 +89,47 @@ void engine::storage::releaseStaticPackMutation(
 
 	/**/
 
-	if (accessor_->getLinker().hasChanges()) {
-		auto commitResult = package::commit_package_changes(accessor_.get());
-		::hg::assertrt(commitResult.has_value());
+	auto result = Result<void, io::CommitError> {};
+	if (accessor_->getLinker().hasChanges() || accessor_->getLinker().getStorage().size() < 1) {
+
+		auto stats = package::CommitStats {};
+		const auto start = std::chrono::steady_clock::now();
+		// The commit allocates plans and buffers; this release is noexcept, so out of memory becomes a commit error.
+		try {
+			result = package::commit_package_changes(accessor_.get(), &stats);
+		} catch (const std::bad_alloc&) {
+			// 8 = ERROR_NOT_ENOUGH_MEMORY; CommitError has no message field.
+			result = Unexpected { io::CommitError { .kind = io::CommitError::Kind::eDeviceError, .osError = 8u } };
+		}
+		const auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start).count();
+
+		// The commit outcome is decided; a log that throws (bad_alloc) must not end the process from this noexcept release.
+		try {
+			const auto name = storageName(*storage_);
+			if (result.has_value()) {
+				IM_CORE_INFOF(
+					"Package commit `{}`: {} -> {} bytes, {} written, {} ms.",
+					name,
+					stats.oldSize,
+					stats.newSize,
+					stats.written,
+					ms
+				);
+			} else {
+				if (result.error().path.empty()) {
+					result.error().path = name;
+				}
+				IM_CORE_ERRORF(
+					"Package commit `{}` failed ({}): {} -> {} bytes, {} written, {} ms.",
+					name,
+					io::kindName(result.error().kind),
+					stats.oldSize,
+					stats.newSize,
+					stats.written,
+					ms
+				);
+			}
+		} catch (...) {}
 	}
 
 	/**/
@@ -100,6 +137,7 @@ void engine::storage::releaseStaticPackMutation(
 	ctx_.objectStore.invalidate(clone(storage_).into<IStorage>());
 	::hg::forward<decltype(accessor_)>(accessor_).reset();
 	::hg::discard(::hg::move(deferred));
+	return result;
 }
 
 /**/

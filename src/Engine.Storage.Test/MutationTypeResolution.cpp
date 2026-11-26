@@ -158,6 +158,47 @@ namespace StorageModule {
 		mutation->cleanup();
 	}
 
+	TEST_F(MutationTypeResolutionFixture, PackageRoutesResolveStatic) {
+		initActionResolver(_system, _resolver);
+
+		auto base = Arci<LocalFileStorage>::create(fs::Path {}, true, true, true, true);
+		auto inter = Arci<PackageStorage>::create(clone(base).into<IStorage>(), true, true, true, true);
+		auto dist = Arci<ArchiveStorage>::create(clone(inter).into<IStorage>(), ArchiveGuid {}, true, true, true, true);
+
+		// Note: Dynamic stages drop commit errors, so every route through a package storage must resolve to the static chain.
+		const auto resolvesStatic = [&](ActionTypeInfo signature_, Arci<IStorage> top_) {
+			const auto factory = _resolver.resolveMutation(signature_);
+			ASSERT_TRUE(factory.has_value());
+			auto mutation = (*factory)();
+			EXPECT_NE(String { typeid(*mutation).name() }.find("MutationStaticGen"), String::npos) << typeid(*mutation).name();
+			ASSERT_TRUE(mutation->prepare(::hg::move(top_)).has_value());
+			mutation->cleanup();
+		};
+
+		resolvesStatic(
+			ActionTypeInfo {
+				.targetResourceInfo = refl::FullTypeInfo::from<ReadWritePackage>(),
+				.stageTypeInfos = {
+					StageTypeInfo { refl::PartialTypeInfo { inter->getMetaClass() } },
+					StageTypeInfo { refl::PartialTypeInfo { base->getMetaClass() } }
+				}
+			},
+			clone(inter).into<IStorage>()
+		);
+
+		resolvesStatic(
+			ActionTypeInfo {
+				.targetResourceInfo = refl::FullTypeInfo::from<Archive>(),
+				.stageTypeInfos = {
+					StageTypeInfo { refl::PartialTypeInfo { dist->getMetaClass() } },
+					StageTypeInfo { refl::PartialTypeInfo { inter->getMetaClass() } },
+					StageTypeInfo { refl::PartialTypeInfo { base->getMetaClass() } }
+				}
+			},
+			clone(dist).into<IStorage>()
+		);
+	}
+
 	TEST_F(MutationTypeResolutionFixture, FetchStrictDynamic) {
 		// Note: Do not upsert any static stages or actions
 
