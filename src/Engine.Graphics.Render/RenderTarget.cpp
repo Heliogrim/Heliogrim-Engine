@@ -56,6 +56,21 @@ void RenderTarget::tidy() {
 
 	const auto req { _onTheFlight ? 2uL : 1uL };
 
+	// Frames this target submitted may still be on the GPU; the resources below must outlive them.
+	for (const auto& renderPass : _renderPasses) {
+		auto cpuGpuSync { renderPass->unsafeSync() };
+		if (cpuGpuSync) {
+			[[maybe_unused]] auto result { _device->vkDevice().waitForFences(1, &cpuGpuSync, VK_TRUE, UINT64_MAX) };
+			::hg::assertd(result == vk::Result::eSuccess);
+		}
+	}
+	for (const auto& fence : _otfCpuGpu) {
+		if (fence) {
+			[[maybe_unused]] auto result { _device->vkDevice().waitForFences(1, &fence, VK_TRUE, UINT64_MAX) };
+			::hg::assertd(result == vk::Result::eSuccess);
+		}
+	}
+
 	/**/
 
 	for (u32 i = 0; i < req; ++i) {
