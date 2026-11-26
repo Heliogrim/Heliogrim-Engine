@@ -12,6 +12,11 @@ import Engine.Common;
 #endif
 
 namespace hg::engine::io {
+	struct IoTemp {
+		Arci<IoFile> file;
+		std::filesystem::path path;
+	};
+
 	class IoSystem final {
 	public:
 		friend class IoQueue;
@@ -47,6 +52,16 @@ namespace hg::engine::io {
 		[[nodiscard]] Future<u64, IoError> size(Arci<IoFile> file_);
 
 		[[nodiscard]] Future<void, IoError> resize(Arci<IoFile> file_, const u64 size_);
+
+		// Creates a unique `.hgtmp` sibling of target_, opened read/write for this backend.
+		[[nodiscard]] Future<IoTemp, IoError> openTemp(ref<const std::filesystem::path> target_);
+
+		[[nodiscard]] Future<void, IoError> flush(const Arci<IoFile> file_);
+
+		[[nodiscard]] Future<void, IoError> renameOver(const Arci<IoFile> file_, const std::filesystem::path target_);
+
+		// Call after the temp file is closed; see replaceByName in FileOps.hpp.
+		[[nodiscard]] Future<void, IoError> replaceByName(const std::filesystem::path temp_, const std::filesystem::path target_);
 
 	private:
 		IoThread _thread;
