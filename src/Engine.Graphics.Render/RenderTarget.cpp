@@ -277,13 +277,11 @@ bool RenderTarget::ready() const noexcept {
 }
 
 bool RenderTarget::active() const noexcept {
-	return _active;
+	return _active.load(std::memory_order_relaxed);
 }
 
 bool RenderTarget::setActive(const bool active_) {
-	const auto changed { _active != active_ };
-	_active = active_;
-	return changed;
+	return _active.exchange(active_, std::memory_order_relaxed) != active_;
 }
 
 void RenderTarget::setup() {

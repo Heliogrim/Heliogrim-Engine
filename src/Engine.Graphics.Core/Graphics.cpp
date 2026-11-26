@@ -389,9 +389,7 @@ const non_owning_rptr<graphics::scene::RenderSceneManager> Graphics::getSceneMan
 
 void Graphics::cleanupTargetsByScene(nmpt<engine::scene::SceneBase> renderableScene_) {
 
-	CompactArray<smr<RenderTarget>> targets {};
-	_sceneManager->selectPrimaryTargets(
-		targets,
+	const auto targets = _sceneManager->selectPrimaryTargets(
 		[renderableScene_](cref<smr<RenderTarget>> target_) {
 			// TODO: Check whether we want this with a query to the render targets to check whether
 			// TODO:    the render target is effected by scene changes ( deletion )
