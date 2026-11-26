@@ -1,6 +1,7 @@
 #pragma once
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
+import Engine.Async;
 import Engine.Common;
 import Engine.Storage.Registry;
 #endif
@@ -18,14 +19,17 @@ namespace hg::engine::storage {
 			Vector<dep_type> deps;
 		};
 
+		// Note: Mutations on different packages share one Context, so every member locks.
+		mutable concurrent::SpinMutex mtx;
 		DenseMap<Arci<IStorage>, Vector<CachedResource>> map;
 
 		template <class Type_>
-		decltype(auto) add(
+		auto add(
 			_In_ mref<Arci<IStorage>> key_,
 			_In_ mref<Rc<Type_>> resource_,
 			_In_ auto*... deps_
 		) {
+			concurrent::SpinLock guard { mtx };
 			const auto iter = map.find(key_);
 			if (iter == map.end()) {
 				const auto result = map.emplace(
@@ -43,7 +47,7 @@ namespace hg::engine::storage {
 						}
 					}
 				);
-				return (const Rc<Type_>&)(result.first->second.front().data);
+				return Rc<Type_> { (const Rc<Type_>&)(result.first->second.front().data) };
 			}
 
 			/**/
@@ -81,14 +85,16 @@ namespace hg::engine::storage {
 				}
 			);
 
-			return (const Rc<Type_>&)(iter->second.back().data);
+			return Rc<Type_> { (const Rc<Type_>&)(iter->second.back().data) };
 		}
 
 		decltype(auto) has(_In_ mref<Arci<IStorage>> key_) const {
+			concurrent::SpinLock guard { mtx };
 			return map.contains(key_);
 		}
 
 		bool valid(_In_ mref<Arci<IStorage>> key_, _In_ auto*... deps_) const {
+			concurrent::SpinLock guard { mtx };
 
 			const auto observed = std::array {
 				CachedResource::dep_type {
@@ -121,6 +127,7 @@ namespace hg::engine::storage {
 			_In_ mref<Arci<IStorage>> key_,
 			_In_ auto*... deps_
 		) const {
+			concurrent::SpinLock guard { mtx };
 			::hg::assertrt(map.contains(key_));
 
 			const auto& stored = map.at(::hg::move(key_));
@@ -159,10 +166,16 @@ namespace hg::engine::storage {
 			return None;
 		}
 
-		decltype(auto) invalidate(_In_ mref<Arci<IStorage>> key_) {
-			// Error: We need to maintain the Rc<T> until all references got removed
-			//::hg::assertrt(map.contains(key_));
-			map.erase(::hg::move(key_));
+		void invalidate(_In_ mref<Arci<IStorage>> key_) {
+			// The entry dies after the guard is released; its destructors may reach back into this store.
+			std::optional<decltype(map.extract(key_))> node {}; {
+				concurrent::SpinLock guard { mtx };
+				// Error: We need to maintain the Rc<T> until all references got removed
+				//::hg::assertrt(map.contains(key_));
+				if (map.contains(key_)) {
+					node.emplace(map.extract(key_));
+				}
+			}
 		}
 	};
 }

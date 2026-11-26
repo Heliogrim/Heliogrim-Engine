@@ -6,6 +6,7 @@
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
 import Engine.Asserts;
+import Engine.Async;
 import Engine.Common;
 import Engine.Reflect;
 import Engine.Storage.Registry;
@@ -18,30 +19,36 @@ namespace hg::engine::storage {
 			type_id type;
 		};
 
+		// Note: Mutations on different packages share one Context, so every member locks.
+		mutable concurrent::SpinMutex mtx;
 		DenseMap<Arci<IStorage>, StoredResource> map;
 
 		template <class Type_>
 		decltype(auto) add(_In_ mref<Arci<IStorage>> key_, mref<Rc<Type_>> resource_) {
+			concurrent::SpinLock guard { mtx };
 			::hg::assertrt(not map.contains(key_));
 			const auto result = map.emplace(
 				::hg::move(key_),
 				StoredResource { (Rc<IoResourceBase>&&)::hg::move(resource_), ::hg::refl::TypeId<Type_>() }
 			);
-			return (const Rc<Type_>&)(result.first->second.data);
+			return Rc<Type_> { (const Rc<Type_>&)(result.first->second.data) };
 		}
 
 		decltype(auto) has(_In_ mref<Arci<IStorage>> key_) const {
+			concurrent::SpinLock guard { mtx };
 			return map.contains(key_);
 		}
 
 		template <class Type_>
 		decltype(auto) get(_In_ mref<Arci<IStorage>> key_) const {
+			concurrent::SpinLock guard { mtx };
 			::hg::assertrt(map.contains(key_));
 			const auto stored = map.at(::hg::move(key_));
 			return stored.type == ::hg::refl::TypeId<Type_>() ? None : Some((Rc<Type_>&&)clone(stored.data));
 		}
 
 		decltype(auto) drop(_In_ mref<Arci<IStorage>> key_) {
+			concurrent::SpinLock guard { mtx };
 			::hg::assertrt(map.contains(key_));
 			const auto where = map.find(key_);
 			auto stored = hg::move(where->second);
