@@ -738,6 +738,78 @@ namespace SchedulerModule {
 		);
 	}
 
+	TEST(CompositePipelineTest, DynamicTaskOnWriterNeverOverlapsReader) {
+		withComposite(
+			[](ref<CompositePipeline> composite_) {
+				const graph::AccessKey probeK[] { graph::AccessKey::of<KeyK>() };
+				constexpr string_view nameW = "::test::W";
+				constexpr string_view nameR = "::test::R";
+				constexpr std::array<string_view, 1> afterW { nameW };
+
+				std::atomic<u32> inReader { 0uL };
+				std::atomic<u32> inWriter { 0uL };
+				std::atomic<u32> observed { 0uL };
+				std::atomic<u32> observedWriter { 0uL };
+				std::atomic_bool dynamicDone { false };
+				std::atomic_bool pushed { false };
+				Signal done {};
+
+				auto pipeline = make_uptr<TestPipeline>("::test::exclusion");
+				// a dynamic task runs within W's slot and inherits its ordering against R (see MergedStageWritesConflict)
+				// empty static body, mirrors the teardown stage
+				pipeline->stages.push_back(make_uptr<TestStage>(nameW, graph::StageDecl { .writes = probeK }, [] {}));
+				pipeline->stages.push_back(
+					make_uptr<TestStage>(
+						nameR,
+						// explicit edge: conflicting keys without one are rejected by the graph builder
+						graph::StageDecl { .after = afterW, .reads = probeK },
+						[&] {
+							inReader.fetch_add(1);
+							const auto seenWriter = inWriter.load();
+							if (seenWriter > observedWriter.load()) { observedWriter.store(seenWriter); }
+							if (not pushed.exchange(true)) {
+								const auto stage = composite_.getStage(string { nameW });
+								composite_.pushTask(
+									std::addressof(stage.value()),
+									task::make_task(
+										[&] {
+											inWriter.fetch_add(1);
+											const auto seenReader = inReader.load();
+											if (seenReader > observed.load()) { observed.store(seenReader); }
+											const auto wUntil = std::chrono::steady_clock::now() + std::chrono::milliseconds { 1 };
+											while (std::chrono::steady_clock::now() < wUntil) { std::this_thread::yield(); }
+											inWriter.fetch_sub(1);
+											dynamicDone.store(true);
+										}
+									)
+								);
+							}
+							const auto until = std::chrono::steady_clock::now() + std::chrono::milliseconds { 1 };
+							while (std::chrono::steady_clock::now() < until) { std::this_thread::yield(); }
+							inReader.fetch_sub(1);
+							// finish only once an R run followed the dynamic task, so its entry check ran
+							if (dynamicDone.load() && not done.isSet()) { done.set(); }
+						}
+					)
+				);
+				(void)composite_.addPipeline(std::move(pipeline));
+				composite_.setup();
+
+				withWatchdog(
+					[&] {
+						composite_.start();
+						done.wait();
+						composite_.stop();
+					}
+				);
+				composite_.destroy();
+
+				EXPECT_EQ(observed.load(), 0uL);
+				EXPECT_EQ(observedWriter.load(), 0uL);
+			}
+		);
+	}
+
 	TEST(CompositePipelineTest, EnqueueStampsFrameLane) {
 		Schedule schedule {};
 		schedule.setup(4uL, LanePolicyConfig {});
