@@ -11,6 +11,7 @@ make_library_project(
 		${PROJECT_NAME}::Engine.Asserts
 		${PROJECT_NAME}::Engine.Reflect
 		${PROJECT_NAME}::Engine.Resource.Archive
+		${PROJECT_NAME}::Engine.IO.Dispatcher
 		${PROJECT_NAME}::Engine.Filesystem
 		${PROJECT_NAME}::Engine.Resource.Blob
 		${PROJECT_NAME}::Engine.Resource.Package

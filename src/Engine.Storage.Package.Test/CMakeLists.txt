@@ -13,6 +13,7 @@ make_test_project(
 		${PROJECT_NAME}::Engine.Crypto
 		${PROJECT_NAME}::Engine.Diagnostics
 		${PROJECT_NAME}::Engine.Filesystem
+		${PROJECT_NAME}::Engine.IO.Dispatcher
 		${PROJECT_NAME}::Engine.Logging
 		${PROJECT_NAME}::Engine.Resource
 		${PROJECT_NAME}::Engine.Resource.Archive
