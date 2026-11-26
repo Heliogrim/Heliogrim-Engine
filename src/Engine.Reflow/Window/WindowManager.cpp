@@ -53,7 +53,12 @@ void WindowManager::setup() {
 
 	/**/
 
-	emitter.on<input::event::MouseButtonEvent>(
+	auto listen = [this, &emitter]<typename Event_>(auto&& fnc_) {
+		const auto handle = emitter.on<Event_>(std::forward<decltype(fnc_)>(fnc_));
+		_unsubscribeEvents.emplace_back([handle] { engine::Input::get()->emitter().remove<Event_>(handle); });
+	};
+
+	listen.operator()<input::event::MouseButtonEvent>(
 		[this](const auto& event_) {
 			auto wnd { resolveWindow(event_._pointer) };
 			// route() redirects to the capture's window; outside every window the capture or press still owns the release.
@@ -65,7 +70,7 @@ void WindowManager::setup() {
 			}
 		}
 	);
-	emitter.on<input::event::MouseMoveEvent>(
+	listen.operator()<input::event::MouseMoveEvent>(
 		[this](const auto& event_) {
 			// route() redirects to the capture's window; route once so the capturer does not see the move twice.
 			if (const auto capturer = captured(); capturer != nullptr && capturer->root() != nullptr) {
@@ -85,7 +90,7 @@ void WindowManager::setup() {
 			}
 		}
 	);
-	emitter.on<input::event::MouseWheelEvent>(
+	listen.operator()<input::event::MouseWheelEvent>(
 		[this](const auto& event_) {
 			const auto wnd { resolveWindow(event_._pointer) };
 			if (wnd) {
@@ -93,7 +98,7 @@ void WindowManager::setup() {
 			}
 		}
 	);
-	emitter.on<input::event::DragDropEvent>(
+	listen.operator()<input::event::DragDropEvent>(
 		[this](const auto& event_) {
 			const auto wnd { resolveWindow(event_._pointer) };
 			if (wnd) {
@@ -101,7 +106,7 @@ void WindowManager::setup() {
 			}
 		}
 	);
-	emitter.on<input::event::KeyboardEvent>(
+	listen.operator()<input::event::KeyboardEvent>(
 		[this](const auto& event_) {
 
 			sptr<Window> wnd { nullptr };
@@ -120,6 +125,13 @@ void WindowManager::setup() {
 }
 
 void WindowManager::tidy() {
+
+	if (const auto input = engine::Input::get(); input.has_value()) {
+		for (const auto& unlisten : _unsubscribeEvents) {
+			unlisten();
+		}
+	}
+	_unsubscribeEvents.clear();
 
 	_focusOrder.clear();
 
