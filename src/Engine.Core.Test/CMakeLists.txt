@@ -7,8 +7,10 @@ make_test_project(
 		${PROJECT_NAME}::Engine.Common
 		${PROJECT_NAME}::Engine.Core
 		${PROJECT_NAME}::Engine.Event
+		${PROJECT_NAME}::Engine.Level
 		${PROJECT_NAME}::Engine.Logging
 		${PROJECT_NAME}::Engine.Reflect
+		${PROJECT_NAME}::Engine.Scene
 		${PROJECT_NAME}::Engine.Scheduler
 		${PROJECT_NAME}::Heliogrim
 )
