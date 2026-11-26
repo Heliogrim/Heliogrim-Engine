@@ -2,6 +2,8 @@
 
 #include <Engine.Common/stdafx.h>
 
+#include "FileOps.hpp"
+
 import Engine.Asserts;
 import Engine.Async;
 
@@ -71,11 +73,11 @@ u64 IoSystem::requestsIssued() const noexcept {
 }
 
 Future<Arci<IoFile>, IoError> IoSystem::open(ref<const std::filesystem::path> path_, const IoOpenMode mode_) {
-	Promise<Arci<IoFile>, IoError> promise {};
+	auto promise = Promise<Arci<IoFile>, IoError> {};
 	auto future = promise.future();
 
 	_thread.thread().postDetached(
-		[this, path = path_, mode_, promise = std::move(promise)]() mutable {
+		[this, path = path_, mode_, promise = ::hg::move(promise)]() mutable {
 			const auto unbuffered = (static_cast<u8>(mode_) & static_cast<u8>(IoOpenMode::eUnbuffered)) != 0u;
 			const auto rw = (static_cast<u8>(mode_) & ~static_cast<u8>(IoOpenMode::eUnbuffered)) ==
 				static_cast<u8>(IoOpenMode::eReadWrite);
@@ -106,7 +108,8 @@ Future<Arci<IoFile>, IoError> IoSystem::open(ref<const std::filesystem::path> pa
 				promise.reject(IoError { error });
 				return;
 			}
-			promise.resolve(std::move(file));
+
+			promise.resolve(::hg::move(file));
 		}
 	);
 	return future;
@@ -117,16 +120,17 @@ Arci<IoQueue> IoSystem::createQueue(const IoPriority priority_) {
 }
 
 Future<u64, IoError> IoSystem::size(Arci<IoFile> file_) {
-	Promise<u64, IoError> promise {};
+	auto promise = Promise<u64, IoError> {};
 	auto future = promise.future();
 
 	_thread.thread().postDetached(
-		[file = std::move(file_), promise = std::move(promise)]() mutable {
+		[file = ::hg::move(file_), promise = ::hg::move(promise)]() mutable {
 			LARGE_INTEGER value {};
 			if (not::GetFileSizeEx(file->handle(), &value)) {
 				promise.reject(IoError { ::GetLastError() });
 				return;
 			}
+
 			promise.resolve(static_cast<u64>(value.QuadPart));
 		}
 	);
@@ -134,17 +138,96 @@ Future<u64, IoError> IoSystem::size(Arci<IoFile> file_) {
 }
 
 Future<void, IoError> IoSystem::resize(Arci<IoFile> file_, const u64 size_) {
-	Promise<void, IoError> promise {};
+	auto promise = Promise<void, IoError> {};
 	auto future = promise.future();
 
 	_thread.thread().postDetached(
-		[file = std::move(file_), size_, promise = std::move(promise)]() mutable {
+		[file = ::hg::move(file_), size_, promise = ::hg::move(promise)]() mutable {
 			FILE_END_OF_FILE_INFO info {};
 			info.EndOfFile.QuadPart = static_cast<LONGLONG>(size_);
 			if (not::SetFileInformationByHandle(file->handle(), FileEndOfFileInfo, &info, sizeof(info))) {
 				promise.reject(IoError { ::GetLastError() });
 				return;
 			}
+
+			promise.resolve();
+		}
+	);
+	return future;
+}
+
+Future<IoTemp, IoError> IoSystem::openTemp(ref<const std::filesystem::path> target_) {
+	auto promise = Promise<IoTemp, IoError> {};
+	auto future = promise.future();
+
+	_thread.thread().postDetached(
+		[this, target = target_, promise = ::hg::move(promise)]() mutable {
+			auto temp = createTempSibling(target, _backend->openFlags());
+			if (not temp.has_value()) {
+				promise.reject(IoError { temp.error().osError });
+				return;
+			}
+
+			// The file closes the handle on every path from here.
+			auto file = Arci<IoFile>::create(temp->handle, 1u);
+			if (const auto error = _backend->associate(temp->handle); error != 0u) {
+				std::error_code ec {};
+				std::filesystem::remove(temp->path, ec);
+				promise.reject(IoError { error });
+				return;
+			}
+
+			promise.resolve(IoTemp { ::hg::move(file), ::hg::move(temp->path) });
+		}
+	);
+	return future;
+}
+
+Future<void, IoError> IoSystem::flush(const Arci<IoFile> file_) {
+	auto promise = Promise<void, IoError> {};
+	auto future = promise.future();
+
+	_thread.thread().postDetached(
+		[file = file_, promise = ::hg::move(promise)]() mutable {
+			if (const auto error = flushFile(file->handle()); error != 0u) {
+				promise.reject(IoError { error });
+				return;
+			}
+
+			promise.resolve();
+		}
+	);
+	return future;
+}
+
+Future<void, IoError> IoSystem::renameOver(const Arci<IoFile> file_, const std::filesystem::path target_) {
+	auto promise = Promise<void, IoError> {};
+	auto future = promise.future();
+
+	_thread.thread().postDetached(
+		[file = file_, target = target_, promise = ::hg::move(promise)]() mutable {
+			if (const auto error = ::hg::engine::io::renameOver(file->handle(), target); error != 0u) {
+				promise.reject(IoError { error });
+				return;
+			}
+
+			promise.resolve();
+		}
+	);
+	return future;
+}
+
+Future<void, IoError> IoSystem::replaceByName(const std::filesystem::path temp_, const std::filesystem::path target_) {
+	auto promise = Promise<void, IoError> {};
+	auto future = promise.future();
+
+	_thread.thread().postDetached(
+		[temp = temp_, target = target_, promise = ::hg::move(promise)]() mutable {
+			if (const auto error = ::hg::engine::io::replaceByName(temp, target); error != 0u) {
+				promise.reject(IoError { error });
+				return;
+			}
+
 			promise.resolve();
 		}
 	);
@@ -158,7 +241,7 @@ ref<hg::engine::async::AffineThread> IoSystem::thread() noexcept {
 void IoSystem::activate(mref<Arci<IoQueue>> queue_) {
 	if (not queue_->_listed) {
 		queue_->_listed = true;
-		_active[static_cast<size_t>(queue_->priority())].push_back(std::move(queue_));
+		_active[static_cast<size_t>(queue_->priority())].push_back(::hg::move(queue_));
 	}
 }
 
@@ -202,6 +285,7 @@ bool IoSystem::pump() {
 		if (token == nullptr) {
 			return false;
 		}
+
 		const auto& request = IoQueue::requestOf(token);
 		++_inFlight;
 		_inFlightBytes += request.buffer.size();
