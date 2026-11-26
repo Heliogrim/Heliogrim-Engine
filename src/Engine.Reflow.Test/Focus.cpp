@@ -291,4 +291,28 @@ namespace ReflowModule {
 		EXPECT_EQ(outer.layoutSize.y, inner.layoutSize.y);
 		EXPECT_EQ(inner.layoutSize.x, 30.F);
 	}
+
+	TEST(Focus, NearestScopeUsesContext) {
+		auto leaf = make_sptr<uikit::Paint>();
+		auto column = make_sptr<uikit::VerticalLayout>();
+		column->addChild(leaf);
+		auto outer = panel(column);
+
+		EXPECT_EQ(nearestScope(leaf), outer);
+		EXPECT_EQ(nearestScope(outer), outer);
+
+		// Moving the leaf below a nested scope drops its cached provider, so the inner scope wins.
+		auto inner = make_sptr<FocusScope>(FocusScopeKind::ePanel);
+		column->addChild(inner);
+		column->removeChild(leaf);
+		inner->setContent(leaf);
+
+		EXPECT_EQ(nearestScope(leaf), inner);
+		EXPECT_EQ(nearestScope(inner), inner);
+		EXPECT_EQ(leaf->context<FocusScopeContext>().value().scope.get(), inner.get());
+		EXPECT_EQ(inner->context<FocusScopeContext>().value().scope.get(), outer.get());
+
+		inner->setContent(nullptr);
+		EXPECT_EQ(nearestScope(leaf), nullptr);
+	}
 }

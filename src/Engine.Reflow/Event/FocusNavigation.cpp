@@ -16,12 +16,19 @@ namespace {
 /**/
 
 sptr<FocusScope> hg::engine::reflow::nearestScope(ref<const sptr<Widget>> widget_) {
-	for (auto next = widget_; next != nullptr; next = next->parent()) {
-		if (auto scope = std::dynamic_pointer_cast<FocusScope>(next)) {
-			return scope;
-		}
+	if (widget_ == nullptr) {
+		return nullptr;
 	}
-	return nullptr;
+	if (auto self = std::dynamic_pointer_cast<FocusScope>(widget_)) {
+		return self;
+	}
+
+	const auto context = widget_->context<FocusScopeContext>();
+	if (not context.has_value() || context->scope == nullptr) {
+		return nullptr;
+	}
+
+	return std::static_pointer_cast<FocusScope>(context->scope->shared_from_this());
 }
 
 sptr<Widget> hg::engine::reflow::nextFocusable(

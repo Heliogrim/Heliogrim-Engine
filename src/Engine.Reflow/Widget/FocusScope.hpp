@@ -8,6 +8,15 @@ import Engine.Common;
 
 namespace hg::engine::reflow {
 	class EventRouter;
+	class FocusScope;
+
+	/**
+	 * Nearest focus scope above a widget, provided by every `FocusScope` to its subtree.
+	 */
+	struct FocusScopeContext {
+		constexpr static bool isStatic = true;
+		nmpt<FocusScope> scope;
+	};
 
 	enum class FocusScopeKind : u8 {
 		eWindow,
@@ -35,6 +44,7 @@ namespace hg::engine::reflow {
 	private:
 		FocusScopeKind _kind;
 		wptr<Widget> _remembered;
+		FocusScopeContext _context;
 
 	public:
 		[[nodiscard]] string getTag() const noexcept override;
@@ -46,6 +56,8 @@ namespace hg::engine::reflow {
 		 */
 		[[nodiscard]] sptr<Widget> remembered() const noexcept;
 
-		void setContent(sptr<Widget> content_);
+		void setContent(const sptr<Widget> content_);
+
+		[[nodiscard]] ptr<void> providedContext(const type_id contextType_) noexcept override;
 	};
 }
