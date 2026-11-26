@@ -121,9 +121,7 @@ void Viewport::tidy() {
 		const auto gfx = engine::Graphics::get();
 		const auto sceneManager = gfx.has_value() ? gfx->getSceneManager() : nullptr;
 		if (sceneManager != nullptr) {
-			CompactArray<smr<engine::graphics::RenderTarget>> targets {};
-			sceneManager->selectPrimaryTargets(
-				targets,
+			const auto targets = sceneManager->selectPrimaryTargets(
 				[this](ref<const smr<engine::graphics::RenderTarget>> target_) {
 					return target_.get() == _renderTarget.get();
 				}

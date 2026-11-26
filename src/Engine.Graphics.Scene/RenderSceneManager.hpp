@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Common/Sal.hpp>
 #include <Engine.Utils/_CTRL.hpp>
 
 #if not defined(HG_MODULE_INTERFACE_UNIT)
@@ -70,8 +69,13 @@ namespace hg::engine::graphics::scene {
 		bool unregisterScene(nmpt<engine::scene::SceneBase> renderableScene_);
 
 	private:
+		// Guards both tables. Never release a RenderTarget reference while held: ~RenderTarget waits on GPU fences.
+		mutable concurrent::SpinMutex _targetsMtx;
 		CompactSet<smr<RenderTarget>> _primaryTargets;
 		DenseMap<smr<Swapchain>, smr<RenderTarget>> _mappedRenderTargets;
+
+	private:
+		[[nodiscard]] CompactArray<smr<RenderTarget>> snapshotPrimaryTargets() const;
 
 	public:
 		void addPrimaryTarget(mref<smr<RenderTarget>> renderTarget_);
@@ -97,26 +101,18 @@ namespace hg::engine::graphics::scene {
 		);
 
 	public:
-		void selectInvokeTargets(_Inout_ ref<CompactSet<smr<RenderTarget>>> targets_) const noexcept;
+		[[nodiscard]] CompactArray<smr<RenderTarget>> selectInvokeTargets() const;
 
 		template <typename Selector_>
-		void selectPrimaryTargets(
-			_Inout_ ref<CompactArray<smr<RenderTarget>>> targets_,
-			Selector_&& selector_
-		) const noexcept(std::is_nothrow_invocable_v<Selector_, cref<smr<RenderTarget>>>) {
-			for (const auto& target : _primaryTargets) {
-				if (selector_(target)) {
-					targets_.emplace_back(clone(target));
-				}
-			}
+		[[nodiscard]] CompactArray<smr<RenderTarget>> selectPrimaryTargets(Selector_&& selector_) const {
+			auto snapshot = snapshotPrimaryTargets();
+			std::erase_if(snapshot, [&selector_](cref<smr<RenderTarget>> target_) { return not selector_(target_); });
+			return snapshot;
 		}
 
 		template <typename Selector_>
-		void selectTargets(
-			_Inout_ ref<CompactArray<smr<RenderTarget>>> targets_,
-			Selector_&& selector_
-		) const noexcept(std::is_nothrow_invocable_v<Selector_, cref<smr<RenderTarget>>>) {
-			selectPrimaryTargets<Selector_>(targets_, std::forward<Selector_>(selector_));
+		[[nodiscard]] CompactArray<smr<RenderTarget>> selectTargets(Selector_&& selector_) const {
+			return selectPrimaryTargets(std::forward<Selector_>(selector_));
 		}
 	};
 }

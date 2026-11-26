@@ -118,8 +118,8 @@ namespace hg::engine::graphics {
 		void flipRenderSync();
 
 	private:
-		/*std::atomic_flag*/
-		bool _active;
+		// Atomic for race freedom only: written by window/viewport teardown, read off-lock by the render tick; it publishes no data, so relaxed.
+		std::atomic_bool _active;
 
 	public:
 		/**
