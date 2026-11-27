@@ -1,13 +1,15 @@
 #include "SaveLevel.hpp"
 
-#include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Sal.hpp>
+#include <Engine.Common/__macro.hpp>
 
 import Engine.ACS;
 import Engine.Assets;
 import Engine.Assets.System;
+import Engine.IO.Dispatcher;
 import Engine.Logging;
 import Engine.Storage;
+import Engine.Storage.Package;
 import Engine.Storage.System;
 
 using namespace hg::editor::scene::actions;
@@ -69,7 +71,7 @@ static Arci<engine::assets::LevelAsset> save_level_in_asset(_In_ ref<const engin
 		return nullptr;
 	}
 
-	ssys->mutate(
+	auto saved = ssys->mutate(
 		std::move(dataArchive).value(),
 		[&level_, serial](auto& archive_) {
 			archive_.setType(engine::resource::ArchiveType::eSerializedStructure);
@@ -77,6 +79,14 @@ static Arci<engine::assets::LevelAsset> save_level_in_asset(_In_ ref<const engin
 			serial->serialize(level_, structured);
 		}
 	);
+	if (not saved.has_value()) {
+		IM_CORE_ERRORF(
+			"Failed to save `{}`: {}.",
+			levelAsset->getAssetName(),
+			engine::storage::package::describeMutationFailure(saved.error())
+		);
+		return nullptr;
+	}
 
 	/**/
 
@@ -87,7 +97,7 @@ static Arci<engine::assets::LevelAsset> save_level_in_asset(_In_ ref<const engin
 	auto assetArchive = ssys->findArchive(clone(assetUrl.as<engine::storage::ArchiveUrl>()));
 	::hg::assertrt(assetArchive != None);
 
-	ssys->mutate(
+	saved = ssys->mutate(
 		std::move(assetArchive).value(),
 		[&levelAsset_ = *levelAsset, serial](auto& archive_) {
 			archive_.setType(engine::resource::ArchiveType::eSerializedStructure);
@@ -95,6 +105,14 @@ static Arci<engine::assets::LevelAsset> save_level_in_asset(_In_ ref<const engin
 			serial->serialize(levelAsset_, structured);
 		}
 	);
+	if (not saved.has_value()) {
+		IM_CORE_ERRORF(
+			"Failed to save `{}`: {}.",
+			levelAsset->getAssetName(),
+			engine::storage::package::describeMutationFailure(saved.error())
+		);
+		return nullptr;
+	}
 
 	return levelAsset;
 }
