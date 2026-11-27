@@ -102,4 +102,30 @@ namespace Crc32Module {
 		crc.update(asBytes(std::span<const u8> { data }.subspan(4uLL)));
 		EXPECT_EQ(std::move(crc).finalize(), reference(data));
 	}
+
+	TEST(Crc32, EmptyUpdateKeepsRunningValue) {
+		constexpr std::array<u8, 9uLL> text { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+
+		auto crc = Crc32 {};
+		crc.update({});
+		crc.update(asBytes(std::span<const u8> { text }.first(4uz)));
+		crc.update({});
+		crc.update(asBytes(std::span<const u8> { text }.subspan(4uz)));
+		crc.update({});
+		EXPECT_EQ(std::move(crc).finalize(), 0xCBF43926uL);
+	}
+
+	TEST(Crc32, LargeUnalignedBufferMatchesReference) {
+		// Note: Odd length from an odd offset exercises the word-wise path and its byte tails.
+		auto data = std::vector<u8>((1uz << 20) + 7uz);
+		for (auto i = 0uz; i < data.size(); ++i) {
+			data[i] = static_cast<u8>((i * 2654435761uLL) >> 13);
+		}
+		const auto bytes = std::span<const u8> { data }.subspan(1uz);
+
+		auto crc = Crc32 {};
+		crc.update(asBytes(bytes.first(333uz)));
+		crc.update(asBytes(bytes.subspan(333uz)));
+		EXPECT_EQ(std::move(crc).finalize(), reference(bytes));
+	}
 }

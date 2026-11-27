@@ -1,7 +1,6 @@
 module;
 
-#define CRCPP_USE_CPP11
-#include <crcpp/CRC.h>
+#include <zlib/zlib.h>
 
 /**/
 
@@ -12,19 +11,15 @@ import :Checksum.Crc32;
 using namespace hg::engine::crypto;
 using namespace hg;
 
-static auto crc32Table = CRC::CRC_32().MakeTable();
-
-/**/
-
 ref<Crc32> Crc32::update(std::span<const _::byte> data_) {
-	// @see: https://d-bahr.github.io/CRCpp/
-	// Note: A finished crc of zero is a valid state, so the first call is tracked explicitly.
-	if (not _started) {
-		_intermediate = CRC::Calculate(data_.data(), data_.size(), crc32Table);
-		_started = true;
-	} else {
-		_intermediate = CRC::Calculate(data_.data(), data_.size(), crc32Table, _intermediate);
+	// Note: zlib's crc32_z chains from the finished value (start 0), CRC-32 IEEE as the package format fixes.
+	// Note: An empty span may carry nullptr, which crc32_z reads as "return the initial value 0".
+	if (data_.empty()) {
+		return *this;
 	}
+	_intermediate = static_cast<result_type>(
+		::crc32_z(_intermediate, reinterpret_cast<const Bytef*>(data_.data()), static_cast<z_size_t>(data_.size()))
+	);
 	return *this;
 }
 
