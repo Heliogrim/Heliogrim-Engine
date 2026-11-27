@@ -14,8 +14,10 @@ import Engine.Common;
 import Engine.Config;
 import Engine.Core;
 import Engine.Graphics.Components;
+import Engine.IO.Dispatcher;
 import Engine.Level;
 import Engine.Storage;
+import Engine.Storage.Package;
 import Engine.Storage.System;
 import Heliogrim;
 
@@ -220,14 +222,22 @@ static decltype(auto) wantedSave(_In_ cref<core::Level> level_, _In_ cref<assets
 		return;
 	}
 
-	ssys->mutate(
+	auto saved = ssys->mutate(
 		std::move(dataArchive).value(),
-		[&level_, serial](auto& archive_) {
+		[&level_, serial](auto& archive_) -> void {
 			archive_.setType(resource::ArchiveType::eSerializedStructure);
 			auto structured = serialization::StructuredArchive { archive_ };
 			serial->serialize(level_, structured);
 		}
 	);
+	if (not saved.has_value()) {
+		IM_CORE_ERRORF(
+			"Failed to save `{}`: {}.",
+			levelAsset_.getAssetName(),
+			engine::storage::package::describeMutationFailure(saved.error())
+		);
+		return;
+	}
 
 	/**/
 
@@ -238,9 +248,9 @@ static decltype(auto) wantedSave(_In_ cref<core::Level> level_, _In_ cref<assets
 		return;
 	}
 
-	ssys->mutate(
+	saved = ssys->mutate(
 		::hg::move(assetArchive).value(),
-		[&levelAsset_, serial](auto& archive_) {
+		[&levelAsset_, serial](auto& archive_) -> void {
 			archive_.setType(resource::ArchiveType::eSerializedStructure);
 			auto structured = serialization::StructuredArchive { archive_ };
 			auto record = structured.insertRootSlot().intoStruct();
@@ -248,6 +258,14 @@ static decltype(auto) wantedSave(_In_ cref<core::Level> level_, _In_ cref<assets
 			serial->serialize(levelAsset_, ::hg::move(record));
 		}
 	);
+	if (not saved.has_value()) {
+		IM_CORE_ERRORF(
+			"Failed to save `{}`: {}.",
+			levelAsset_.getAssetName(),
+			engine::storage::package::describeMutationFailure(saved.error())
+		);
+		return;
+	}
 }
 
 static assets::AssetUrl experimentalResolveLevelAssetUrl() {
