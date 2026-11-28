@@ -2,6 +2,7 @@
 
 /**/
 
+import Editor.Action;
 import Engine.Accel.Lang;
 import Engine.Common;
 import Engine.Diagnostics;
@@ -13,10 +14,11 @@ using namespace hg;
 
 namespace HgDiagCodes {
 	namespace {
-		const std::array<std::span<const DiagnosticCodeInfo>, 3uLL> tables {
+		const std::array<std::span<const DiagnosticCodeInfo>, 4uLL> tables {
 			std::span<const DiagnosticCodeInfo> { hg::engine::accel::lang::codes::table },
 			std::span<const DiagnosticCodeInfo> { hg::engine::storage::package::codes::table },
-			std::span<const DiagnosticCodeInfo> { hg::engine::serialization::codes::table }
+			std::span<const DiagnosticCodeInfo> { hg::engine::serialization::codes::table },
+			std::span<const DiagnosticCodeInfo> { hg::editor::codes::table }
 		};
 
 		String escaped(const StringView text_) {

@@ -2,6 +2,7 @@
 make_test_project(
 		TEST_NAME Engine.DiagnosticCodes.Test
 		LIBRARIES
+		${PROJECT_NAME}::Editor.Action
 		${PROJECT_NAME}::Engine.Diagnostics
 		${PROJECT_NAME}::Engine.Storage.Package
 		${PROJECT_NAME}::Engine.Serialization
