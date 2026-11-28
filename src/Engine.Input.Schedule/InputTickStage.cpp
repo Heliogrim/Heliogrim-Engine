@@ -33,8 +33,19 @@ void InputTickStage::dynamicDispatch(cref<DynamicStageDispatcher> dispatcher_) {
 	// TODO:
 }
 
+namespace hg::engine::reflow {
+	class WindowManager;
+}
+namespace hg::engine::acs {
+	class Registry;
+}
+
 namespace {
-	static constexpr graph::AccessKey Writes[] = { graph::AccessKey::of<engine::Input>() };
+	static constexpr graph::AccessKey Writes[] = {
+		graph::AccessKey::of<engine::Input>(),
+		graph::AccessKey::of<engine::reflow::WindowManager>(),
+		graph::AccessKey::of<engine::acs::Registry>()
+	};
 }
 
 graph::StageDecl InputTickStage::decl() const noexcept {
