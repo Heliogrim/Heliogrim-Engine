@@ -89,9 +89,19 @@ void ReflowFlowStage::dynamicDispatch(cref<DynamicStageDispatcher> dispatcher_) 
 namespace hg::engine::reflow {
 	class WindowManager;
 }
+namespace hg::engine::core {
+	class Timing;
+}
+namespace hg::engine::acs {
+	class Registry;
+}
 
 namespace {
-	static constexpr graph::AccessKey Writes[] = { graph::AccessKey::of<engine::reflow::WindowManager>() };
+	static constexpr graph::AccessKey Reads[] = { graph::AccessKey::of<engine::core::Timing>() };
+	static constexpr graph::AccessKey Writes[] = {
+		graph::AccessKey::of<engine::reflow::WindowManager>(),
+		graph::AccessKey::of<engine::acs::Registry>()
+	};
 }
 
 graph::StageDecl ReflowFlowStage::decl() const noexcept {
@@ -99,7 +109,7 @@ graph::StageDecl ReflowFlowStage::decl() const noexcept {
 	static const string_view before[] = { engine::graphics::schedule::RenderScenePipeline::RenderTick };
 	return {
 		.name = engine::reflow::schedule::ReflowPipeline::Tick,
-		.reads = {},
+		.reads = Reads,
 		.writes = Writes,
 		.after = after,
 		.before = before
