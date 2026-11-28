@@ -7,6 +7,7 @@ import Editor.Action;
 import Editor.UI.Main;
 import Editor.UI.Service;
 import Engine.Core;
+import Engine.Diagnostics;
 import Engine.Logging;
 import Engine.Reflow;
 import std;
@@ -73,13 +74,19 @@ engine::reflow::EventReply InputBindingProvider::invokeOnKeyDown(ref<const engin
 		return CompoundWidget::invokeOnKeyDown(event_);
 	}
 
+	// A matched binding consumes the key even when it fails; the failure is the user's answer (W43.13: toast).
+	if (not maybeAction->has_value()) {
+		engine::diag::LogSink {}.emit(::hg::move(maybeAction->error()));
+		return EventResponse::eConsumed;
+	}
+
 	const auto module = engine::Engine::getEngine()->getModules().getSubModule(editor::ActionDepKey);
 	if (module == nullptr) {
 		IM_DEBUG_LOG("Captured user input at input binding provider without action handler module present.");
 		return EventResponse::eConsumed;
 	}
 
-	static_cast<ptr<ActionManager>>(module.get())->apply(::hg::move(maybeAction).value());
+	static_cast<ptr<ActionManager>>(module.get())->apply(::hg::move(maybeAction->value()));
 	return EventResponse::eConsumed;
 }
 

@@ -5,6 +5,7 @@
 import Editor.Action;
 import Editor.UI.Service;
 import Engine.Common;
+import Engine.Diagnostics;
 
 using namespace hg;
 using namespace hg::editor::ui::service;
@@ -20,15 +21,17 @@ namespace EditorService {
 		[[nodiscard]] InputBinding binding(
 			std::initializer_list<u32> keys_,
 			int* counter_ = nullptr,
-			std::function<bool()> condition_ = nullptr
+			std::function<bool()> condition_ = nullptr,
+			Opt<ref<const engine::diag::DiagnosticCodeInfo>> error_ = None
 		) {
 			return InputBinding {
 				.label = "test",
 				.binding = keys(keys_),
 				.condition = std::move(condition_),
-				.invoke = [counter_]() -> Arci<editor::Action> {
+				.invoke = [counter_, error_ = std::move(error_)]() -> Result<Arci<editor::Action>, engine::diag::Diagnostic> {
 					if (counter_ != nullptr) { ++(*counter_); }
-					return {};
+					if (error_ != None) { return engine::diag::Diagnostic::error(*error_, "failed"); }
+					return Expected { Arci<editor::DelegateAction>::create().into<editor::Action>() };
 				}
 			};
 		}
@@ -58,6 +61,19 @@ namespace EditorService {
 
 		EXPECT_EQ(a, 0);
 		EXPECT_EQ(b, 1);
+	}
+
+	TEST(InputBindingListTest, FailingBindingReturnsTheError) {
+		InputBindingList list {};
+		int a = 0;
+		ASSERT_TRUE(list.addBinding(binding({ 1u }, &a, nullptr, SomeRef(editor::codes::edt("no-root-level")))));
+
+		const auto result = list.invoke(keys({ 1u }));
+
+		ASSERT_TRUE(result.has_value());
+		ASSERT_FALSE(result->has_value());
+		EXPECT_EQ(result->error().code(), &editor::codes::edt("no-root-level"));
+		EXPECT_EQ(a, 1);
 	}
 
 	TEST(InputBindingListTest, UnmatchedChordDoesNotInvoke) {

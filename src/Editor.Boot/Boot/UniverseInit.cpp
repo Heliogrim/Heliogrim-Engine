@@ -202,7 +202,7 @@ static Result<Arci<core::Level>, diag::Diagnostics> reject_level(
 	return Unexpected<diag::Diagnostics> { ::hg::move(out) };
 }
 
-static decltype(auto) wantedSave(_In_ cref<core::Level> level_, _In_ cref<assets::LevelAsset> levelAsset_) {
+static bool wantedSave(_In_ cref<core::Level> level_, _In_ cref<assets::LevelAsset> levelAsset_) {
 
 	auto engine = Engine::getEngine();
 	const auto serial = SerializationModule::get();
@@ -213,13 +213,13 @@ static decltype(auto) wantedSave(_In_ cref<core::Level> level_, _In_ cref<assets
 	const auto& dataUrl = levelAsset_.getLevelData();
 	if (not dataUrl.is<storage::ArchiveUrl>()) {
 		IM_CORE_ERRORF("Failed to save level `{}`: it has no level data archive.", levelAsset_.getAssetName());
-		return;
+		return false;
 	}
 
 	auto dataArchive = ssys->findArchive(clone(dataUrl.as<storage::ArchiveUrl>()));
 	if (dataArchive == None) {
 		IM_CORE_ERRORF("Failed to save level `{}`: its level data archive is missing.", levelAsset_.getAssetName());
-		return;
+		return false;
 	}
 
 	auto saved = ssys->mutate(
@@ -236,7 +236,7 @@ static decltype(auto) wantedSave(_In_ cref<core::Level> level_, _In_ cref<assets
 			levelAsset_.getAssetName(),
 			engine::storage::package::describeMutationFailure(saved.error())
 		);
-		return;
+		return false;
 	}
 
 	/**/
@@ -245,7 +245,7 @@ static decltype(auto) wantedSave(_In_ cref<core::Level> level_, _In_ cref<assets
 	auto assetArchive = ssys->findArchive(clone(assetUrl.as<storage::ArchiveUrl>()));
 	if (assetArchive == None) {
 		IM_CORE_ERRORF("Failed to save level asset `{}`: its archive is missing.", levelAsset_.getAssetName());
-		return;
+		return false;
 	}
 
 	saved = ssys->mutate(
@@ -264,8 +264,10 @@ static decltype(auto) wantedSave(_In_ cref<core::Level> level_, _In_ cref<assets
 			levelAsset_.getAssetName(),
 			engine::storage::package::describeMutationFailure(saved.error())
 		);
-		return;
+		return false;
 	}
+
+	return true;
 }
 
 static assets::AssetUrl experimentalResolveLevelAssetUrl() {
@@ -384,7 +386,14 @@ void experimentalSaveLevel(ref<core::Level> level_) {
 	}
 
 	const auto asset = experimentalResolveLevelAsset(level_);
-	if (asset != nullptr) {
-		wantedSave(level_, *asset);
+	// The new asset exists only here; without registering it nothing (e.g. Ctrl+S) can find the root level's asset.
+	if (asset != nullptr && wantedSave(level_, *asset)) {
+		const auto inserted = Assets::get()->getRegistry()->insertOrFail(
+			assets::system::AssetDescriptor { clone(asset).into<assets::Asset>() }
+		);
+		if (not inserted.has_value()) {
+			// 0 guid taken, 1 another unique index (e.g. path) taken, 2 repository refused
+			IM_CORE_ERRORF("Failed to register the saved level asset (registry error {}).", inserted.error().index());
+		}
 	}
 }

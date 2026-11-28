@@ -18,6 +18,6 @@ namespace hg::editor::ui::service {
 		bool addBinding(mref<InputBinding> binding_);
 
 	public:
-		[[nodiscard]] Opt<Arci<Action>> invoke(ref<const InlineAutoArray<u32, 4>> keys_) const;
+		[[nodiscard]] Opt<Result<Arci<Action>, engine::diag::Diagnostic>> invoke(ref<const InlineAutoArray<u32, 4>> keys_) const;
 	};
 }

@@ -405,6 +405,31 @@ namespace IoModule {
 		sys.stop();
 	}
 
+	TEST_F(IoSystemTest, OpenReadWriteCreatesMissingDirectories) {
+		IoSystem sys {};
+		sys.start();
+		const auto path = dir / "new" / "nested" / "created.bin";
+		auto fut = sys.open(path, IoOpenMode::eReadWrite);
+		ASSERT_TRUE(waitReady(fut));
+		auto res = await(std::move(fut));
+		EXPECT_TRUE(res.has_value());
+		EXPECT_TRUE(std::filesystem::exists(path));
+		sys.stop();
+	}
+
+	TEST_F(IoSystemTest, OpenReadIntoMissingDirectoryCreatesNothing) {
+		IoSystem sys {};
+		sys.start();
+		const auto missing = dir / "absent";
+		auto fut = sys.open(missing / "file.bin", IoOpenMode::eRead);
+		ASSERT_TRUE(waitReady(fut));
+		auto res = await(std::move(fut));
+		ASSERT_FALSE(res.has_value());
+		EXPECT_EQ(res.error().as<IoError>().osError, static_cast<u32>(ERROR_PATH_NOT_FOUND));
+		EXPECT_FALSE(std::filesystem::exists(missing));
+		sys.stop();
+	}
+
 	TEST_F(IoSystemTest, CompressionOtherThanNoneFails) {
 		IoSystem sys {};
 		sys.start();

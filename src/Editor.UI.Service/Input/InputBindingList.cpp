@@ -2,6 +2,7 @@
 
 import Editor.Action;
 import Engine.Common;
+import Engine.Diagnostics;
 
 using namespace hg::editor::ui::service;
 using namespace hg;
@@ -21,7 +22,7 @@ bool InputBindingList::addBinding(mref<InputBinding> binding_) {
 	return true;
 }
 
-Opt<Arci<editor::Action>> InputBindingList::invoke(ref<const InlineAutoArray<u32, 4>> keys_) const {
+Opt<Result<Arci<editor::Action>, engine::diag::Diagnostic>> InputBindingList::invoke(ref<const InlineAutoArray<u32, 4>> keys_) const {
 	auto binding = std::ranges::find_if(
 		_bindings,
 		[&keys_](ref<const InputBinding> binding_) {
