@@ -168,6 +168,7 @@ void Viewport::setViewportTarget(StringView renderer_, Universe universe_, const
 void Viewport::updateCameraWithCtrl() {
 
 	auto* const camera = getCameraActor();
+	// shortcut: writes the camera actor from the UI/input stage, move camera control into the actor tick
 	ref<Transform> rtf { camera->getRootComponent()->getLocalTransform() };
 	ref<const Transform> ctf = camera->getCameraComponent()->getLocalTransform();
 	const auto factor = (_cameraControls.boost ? 20.F : 5.F) * core::Timing::getDeltaTime();
@@ -672,6 +673,7 @@ EventReply Viewport::invokeOnMouseMove(ref<const MouseMoveEvent> event_) {
 	dxdy.x = glm::radians(dxdy.x);
 	dxdy.y = glm::radians(dxdy.y);
 
+	// shortcut: writes the camera actor from the UI/input stage, move camera control into the actor tick
 	ref<Transform> rtf { camera->getRootComponent()->getLocalTransform() };
 	ref<Transform> ctf { camera->getCameraComponent()->getLocalTransform() };
 
