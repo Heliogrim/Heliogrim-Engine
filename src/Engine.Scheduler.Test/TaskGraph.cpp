@@ -394,4 +394,43 @@ namespace SchedulerModule {
 			}
 		}
 	}
+
+	TEST(TaskGraphTest, InputTickStaysAfterTickBeginThroughTeardown) {
+		for (const auto withReflow : { true, false }) {
+			const auto stages = makeFrame(withReflow);
+			const auto decls = declsOf(stages);
+			const auto result = build(decls);
+			ASSERT_TRUE(result.has_value());
+
+			const auto& graph = result.value();
+			const auto input = indexOf(graph, hg::engine::input::schedule::InputPipeline::InputTick);
+			const auto begin = indexOf(graph, hg::engine::core::schedule::CorePipeline::TickBegin);
+
+			const auto reaches = [&graph](const u16 from_, const u16 to_) {
+				Vector<u16> open { from_ };
+				Vector<bool> seen(graph.nodes.size(), false);
+				while (not open.empty()) {
+					const auto cur = open.back();
+					open.pop_back();
+					if (cur == to_) {
+						return true;
+					}
+
+					if (seen[cur]) {
+						continue;
+					}
+
+					seen[cur] = true;
+					open.insert(open.end(), graph.nodes[cur].successors.begin(), graph.nodes[cur].successors.end());
+				}
+				return false;
+			};
+
+			const auto inputDecl = std::ranges::find(decls, hg::engine::input::schedule::InputPipeline::InputTick, &StageDecl::name);
+			ASSERT_NE(inputDecl, decls.end());
+			EXPECT_EQ(std::ranges::count(inputDecl->after, hg::engine::core::schedule::CorePipeline::TickBegin), 0);
+			// no direct edge any more, Teardown (after TickBegin) still orders it
+			EXPECT_TRUE(reaches(begin, input));
+		}
+	}
 }
