@@ -87,15 +87,25 @@ Future<Arci<IoFile>, IoError> IoSystem::open(ref<const std::filesystem::path> pa
 				return;
 			}
 
-			const auto handle = ::CreateFileW(
-				path.c_str(),
-				rw ? (GENERIC_READ | GENERIC_WRITE) : GENERIC_READ,
-				FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
-				nullptr,
-				rw ? OPEN_ALWAYS : OPEN_EXISTING,
-				_backend->openFlags() | (unbuffered ? FILE_FLAG_NO_BUFFERING : 0u),
-				nullptr
-			);
+			const auto create = [&] {
+				return ::CreateFileW(
+					path.c_str(),
+					rw ? (GENERIC_READ | GENERIC_WRITE) : GENERIC_READ,
+					FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+					nullptr,
+					rw ? OPEN_ALWAYS : OPEN_EXISTING,
+					_backend->openFlags() | (unbuffered ? FILE_FLAG_NO_BUFFERING : 0u),
+					nullptr
+				);
+			};
+
+			auto handle = create();
+			// Like LfsSyncBlob: a new package may live in a directory that does not exist yet; only pay for it then.
+			if (handle == INVALID_HANDLE_VALUE && rw && ::GetLastError() == ERROR_PATH_NOT_FOUND) {
+				std::error_code ec {};
+				std::filesystem::create_directories(path.parent_path(), ec);
+				handle = create();
+			}
 			if (handle == INVALID_HANDLE_VALUE) {
 				promise.reject(IoError { ::GetLastError() });
 				return;
